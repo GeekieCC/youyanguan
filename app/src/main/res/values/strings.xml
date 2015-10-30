@@ -103,6 +103,7 @@
 
     <!--    system title of some activites   -->
 
+    <string name="title_activity_userinfor">个人中心</string>
     <string name="title_activity_about">关于软件</string>
     <string name="title_activity_book_detail">书籍详情</string>
     <string name="title_activity_base">反馈建议</string>

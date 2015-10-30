@@ -26,6 +26,7 @@ import android.widget.Toast;
 import android.view.MotionEvent;
 
 
+import com.gusteauscuter.youyanguan.DepActivity.UserInforActivity;
 import com.gusteauscuter.youyanguan.content_fragment.homeFragment;
 import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.CourseFragment;
@@ -110,6 +111,15 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         setContentView(R.layout.activity_navigation_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
         mNavigationViewLeft = (NavigationView) findViewById(R.id.id_nv_menu);
+        findViewById(R.id.header).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
+                startActivity(intent);
+
+            }
+        });
 //        mNavigationViewRight = (NavigationView) findViewById(R.id.id_nv_menu_right);
         mContentFramelayout = (FrameLayout) findViewById(R.id.container_frame);
 

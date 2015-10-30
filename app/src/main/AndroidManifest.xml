@@ -44,6 +44,11 @@
             android:theme="@style/AppTheme" >
         </activity>
         <activity
+            android:name=".DepActivity.UserInforActivity"
+            android:label="@string/title_activity_userinfor"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
             android:name=".DepActivity.BookDetailActivity"
             android:label="@string/title_activity_book_detail"
             android:theme="@style/AppTheme" >
