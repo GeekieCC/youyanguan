@@ -2,9 +2,9 @@ package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,8 +21,6 @@ import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
-
-import org.apache.commons.httpclient.ConnectionPoolTimeoutException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -269,7 +267,7 @@ public class SearchResultActivity extends AppCompatActivity {
 //                    }
 
                     if (page <= numOfPages) {
-                        resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch);
+                        resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
                         if (resultBookLists != null) {
                             if (ithSearch >= numOfSearchesOnThisPage) {
                                 ithSearch = 1;
