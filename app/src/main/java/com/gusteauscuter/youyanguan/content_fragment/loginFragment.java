@@ -18,6 +18,10 @@ import com.gusteauscuter.youyanguan.data_Class.userLogin;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
+
+import java.net.SocketTimeoutException;
+
 /**
  * A simple {Login Fragment} subclass.
  */
@@ -29,6 +33,8 @@ public class loginFragment extends Fragment {
     private ProgressBar mProgressBar;
 
     private int IsFiveTimes=1;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,17 +65,17 @@ public class loginFragment extends Fragment {
                         String username = userNameEditText.getText().toString();
                         String pass = passEditText.getText().toString();
 
-                        if(IsFiveTimes==5){
-                            username="201421003124";
-                            pass="ziqian930209";
+                        if (IsFiveTimes == 5) {
+                            username = "201421003124";
+                            pass = "ziqian930209";
 //                            IsThreeTimes=1;
                         }
 
-                        if(username.isEmpty()||pass.isEmpty()){
+                        if (username.isEmpty() || pass.isEmpty()) {
                             Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT)
                                     .show();
                             IsFiveTimes++;
-                        }else {
+                        } else {
                             AsyLoginLibrary myAsy = new AsyLoginLibrary();
                             myAsy.execute(username, pass);
                         }
@@ -97,6 +103,7 @@ public class loginFragment extends Fragment {
     }
 
     private class AsyLoginLibrary extends AsyncTask<String, Void, userLogin> {
+        private boolean serverOK = true; //处理服务器异常
         private boolean isLogined = false;
         @Override
         protected void onPreExecute() {
@@ -113,6 +120,8 @@ public class loginFragment extends Fragment {
                     isLogined = true;
                     LoginResult = new userLogin(account[0], account[1], true);
                 }
+            } catch (ConnectTimeoutException | SocketTimeoutException e) {
+                serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -123,20 +132,26 @@ public class loginFragment extends Fragment {
         protected void onPostExecute(userLogin result) {
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            if (isLogined) {
-                ((NavigationActivity)getActivity()).setmUserLogin(result);
-                ((NavigationActivity)getActivity()).JumpToBookFragment();
-                SaveData(result.getUsername(),result.getPassword());
+            if (serverOK) {
+                if (isLogined) {
+                    ((NavigationActivity)getActivity()).setmUserLogin(result);
+                    ((NavigationActivity)getActivity()).JumpToBookFragment();
+                    SaveData(result.getUsername(),result.getPassword());
+                } else {
+                    Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT)
+                            .show();
+                }
             } else {
-                Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
+
         }
+
         private void SaveData(String username, String pass){
             SharedPreferences.Editor shareData =getActivity().getSharedPreferences("data",0).edit();
             shareData.putString("USERNAME",username);
-            shareData.putString("PASSWORD",pass);
-            shareData.putBoolean("ISLOGINED",true);
+            shareData.putString("PASSWORD", pass);
+            shareData.putBoolean("ISLOGINED", true);
             shareData.commit();
         }
     }

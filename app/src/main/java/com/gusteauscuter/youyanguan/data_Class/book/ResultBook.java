@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.Serializable;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,18 +40,18 @@ public class ResultBook implements Serializable {
 	}
 	
 	
-	public void getResultBookWithBorrowInfo(Element element) {
+	public void getResultBookWithBorrowInfo(Element element) throws SocketTimeoutException {
 		getResultBookHelper(element);
 		isBorrowable = isBorrowableHelper();
 	}
 
-	public void getResultBookWithBorrowInfo(Element element, int searchSN) {
+	public void getResultBookWithBorrowInfo(Element element, int searchSN) throws SocketTimeoutException {
 		getResultBookHelper(element);
 		isBorrowable = isBorrowableHelperSN(searchSN);
 	}
 
 
-	private boolean isBorrowableHelperSN(int searchSN) {
+	private boolean isBorrowableHelperSN(int searchSN) throws SocketTimeoutException {
 		String detailLink = buildDetailLink(bookId);
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
@@ -74,7 +75,7 @@ public class ResultBook implements Serializable {
 		return false;
 	}
 	
-	private boolean isBorrowableHelper() {
+	private boolean isBorrowableHelper() throws SocketTimeoutException {
 		
 		String detailLink = buildDetailLink(bookId);
 		String detailHtml = getHtml(detailLink);
@@ -108,7 +109,7 @@ public class ResultBook implements Serializable {
 		return locationLists;
 	}
 	
-	private String getHtml(String link) {
+	private String getHtml(String link) throws SocketTimeoutException {
 		return HttpUtil.getHtml(link);
 	}
 	

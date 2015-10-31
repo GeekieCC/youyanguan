@@ -3,6 +3,7 @@ package com.gusteauscuter.youyanguan.login_Client;
 
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -16,17 +17,18 @@ import org.jsoup.select.Elements;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryClient {
-	
-	/**
-	 * 
-	 */
+
+	public static final int CONNECT_TIME_OUT = 6000;
+	public static final int READ_TIME_OUT = 6000;
+
 	private static final String MAIN_PAGE_URL = "http://202.38.232.10/opac/servlet/opac.go?cmdACT=mylibrary.login";
 	private static final String LOAN_PAGE_URL = "http://202.38.232.10/opac/servlet/opac.go?cmdACT=loan.list";
-	
+
 	private HttpClient httpClient;
 	private String bookHtml;
 	private boolean isLogined = false;
@@ -35,15 +37,23 @@ public class LibraryClient {
 	private boolean isRenewed = false;
 
 	//登录图书馆
-	public boolean login(String username, String pass) {
+	public boolean login(String username, String pass) throws ConnectTimeoutException, SocketTimeoutException {
 		NameValuePair[] nameValuePairs = {
 				new NameValuePair("userid", username),
 				new NameValuePair("passwd", pass) };
 		PostMethod postMethod = new PostMethod(MAIN_PAGE_URL);
 		postMethod.setRequestBody(nameValuePairs);
 		httpClient = new HttpClient();
+		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECT_TIME_OUT);
+		httpClient.getHttpConnectionManager().getParams().setSoTimeout(READ_TIME_OUT);
 		try {
 			httpClient.executeMethod(postMethod);
+		} catch (ConnectTimeoutException e) {
+			e.printStackTrace();
+			throw new ConnectTimeoutException();
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+			throw new SocketTimeoutException();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

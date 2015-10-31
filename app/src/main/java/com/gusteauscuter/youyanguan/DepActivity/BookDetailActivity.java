@@ -1,12 +1,11 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -27,11 +25,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
 import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 
-import junit.framework.Test;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 public class BookDetailActivity extends AppCompatActivity {
@@ -54,6 +48,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView catalogTextView;
     private TextView pagesTextView;
     private TextView priceTextView;
+
 
 
     @Override
@@ -107,7 +102,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
 
     private class GetBooksDetailAsy extends AsyncTask<Object, Void, BookDetail> {
-
+        private boolean serverOK = true;
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
@@ -120,14 +115,18 @@ public class BookDetailActivity extends AppCompatActivity {
         protected BookDetail doInBackground(Object... baseBook) {
             BookDetail bookDetail = null;
             try {
-
                 if (baseBook[0] instanceof Book) {
-                    bookDetail = new BookDetail((Book) baseBook[0]);
-                } else if (baseBook[0] instanceof ResultBook) {
-                    bookDetail = new BookDetail((ResultBook) baseBook[0]);
-                }
+                    bookDetail = new BookDetail();
+                    bookDetail.getBookDetail((Book) baseBook[0]);
 
+                } else if (baseBook[0] instanceof ResultBook) {
+                    bookDetail = new BookDetail();
+                    bookDetail.getResultBookDetail((ResultBook) baseBook[0]);
+                }
+            } catch (SocketTimeoutException e) {
+                serverOK = false;
             } catch (Exception e) {
+                //serverOK = false;
                 e.printStackTrace();
             }
             return bookDetail;
@@ -138,19 +137,22 @@ public class BookDetailActivity extends AppCompatActivity {
 
             mProgressBar.setVisibility(View.INVISIBLE);
 
+            if (serverOK) {
+                inflateTopRight(result);
+                inflateTable(result);
 
-            inflateTopRight(result);
-            inflateTable(result);
+                if (result.isDoubanExisting()) {
+                    bookPictureImageView.setImageBitmap(result.getPicture());
+                    inflateBottom(result);
 
-            if (result.isDoubanExisting()) {
-                bookPictureImageView.setImageBitmap(result.getPicture());
-                inflateBottom(result);
-
+                } else {
+                    bookPictureImageView.setImageResource(R.drawable.book3); //当网络上没有图片时，自动加载这个图片
+                    bottomLinearLayout.removeAllViews();
+                }
             } else {
-                bookPictureImageView.setImageResource(R.drawable.book3); //当网络上没有图片时，自动加载这个图片
-                bottomLinearLayout.removeAllViews();
-
+                Toast.makeText(getApplicationContext(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
+
         }
 
 

@@ -3,10 +3,6 @@ package com.gusteauscuter.youyanguan.data_Class.book;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import org.apache.commons.httpclient.ConnectionPoolTimeoutException;
-import org.apache.commons.httpclient.util.TimeoutController;
-import org.apache.http.conn.ConnectTimeoutException;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,15 +19,15 @@ import java.net.URL;
  */
 public class HttpUtil {
 
-    public static final int CONNECT_TIME_OUT = 5000;
-    public static final int READ_TIME_OUT = 5000;
+    public static final int CONNECT_TIME_OUT = 6000;
+    public static final int READ_TIME_OUT = 6000;
 
     /**
      * 使用HttpURLConnection,get方法获取网页源代码
      * @param link 网址
      * @return 网页源代码
      */
-    public static String getHtml(String link) {
+    public static String getHtml(String link) throws SocketTimeoutException {
         String result = "";
         HttpURLConnection urlConnection = null;
         BufferedReader br = null;
@@ -49,6 +45,9 @@ public class HttpUtil {
                     result += readLine;
                 }
             }
+        } catch (SocketTimeoutException e) {
+            e.printStackTrace();
+            throw new SocketTimeoutException();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -59,10 +58,11 @@ public class HttpUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            urlConnection.disconnect();
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
         return result;
-
     }
 
     /**
@@ -71,7 +71,7 @@ public class HttpUtil {
      * @param query 查询字符串
      * @return 网页源代码
      */
-    public static String getQueryHtml(String baseUrl, String query) {
+    public static String getQueryHtml(String baseUrl, String query) throws SocketTimeoutException {
         String resultHtml = "";
         HttpURLConnection conn = null;
         BufferedReader reader = null;
@@ -95,10 +95,9 @@ public class HttpUtil {
                 }
 
             }
-//        } catch (ConnectionPoolTimeoutException e) {
-//            e.printStackTrace();
-//        } catch (SocketTimeoutException e) {
-//            e.printStackTrace();
+        } catch (SocketTimeoutException e) {
+            e.printStackTrace();
+            throw new SocketTimeoutException();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -113,7 +112,9 @@ public class HttpUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            conn.disconnect();
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
         return resultHtml;
     }
@@ -123,7 +124,7 @@ public class HttpUtil {
      * @param imageLink 图片的URL地址
      * @return 图片
      */
-    public static Bitmap getPicture(String imageLink) {
+    public static Bitmap getPicture(String imageLink) throws SocketTimeoutException {
         Bitmap picture = null;
         HttpURLConnection urlConnection = null;
         BufferedInputStream bis = null;
@@ -138,6 +139,9 @@ public class HttpUtil {
                 bis = new BufferedInputStream(urlConnection.getInputStream());
                 picture = BitmapFactory.decodeStream(bis);
             }
+        } catch (SocketTimeoutException e) {
+            e.printStackTrace();
+            throw new SocketTimeoutException();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -148,8 +152,9 @@ public class HttpUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            urlConnection.disconnect();
-
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
         return picture;
     }
