@@ -22,6 +22,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +51,9 @@ public class SearchResultActivity extends AppCompatActivity {
     //// TOD: 2015/10/9 从searchBookFragment传一个整形的常量给searchSN
     private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校为2
 
-
     private TextView mTotalNumber;
+
+//    private boolean isConnected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +84,6 @@ public class SearchResultActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private  void initData(){
@@ -101,7 +102,6 @@ public class SearchResultActivity extends AppCompatActivity {
 
         SearchBook();
     }
-
 
     public void SearchBook(){
 
@@ -233,8 +233,9 @@ public class SearchResultActivity extends AppCompatActivity {
         }
     }
 
-
     private class SearchBookAsyTask extends AsyncTask<String, Void, List<ResultBook>> {
+
+        private boolean serverOK = true; //处理服务器异常
 
         @Override
         protected void onPreExecute(){
@@ -256,16 +257,6 @@ public class SearchResultActivity extends AppCompatActivity {
                 if (isAllowedToBorrow) {
 
                     int numOfSearchesOnThisPage = engine.getNumOfSearchesOnThisPage(page, NUM_OF_BOOKS_PER_SEARCH);
-//                    if ((page <= numOfPages) && (ithSearch <= numOfSearchesOnThisPage)) {
-//                        resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
-//                    }
-//                    if (page <= numOfPages && ithSearch >= numOfSearchesOnThisPage) {
-//                        ithSearch = 1;
-//                        page++;
-//                    } else if (ithSearch < numOfSearchesOnThisPage){
-//                        ithSearch++;
-//                    }
-
                     if (page <= numOfPages) {
                         resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
                         if (resultBookLists != null) {
@@ -282,10 +273,10 @@ public class SearchResultActivity extends AppCompatActivity {
                     resultBookLists = engine.getBooksOnPage(page);
                     if (page <= numOfPages) page++;
                 }
-
+            } catch (SocketTimeoutException e) {
+                serverOK = false;
             } catch (Exception e) {
-                //Toast.makeText(getApplication(), "服务器异常", Toast.LENGTH_SHORT).show();
-
+                //serverOK = false;
                 e.printStackTrace();
             }
             return resultBookLists;
@@ -294,30 +285,27 @@ public class SearchResultActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<ResultBook> result) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            mTotalNumber.setText(String.valueOf(numOfBooks));
 
-            if (numOfBooks == 0) {
-                Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
-            }else {
-                if (result != null) {
+            if (serverOK) {
+                mTotalNumber.setText(String.valueOf(numOfBooks));
+                if (numOfBooks == 0) {
+                    Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
+                }else {
+                    if (result != null) {
 
-                    mSearchBookList.addAll(result);
-                    mAdapter.notifyDataSetChanged();
-                    mListView.setTriggeredOnce(false);
+                        mSearchBookList.addAll(result);
+                        mAdapter.notifyDataSetChanged();
+                        mListView.setTriggeredOnce(false);
 
-//                } else if (page < numOfPages) {
-//                    page++;
-//                    ithSearch = 1;
-//                    mListView.setTriggeredOnce(false);
-
-                } else if (page >= numOfPages) {
-                    Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
+                    } else if (page >= numOfPages) {
+                        Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
+                    }
                 }
+            } else {
+                Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
-
             super.onPostExecute(result);
         }
-
     }
 
 

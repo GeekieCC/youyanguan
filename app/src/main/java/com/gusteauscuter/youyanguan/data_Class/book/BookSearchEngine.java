@@ -2,19 +2,18 @@ package com.gusteauscuter.youyanguan.data_Class.book;
 
 
 
-import org.apache.commons.httpclient.ConnectionPoolTimeoutException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookSearchEngine {
 	
 	private static final String BASE_URL = "http://202.38.232.10/opac/servlet/opac.go";
-	//private static final String BASE_URL = "http://202.38.232.10/opac/servlet/opac.go12345"; // 测试，此链接不存在
 
 //	private static final int START_PAGE_NUM = 1;
 	
@@ -55,19 +54,13 @@ public class BookSearchEngine {
 		
 	}
 	
-	public void searchBook(String searchContent, String searchCriteria, int page) {
+	public void searchBook(String searchContent, String searchCriteria, int page) throws SocketTimeoutException {
 		this.searchContent = searchContent;
 		this.searchCriteria = searchCriteria;
 		doc = searchBookHelper(page);
 		howMany(doc);
 	}
 
-//	public void searchBook(String searchContent, int page) throws Exception {
-//		this.searchContent = searchContent;
-//		this.searchCriteria = "TITLE";
-//		doc = searchBookHelper(page);
-//		howMany(doc);
-//	}
 	
 	public List<ResultBook> getBooksOnPage(int pageNum) {
 		List<ResultBook> resultBookLists = new ArrayList<ResultBook>();
@@ -83,26 +76,26 @@ public class BookSearchEngine {
 	}
 	
 	
-	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch) {
-		List<ResultBook> resultBookLists = new ArrayList<ResultBook>();
-		if (numOfBooks == 0 || pageNum > numOfPages) return null;
-		Elements elements = doc.getElementsByTag("tr");
-		elements.remove(0);
-		List<Element> elementLists = null;
-		int start = (ithSearch - 1) * numOfBooksPerSearch;
-		if (ithSearch < numOfSearchesOnThisPage) {
-			elementLists = elements.subList(start, start + numOfBooksPerSearch);
-		} else {
-			elementLists = elements.subList(start, numOfBooksOnThisPage);
-		}
-		
-		for (Element element : elementLists) {
-			ResultBook book = new ResultBook();
-			book.getResultBookWithBorrowInfo(element);
-			resultBookLists.add(book);
-		}
-		return resultBookLists;
-	}
+//	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch) {
+//		List<ResultBook> resultBookLists = new ArrayList<ResultBook>();
+//		if (numOfBooks == 0 || pageNum > numOfPages) return null;
+//		Elements elements = doc.getElementsByTag("tr");
+//		elements.remove(0);
+//		List<Element> elementLists = null;
+//		int start = (ithSearch - 1) * numOfBooksPerSearch;
+//		if (ithSearch < numOfSearchesOnThisPage) {
+//			elementLists = elements.subList(start, start + numOfBooksPerSearch);
+//		} else {
+//			elementLists = elements.subList(start, numOfBooksOnThisPage);
+//		}
+//
+//		for (Element element : elementLists) {
+//			ResultBook book = new ResultBook();
+//			book.getResultBookWithBorrowInfo(element);
+//			resultBookLists.add(book);
+//		}
+//		return resultBookLists;
+//	}
 	
 	
 	public int getNumOfPages() {
@@ -130,7 +123,7 @@ public class BookSearchEngine {
 
 	}
 	
-	private Document searchBookHelper(int pageNum) {
+	private Document searchBookHelper(int pageNum) throws SocketTimeoutException {
 		String query = buildQueryString(pageNum - 1);
 		String resultHtml = getQueryHtml(query);
 		Document doc = Jsoup.parse(resultHtml);
@@ -147,12 +140,12 @@ public class BookSearchEngine {
 		return queryString;
 	}
 	
-	private String getQueryHtml(String query) {
+	private String getQueryHtml(String query) throws SocketTimeoutException {
 			return HttpUtil.getQueryHtml(BASE_URL, query);
 
 	}
 
-	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch, int searchSN) {
+	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch, int searchSN) throws SocketTimeoutException{
 		List<ResultBook> resultBookLists = new ArrayList<ResultBook>();
 		if (numOfBooks == 0 || pageNum > numOfPages) return null;
 		Elements elements = doc.getElementsByTag("tr");

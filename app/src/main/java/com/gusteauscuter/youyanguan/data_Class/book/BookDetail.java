@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +36,12 @@ public class BookDetail {
 	private List<LocationInformation> locationLists;
 	private String isbn = "";
 
-	public BookDetail(Book book) {
+	public BookDetail() {
 
+	}
+
+	//新方法1
+	public void getBookDetail(Book book) throws SocketTimeoutException {
 		title=book.getTitle();
 		author = book.getAuthor();
 
@@ -45,25 +50,21 @@ public class BookDetail {
 		Document detailDoc = Jsoup.parse(detailHtml);
 		isbn = getISBN(detailDoc);
 		getLocationInfo(detailDoc);
-//		try {
-			if (!isbn.isEmpty()) {
-				String doubanUrl = DOUBAN_BASE_URL + isbn;
-				JSONObject doubanJson = getDetailJson(doubanUrl);
-				if (doubanJson != null) {
-					isDoubanExisting = true;
-					initIVar(doubanJson);
-				} else {
-					isDoubanExisting = false;
-				}
+		if (!isbn.isEmpty()) {
+			String doubanUrl = DOUBAN_BASE_URL + isbn;
+			JSONObject doubanJson = getDetailJson(doubanUrl);
+			if (doubanJson != null) {
+				isDoubanExisting = true;
+				initIVar(doubanJson);
+			} else {
+				isDoubanExisting = false;
 			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		}
 
 	}
 
-	public BookDetail(ResultBook resultBook) {
-
+	//新方法2
+	public void getResultBookDetail(ResultBook resultBook) throws SocketTimeoutException {
 		title=resultBook.getTitle();
 		author = resultBook.getAuthor();
 		publisher=resultBook.getPublisher();
@@ -76,22 +77,18 @@ public class BookDetail {
 		isbn = resultBook.getIsbn();
 		//处理detialHtml
 		getLocationInfo(detailDoc);
-//		try {
-			if (!isbn.isEmpty()) {
-				String doubanUrl = DOUBAN_BASE_URL + isbn;
-				JSONObject doubanJson = getDetailJson(doubanUrl);
-				if (doubanJson != null) {
-					isDoubanExisting = true;
-					initIVar(doubanJson);
-				} else {
-					isDoubanExisting = false;
-				}
+		if (!isbn.isEmpty()) {
+			String doubanUrl = DOUBAN_BASE_URL + isbn;
+			JSONObject doubanJson = getDetailJson(doubanUrl);
+			if (doubanJson != null) {
+				isDoubanExisting = true;
+				initIVar(doubanJson);
+			} else {
+				isDoubanExisting = false;
 			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-
+		}
 	}
+
 
 	public String toString() {
 		String locationStr = "";
@@ -148,7 +145,7 @@ public class BookDetail {
 		}
 	}
 
-	private void initIVar(JSONObject doubanJson) {
+	private void initIVar(JSONObject doubanJson) throws SocketTimeoutException {
 		try {
 			picture = getPictureHelper(doubanJson);
 
@@ -182,7 +179,7 @@ public class BookDetail {
 		}
 	}
 
-	private Bitmap getPictureHelper(JSONObject doubanJson) {
+	private Bitmap getPictureHelper(JSONObject doubanJson) throws SocketTimeoutException {
 		String imageLink = "";
 		try {
 			JSONObject imageJson = doubanJson.getJSONObject("images");
@@ -194,7 +191,7 @@ public class BookDetail {
 	}
 
 
-	private JSONObject getDetailJson(String doubanUrl) {
+	private JSONObject getDetailJson(String doubanUrl) throws SocketTimeoutException {
 		JSONObject doubanJson = null;
 		String doubanHtml = getHtml(doubanUrl);
 		try {
@@ -218,8 +215,8 @@ public class BookDetail {
 		return isbn;
 	}
 
-	private String getHtml(String link) {
-		return HttpUtil.getHtml(link);
+	private String getHtml(String link) throws SocketTimeoutException {
+		return  HttpUtil.getHtml(link);
 	}
 
 

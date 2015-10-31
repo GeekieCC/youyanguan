@@ -26,11 +26,13 @@ import com.gusteauscuter.youyanguan.data_Class.userLogin;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
+
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 
 public class bookFragment extends Fragment {
@@ -239,6 +241,7 @@ public class bookFragment extends Fragment {
 
     private class GetBooksAsy extends AsyncTask<String, Void, List<Book>> {
         private boolean isLogined;
+        private boolean serverOK = true;
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
@@ -254,8 +257,11 @@ public class bookFragment extends Fragment {
                     isLogined = true;
                     bookLists = libClient.getBooks();
                 }
+            } catch (ConnectTimeoutException | SocketTimeoutException e) {
+                serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
+                //serverOK = false;
             }
             return bookLists;
         }
@@ -264,30 +270,36 @@ public class bookFragment extends Fragment {
         protected void onPostExecute(List<Book> result) {
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            if (isLogined) {
-                if (result == null) {
-                    mTotalNumber.setText("0");
-                    mEmptyInformation.setVisibility(View.VISIBLE);
+            if (serverOK) {
+                if (isLogined) {
+                    if (result == null) {
+                        mTotalNumber.setText("0");
+                        mEmptyInformation.setVisibility(View.VISIBLE);
+                    } else {
+                        mBookList = result;
+                        SortBookList();
+                        mTotalNumber.setText(String.valueOf(mBookList.size()));
+                        ((NavigationActivity) getActivity()).setmBookList(mBookList);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT)
+                            .show();
+
                 } else {
-                    mBookList = result;
-                    SortBookList();
-                    mTotalNumber.setText(String.valueOf(mBookList.size()));
-                    ((NavigationActivity) getActivity()).setmBookList(mBookList);
-                    mAdapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(), R.string.failed_to_getBooks, Toast.LENGTH_SHORT)
+                            .show();
                 }
-
-                Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT)
-                        .show();
-
             } else {
-                Toast.makeText(getActivity(), R.string.failed_to_getBooks, Toast.LENGTH_SHORT)
+                Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT)
                         .show();
             }
+
         }
     }
 
     private class RenewBookAsy extends AsyncTask<String, Void, List<Book>> {
-
+        private boolean serverOK = true;
         private Book bookToRenew;
         public RenewBookAsy(Book bookToRenew) {
             this.bookToRenew = bookToRenew;
@@ -306,9 +318,11 @@ public class bookFragment extends Fragment {
                 LibraryClient libClient = new LibraryClient();
                 if (libClient.login(account[0], account[1])) {
                     if (libClient.renew(bookToRenew)) {
-                        bookLists =  libClient.getBooks();
+                        bookLists = libClient.getBooks();
                     }
                 }
+            } catch (ConnectTimeoutException | SocketTimeoutException e) {
+                serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -320,14 +334,17 @@ public class bookFragment extends Fragment {
         protected void onPostExecute(List<Book> result) {
 
             mProgressBar.setVisibility(View.INVISIBLE);
-
-            if (result != null) {
-                mBookList=result;
-                SortBookList();
-                mAdapter.notifyDataSetChanged();
-                Toast.makeText(getActivity(), "续借成功，自动续期30天" , Toast.LENGTH_SHORT).show();
+            if (serverOK) {
+                if (result != null) {
+                    mBookList=result;
+                    SortBookList();
+                    mAdapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(), "续借成功，自动续期30天" , Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
         }
     }
