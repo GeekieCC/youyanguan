@@ -9,12 +9,13 @@
     <color name="blue">#027FD4</color>
     <color name="blue_primary">#3f51b5</color>
     <color name="blue_gray">#607d8b</color>
-    <color name="blue_trans">#90027FD4</color>
+    <color name="blue_trans">#48027FD4</color>
+    <color name="blue_trans_2">#80027FD4</color>
 
     <color name="red">#FFE64C3C</color>
     <color name="red_trans">#ccAA2A1A</color>
 
-    <color name="white">#ffeeeeee</color>
+    <color name="white">#ffffffff</color>
 
     <color name="course_red">#FFE64C3C</color>
     <color name="course_blue">#FF0ED3F8</color>
@@ -22,5 +23,16 @@
     <color name="course_yellow">#e3ea13</color>
     <color name="course_purple">#5e5ab7</color>
     <color name="course_orange">#f9ad1d</color>
+
+    <color name="book_color_1">#293f4a</color>
+    <color name="book_color_2">#5a98cd</color>
+    <color name="book_color_3">#295086</color>
+    <color name="book_color_4">#6d83ad</color>
+    <color name="book_color_5">#5e5ab7</color>
+    <color name="book_color_6">#3c3f41</color>
+    <color name="book_color_7">#627c96</color>
+    <color name="book_color_8">#c7bdb3</color>
+    <color name="book_color_9">#E64C3C</color>
+    <color name="book_color_10">#f8901c</color>
 
 </resources>

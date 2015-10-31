@@ -8,25 +8,10 @@ android {
         applicationId "com.gusteauscuter.youyanguan"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
-    signingConfigs {
-        release {
-            storeFile file("D:\\Z_Android\\KeyStore")
-            storePassword "AuGusteauScuter"
-            keyAlias "GusteauScuter"
-            keyPassword "AuGusteauScuter"
-        }
+        versionCode 2
+        versionName "1.01"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled true
-            signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
     sourceSets {
         main {
             res.srcDirs = ['src/main/res', 'src/main/res/layout/card', 'src/main/res/layout/cards']

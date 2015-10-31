@@ -7,6 +7,10 @@
         <item name="android:windowAnimationStyle">@style/fade</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.Base" >
+        <item name="android:colorPrimaryDark">@color/white</item>
+    </style>
+
     <style name="fade" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@anim/fade_out</item>
@@ -56,6 +60,10 @@
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
+
+    <style name="ActionbarThemeTrans" parent="ActionbarTheme">
+        <item name="android:background">@color/blue_trans</item>
+    </style>
     <style name="drawerTheme" parent="ThemeOverlay.AppCompat.Dark">
 
     </style>
@@ -66,9 +74,9 @@
     </style>
 
     <style name="UserPicture" >
-        <item name="android:layout_height">200dp</item>
+        <item name="android:layout_height">240dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@color/blue</item>
+        <item name="android:background">@color/blue_trans_2</item>
 
     </style>
 
@@ -83,7 +91,7 @@
     </style>
 
     <style name="ContainerTheme">
-        <item name="android:background">@android:color/white</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
 

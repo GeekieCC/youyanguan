@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.gusteauscuter.youyanguan.content_fragment.bookFragment"
     android:layout_width="match_parent"
@@ -11,6 +10,7 @@
     <TextView
         android:padding="@dimen/margin_large"
         android:text="华南理工大学图书馆\n馆藏查询"
+        android:visibility="invisible"
         android:gravity="center"
         android:layout_margin="20dp"
         android:textSize="20sp"
@@ -39,8 +39,7 @@
                 android:id="@+id/spinner"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginLeft="10dp"/>
 
             <SearchView
                 android:id="@+id/searchBookEditText"
@@ -51,17 +50,11 @@
                 android:inputType="textFilter"
                 android:queryHint="请输入要查找的图书"
                 android:textColor="@color/black"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blue"
-            android:text="查    询"/>
     </LinearLayout>
 
     <View style="@style/HorizontalDivider"/>

@@ -69,7 +69,6 @@ public class SearchResultActivity extends AppCompatActivity {
 //        ab.setHomeAsUpIndicator(R.drawable.ic_back);
         ab.setDisplayHomeAsUpEnabled(true);
 
-
         mProgressBar=(ProgressBar) findViewById(R.id.progressBarRefreshBookSearched);
         mProgressBar.setVisibility(View.INVISIBLE);
         mTotalNumber=(TextView) findViewById(R.id.totalNumber);

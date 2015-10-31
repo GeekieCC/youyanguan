@@ -5,13 +5,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background">
+    android:background="@mipmap/bk5">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#22000000">
 
+    </FrameLayout>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:background="@mipmap/bk5">
 
         <android.support.v7.widget.Toolbar
             android:title="@string/app_name"
@@ -22,7 +28,7 @@
 
         <FrameLayout
             android:id="@+id/container_frame"
-            android:layout_below="@id/id_toolbar"
+            android:layout_below="@+id/id_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:theme="@style/ContainerTheme">

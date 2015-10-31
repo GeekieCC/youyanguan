@@ -3,7 +3,6 @@
     style="@style/headerTheme"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="30dp"
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:clickable="true">
@@ -12,6 +11,7 @@
         android:id="@+id/header"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="16dp"
         android:src="@drawable/ic_gusteauscuter"/>
 
@@ -20,6 +20,7 @@
         style="@style/id_linkTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
         android:text="@string/id_link"/>
 
 </LinearLayout>

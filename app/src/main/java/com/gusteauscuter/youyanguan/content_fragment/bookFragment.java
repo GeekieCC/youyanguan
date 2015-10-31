@@ -3,6 +3,7 @@ package com.gusteauscuter.youyanguan.content_fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 
 public class bookFragment extends Fragment {
@@ -49,8 +51,8 @@ public class bookFragment extends Fragment {
 
     private TextView mTotalNumber;
     private TextView mEmptyInformation;
-
-
+    private boolean refreshColor=true;
+    private int start=0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,7 +123,9 @@ public class bookFragment extends Fragment {
 
 
     public void RefreshData(){
+        refreshColor=true;
         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+
         if(isConnected){
             GetBooksAsy getBooksAsy=new GetBooksAsy();
             getBooksAsy.execute(mUserLogin.getUsername(),mUserLogin.getPassword());
@@ -213,16 +217,28 @@ public class bookFragment extends Fragment {
             mHolder.mBorrowDay.setText(borrowDay.toString());
             mHolder.mReturnDay.setText(returnDay.toString());
             mHolder.mBorrowedTime.setText(borrowedTime.toString());
-            int[] book={R.drawable.book1,R.drawable.book2,R.drawable.book3,
-                    R.drawable.book4,R.drawable.book5};
 
-            int no =position%book.length;
+            int[] book_color={
+                    getResources().getColor(R.color.book_color_1),
+                    getResources().getColor(R.color.book_color_2),
+                    getResources().getColor(R.color.book_color_3),
+                    getResources().getColor(R.color.book_color_4),
+                    getResources().getColor(R.color.book_color_5),
+                    getResources().getColor(R.color.book_color_6),
+                    getResources().getColor(R.color.book_color_7),
+//                    getResources().getColor(R.color.book_color_8),
+//                    getResources().getColor(R.color.book_color_9),
+//                    getResources().getColor(R.color.book_color_10)
+            };
 
-//            Random ra =new Random();
-//            int no =ra.nextInt(6);
+            if(refreshColor){
+                refreshColor=false;
+                Random ra =new Random();
+                start=ra.nextInt(book_color.length);
+            }
+            int no =(start+position)%book_color.length;
+            mHolder.mBookPicture.setBackgroundColor(book_color[no]);
 
-            mHolder.mBookPicture.setImageResource(book[no]);
-            mHolder.mButtonBorrow.setBackgroundResource(book[no]);
             return convertView;
             }
 

@@ -554,18 +554,20 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                View mContent = mDrawerLayout.getChildAt(0);
+                View mContent = mDrawerLayout.getChildAt(1);
                 View mMenu = drawerView;
                 float scale = 1 - slideOffset;
                 float rightScale = 0.8f + scale * 0.2f;
 
                 if (drawerView.getTag().equals("LEFT")) {
 
-                    float leftScale = 1 - 0.3f * scale;
+                    float leftScale = 1 - 0.25f * scale;
 
                     ViewHelper.setScaleX(mMenu, leftScale);
                     ViewHelper.setScaleY(mMenu, leftScale);
-                    ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
+                    ViewHelper.setAlpha(mMenu, 1.f);
+//                    ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
+
                     ViewHelper.setTranslationX(mContent,
                             mMenu.getMeasuredWidth() * (1 - scale));
                     ViewHelper.setPivotX(mContent, 0);
