@@ -13,14 +13,25 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="5dp">
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
             <TextView
                 android:id="@+id/searchBook_Title"
                 style="@style/Card.SearchBook.Title"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="book"
                 android:layout_marginBottom="5dp"/>
+            <Button
+                android:id="@+id/collect_book"
+                android:layout_weight="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收藏"/>
+        </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

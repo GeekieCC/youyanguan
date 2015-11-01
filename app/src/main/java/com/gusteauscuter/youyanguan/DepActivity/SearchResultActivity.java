@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
+import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
@@ -49,9 +51,10 @@ public class SearchResultActivity extends AppCompatActivity {
     private int page;
     
     //// TOD: 2015/10/9 从searchBookFragment传一个整形的常量给searchSN
-    private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校为2
+    private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
 
     private TextView mTotalNumber;
+
 
 //    private boolean isConnected;
     @Override
@@ -83,6 +86,8 @@ public class SearchResultActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     private  void initData(){
@@ -140,9 +145,10 @@ public class SearchResultActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup container) {
+        public View getView(final int position, View convertView, final ViewGroup container) {
 
-            ViewHolder mHolder=null;
+            final ViewHolder mHolder;
+            final ResultBook mResultBook = mSearchBookList.get(position);
 
             if (convertView == null) {
 
@@ -155,6 +161,7 @@ public class SearchResultActivity extends AppCompatActivity {
                 mHolder.mPubdate=((TextView) convertView.findViewById(R.id.searchBook_Pubdate));
                 mHolder.mBookId=((TextView) convertView.findViewById(R.id.searchBook_BookId));
                 mHolder.mAuthor=((TextView) convertView.findViewById(R.id.searchBook_Author));
+                mHolder.mButton = (Button) convertView.findViewById(R.id.collect_book);
 
                 convertView.setTag(mHolder);
 
@@ -164,7 +171,7 @@ public class SearchResultActivity extends AppCompatActivity {
 
 
             if (isAllowedToBorrow) {
-                boolean isBorrowable = mSearchBookList.get(position).isBorrowable();
+                boolean isBorrowable = mResultBook.isBorrowable();
                 if (isBorrowable) {
                     mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
                 } else {
@@ -173,11 +180,11 @@ public class SearchResultActivity extends AppCompatActivity {
             }
 
             // TO 设置Book对应属性
-            String title="【" + (position + 1) + "】"+mSearchBookList.get(position).getTitle();
-            String publisher="出版社："+mSearchBookList.get(position).getPublisher();
-            String pubdate="出版日期："+mSearchBookList.get(position).getPubdate();
-            String bookId="索书号："+mSearchBookList.get(position).getSearchNum();
-            String author="作者："+mSearchBookList.get(position).getAuthor();
+            String title="【" + (position + 1) + "】"+mResultBook.getTitle();
+            String publisher="出版社："+mResultBook.getPublisher();
+            String pubdate="出版日期："+mResultBook.getPubdate();
+            String bookId="索书号："+mResultBook.getSearchNum();
+            String author="作者："+mResultBook.getAuthor();
 
             mHolder.mTitle.setText(title);
             mHolder.mBookId.setText(bookId);
@@ -193,14 +200,32 @@ public class SearchResultActivity extends AppCompatActivity {
                     if (isConnected) {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("bookToShowDetail", mSearchBookList.get(position));
-//                        bundle.putSerializable("type","bookSearched");
+                        bundle.putSerializable("bookToShowDetail", mResultBook);
                         intent.putExtras(bundle);
                         startActivity(intent);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                                 .show();
                     }
+
+                }
+            });
+
+            // 对搜索出来的结果显示时，区别已收藏和未收藏图书
+            if (!mResultBook.isCollected()) {
+                mHolder.mButton.setText("点击收藏");
+            } else {
+                mHolder.mButton.setText("取消收藏");
+            }
+            // 收藏和取消收藏的动作监听
+            mHolder.mButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Toast.makeText(getApplicationContext(), "收藏", Toast.LENGTH_SHORT).show();
+
+                    CrudTask crudTask = new CrudTask();
+                    crudTask.execute(mResultBook);
+
 
                 }
             });
@@ -228,7 +253,7 @@ public class SearchResultActivity extends AppCompatActivity {
             public TextView mPubdate;
             public TextView mBookId;
             public TextView mAuthor;
-
+            public Button mButton;
         }
     }
 
@@ -272,6 +297,19 @@ public class SearchResultActivity extends AppCompatActivity {
                     resultBookLists = engine.getBooksOnPage(page);
                     if (page <= numOfPages) page++;
                 }
+
+                //对于搜索出来的书，检查其是否已经被收藏到数据库
+                BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+                List<ResultBook> bookCollections = mDbHelper.getAllBookCollections();
+                for (ResultBook resultBook : resultBookLists) {
+                    for (ResultBook bookCollected : bookCollections) {
+                        if (resultBook.getBookId().equals(bookCollected.getBookId())) {
+                            resultBook.setIsCollected(true);
+                        }
+                    }
+                }
+
+
             } catch (SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
@@ -307,7 +345,6 @@ public class SearchResultActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -319,5 +356,57 @@ public class SearchResultActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //TODO 收藏图书的增删改查异步类
+    private class CrudTask extends AsyncTask<ResultBook, Void, Boolean> {
+        private boolean operation;// 操作为添加时，为true;操作为删除时，为false
+        @Override
+        protected void onPreExecute() {
+            mProgressBar.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+        }
 
+        @Override
+        protected Boolean doInBackground(ResultBook... resultBooks) {
+            //操作成功与否
+            boolean result = false;
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+            if (!resultBooks[0].isCollected()) {
+                operation = true;
+                if (mDbHelper.addResultBook(resultBooks[0]) != -1) {
+                    resultBooks[0].setIsCollected(true);
+                    result = true;
+                }
+            } else {
+                operation = false;
+                if (mDbHelper.deleteResultBook(resultBooks[0]) != 0) {
+                    resultBooks[0].setIsCollected(false);
+                    result = true;
+                }
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            if (operation) {
+                if (result) {
+                    mAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplication(), "添加失败", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (result) {
+                    mAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplication(), "删除失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+            super.onPostExecute(result);
+        }
+
+
+    }
 }

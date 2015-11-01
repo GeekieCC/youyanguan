@@ -160,23 +160,23 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     }
 
-    private void JumpToCourseFragment(){
-        if(mCourseFragment==null)
-            mCourseFragment=new CourseFragment();
-        mActionBar.setTitle(R.string.nav_course);
-        FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-        mTransaction.replace(R.id.container_frame, mCourseFragment);
-        mTransaction.commit();
-
-        if (mMenu!=null) {
-//            mMenu.findItem(R.id.action_feedback).setVisible(true);
-//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
-            mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
-        }
-
-    }
+//    private void JumpToCourseFragment(){
+//        if(mCourseFragment==null)
+//            mCourseFragment=new CourseFragment();
+//        mActionBar.setTitle(R.string.nav_course);
+//        FragmentManager mFragmentManager = getFragmentManager();
+//        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
+//        mTransaction.replace(R.id.container_frame, mCourseFragment);
+//        mTransaction.commit();
+//
+//        if (mMenu!=null) {
+////            mMenu.findItem(R.id.action_feedback).setVisible(true);
+////            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+//            mMenu.findItem(R.id.action_log_out).setVisible(false);
+//            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+//        }
+//
+//    }
 
     public void JumpToBookFragment(){
 

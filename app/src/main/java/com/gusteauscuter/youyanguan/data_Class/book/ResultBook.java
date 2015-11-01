@@ -24,6 +24,7 @@ public class ResultBook implements Serializable {
 	private String type;
 	private String bookId;
 	private boolean isBorrowable;
+	private boolean isCollected = false;
 	
 	
 	public boolean isBorrowable() {
@@ -134,7 +135,7 @@ public class ResultBook implements Serializable {
 	public String toString() {
 		return rowNumber + "||" + title + "||" + author + "||"
 	             + publisher + "||" + isbn + "||" + pubdate 
-	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable;
+	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable + "\n";
 	}
 	
 	
@@ -164,4 +165,39 @@ public class ResultBook implements Serializable {
 		return searchNum;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	public void setPubdate(String pubdate) {
+		this.pubdate = pubdate;
+	}
+
+	public void setSearchNum(String searchNum) {
+		this.searchNum = searchNum;
+	}
+
+	public void setBookId(String bookId) {
+		this.bookId = bookId;
+	}
+
+	public boolean isCollected() {
+		return isCollected;
+	}
+
+	public void setIsCollected(boolean isCollected) {
+		this.isCollected = isCollected;
+	}
 }

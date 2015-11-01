@@ -11,16 +11,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.gusteauscuter.youyanguan.DepActivity.BookCollectionActivity;
 import com.gusteauscuter.youyanguan.DepActivity.SearchResultActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 
 /**
@@ -37,6 +35,8 @@ public class searchBookFragment extends Fragment{
     private String searchBookType="TITLE";
     private boolean isAllowedToBorrow;
     private int searchSN;
+
+    private Button checkBookCollectionButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,6 +112,15 @@ public class searchBookFragment extends Fragment{
             }
         });
 
+
+        checkBookCollectionButton = (Button) view.findViewById(R.id.check_book_collection);
+        checkBookCollectionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), BookCollectionActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return view;
     }
