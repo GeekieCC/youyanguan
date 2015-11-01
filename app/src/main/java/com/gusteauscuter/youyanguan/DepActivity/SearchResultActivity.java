@@ -54,6 +54,7 @@ public class SearchResultActivity extends AppCompatActivity {
     private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
 
     private TextView mTotalNumber;
+    private int currentCount = 0;//当前搜索到的书的数目
 
 
 //    private boolean isConnected;
@@ -82,7 +83,7 @@ public class SearchResultActivity extends AppCompatActivity {
             @Override
             public void onBottomReached() {
                 //Toast.makeText(getApplicationContext(),"到底了",Toast.LENGTH_SHORT).show();
-                SearchBook();
+                searchBook();
 
             }
         });
@@ -104,16 +105,18 @@ public class SearchResultActivity extends AppCompatActivity {
 
         page = FIRST_PAGE;
 
-        SearchBook();
+        searchBook();
     }
 
-    public void SearchBook(){
+
+    private void searchBook() {
 
         boolean isConnected = NetworkConnectivity.isConnected(getApplication());
         if(isConnected){
             mListView.setTriggeredOnce(true);
             SearchBookAsyTask searchBookAsyTask=new SearchBookAsyTask();
             searchBookAsyTask.execute(bookToSearch, searchBookType);
+
         }else{
             mListView.setTriggeredOnce(false);
             Toast.makeText(getApplication(),
@@ -270,51 +273,53 @@ public class SearchResultActivity extends AppCompatActivity {
         @Override
         protected List<ResultBook> doInBackground(String... args) {
             List<ResultBook> resultBookLists = null;
-            try {
-                BookSearchEngine engine = new BookSearchEngine();
-                engine.searchBook(args[0], args[1], page);
-                if (page == 1) {
-                    numOfBooks = engine.getNumOfBooks();
-                    numOfPages = engine.getNumOfPages();
-                }
+            if ((page == 1 && ithSearch == 1) || (currentCount != numOfBooks)) {
+                try {
+                    BookSearchEngine engine = new BookSearchEngine();
+                    engine.searchBook(args[0], args[1], page);
+                    if (page == 1) {
+                        numOfBooks = engine.getNumOfBooks();
+                        numOfPages = engine.getNumOfPages();
+                    }
 
-                if (isAllowedToBorrow) {
+                    if (isAllowedToBorrow) {
+                        int numOfSearchesOnThisPage = engine.getNumOfSearchesOnThisPage(page, NUM_OF_BOOKS_PER_SEARCH);
+                        if (page <= numOfPages) {
+                            resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
+                            if (resultBookLists != null) {
+                                if (ithSearch >= numOfSearchesOnThisPage) {
+                                    ithSearch = 1;
+                                    page++;
+                                } else {
+                                    ithSearch++;
+                                }
+                            }
+                        }
 
-                    int numOfSearchesOnThisPage = engine.getNumOfSearchesOnThisPage(page, NUM_OF_BOOKS_PER_SEARCH);
-                    if (page <= numOfPages) {
-                        resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
-                        if (resultBookLists != null) {
-                            if (ithSearch >= numOfSearchesOnThisPage) {
-                                ithSearch = 1;
-                                page++;
-                            } else {
-                                ithSearch++;
+                    } else {
+                        resultBookLists = engine.getBooksOnPage(page);
+                        if (resultBookLists != null && page <= numOfPages) {
+                            page++;
+                        }
+                    }
+
+                    //对于搜索出来的书，检查其是否已经被收藏到数据库
+                    BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+                    List<ResultBook> bookCollections = mDbHelper.getAllBookCollections();
+                    for (ResultBook resultBook : resultBookLists) {
+                        for (ResultBook bookCollected : bookCollections) {
+                            if (resultBook.getBookId().equals(bookCollected.getBookId())) {
+                                resultBook.setIsCollected(true);
                             }
                         }
                     }
 
-                } else {
-                    resultBookLists = engine.getBooksOnPage(page);
-                    if (page <= numOfPages) page++;
+                } catch (SocketTimeoutException e) {
+                    serverOK = false;
+                } catch (Exception e) {
+                    //serverOK = false;
+                    e.printStackTrace();
                 }
-
-                //对于搜索出来的书，检查其是否已经被收藏到数据库
-                BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-                List<ResultBook> bookCollections = mDbHelper.getAllBookCollections();
-                for (ResultBook resultBook : resultBookLists) {
-                    for (ResultBook bookCollected : bookCollections) {
-                        if (resultBook.getBookId().equals(bookCollected.getBookId())) {
-                            resultBook.setIsCollected(true);
-                        }
-                    }
-                }
-
-
-            } catch (SocketTimeoutException e) {
-                serverOK = false;
-            } catch (Exception e) {
-                //serverOK = false;
-                e.printStackTrace();
             }
             return resultBookLists;
         }
@@ -329,13 +334,14 @@ public class SearchResultActivity extends AppCompatActivity {
                     Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
                 }else {
                     if (result != null) {
-
                         mSearchBookList.addAll(result);
                         mAdapter.notifyDataSetChanged();
                         mListView.setTriggeredOnce(false);
-
-                    } else if (page >= numOfPages) {
+                        currentCount = mListView.getCount();
+                    } else if (currentCount >= numOfBooks) {
                         Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
                     }
                 }
             } else {
