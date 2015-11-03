@@ -1,37 +1,50 @@
-package com.gusteauscuter.youyanguan.DepActivity;
+package com.gusteauscuter.youyanguan.content_fragment;
 
+import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gusteauscuter.youyanguan.DepActivity.BookCollectionActivity;
+import com.gusteauscuter.youyanguan.DepActivity.SearchResultActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.content_fragment.bookFragment;
-import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
+import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 
 import java.util.List;
 
-public class BookCollectionActivity extends AppCompatActivity {
+/**
+ * A simple {searchBook Fragment} subclass.
+ */
+public class collectBookFragment extends Fragment{
 
     private TextView bookCollectionTextView;
     private Button clearCollectionButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_book_collection);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        bookCollectionTextView = (TextView) findViewById(R.id.book_collection_text);
-        clearCollectionButton = (Button) findViewById(R.id.clear_collection_button);
+        View view = inflater.inflate(R.layout.activity_book_collection, container, false);
+
+        bookCollectionTextView = (TextView) view.findViewById(R.id.book_collection_text);
+        clearCollectionButton = (Button) view.findViewById(R.id.clear_collection_button);
         //TODO 从收藏的图书数据库里取出数据
         GetBookCollectionTask getBookCollectionTask = new GetBookCollectionTask();
         getBookCollectionTask.execute();
@@ -44,35 +57,8 @@ public class BookCollectionActivity extends AppCompatActivity {
                 removeAllCollectionTask.execute();
             }
         });
-
+        return view;
     }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        menu.findItem(R.id.action_feedback).setVisible(true);
-        menu.findItem(R.id.action_open_drawer).setVisible(true);
-        menu.findItem(R.id.action_log_out).setVisible(true);
-        menu.findItem(R.id.action_refresh_book).setVisible(true);
-        menu.findItem(R.id.action_add_course).setVisible(true);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //菜单栏动作
-        if (item.getItemId()==R.id.action_feedback) {
-            return true;
-        }else
-            return super.onOptionsItemSelected(item);
-    }
-
 
     private class GetBookCollectionTask extends AsyncTask<Void, Void, List<ResultBook>> {
         @Override
@@ -83,7 +69,7 @@ public class BookCollectionActivity extends AppCompatActivity {
         @Override
         protected List<ResultBook> doInBackground(Void... params) {
             List<ResultBook> resultBookList = null;
-            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getActivity());
             resultBookList = mDbHelper.getAllBookCollections();
             return resultBookList;
         }
@@ -108,7 +94,7 @@ public class BookCollectionActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Void... params) {
-            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getActivity());
             return mDbHelper.removeAllCollections();
         }
 
@@ -122,7 +108,7 @@ public class BookCollectionActivity extends AppCompatActivity {
                 toastString += "清空了" + result + "本图书！";
                 bookCollectionTextView.setText("");
             }
-            Toast.makeText(getApplicationContext(), toastString, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT).show();
             super.onPostExecute(integer);
         }
     }

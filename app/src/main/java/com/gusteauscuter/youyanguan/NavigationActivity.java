@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.view.GravityCompat;
 import android.os.Bundle;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -27,6 +28,7 @@ import android.view.MotionEvent;
 
 
 import com.gusteauscuter.youyanguan.DepActivity.UserInforActivity;
+import com.gusteauscuter.youyanguan.content_fragment.collectBookFragment;
 import com.gusteauscuter.youyanguan.content_fragment.homeFragment;
 import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.CourseFragment;
@@ -60,6 +62,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     private FrameLayout mContentFramelayout;
 
     private bookFragment mBookFragment;
+    private collectBookFragment mCollectBookFragment;
     private CourseFragment mCourseFragment;
     private homeFragment mHomeFragment;
     private settingFragment mSettingFragment;
@@ -200,6 +203,21 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         }
     }
 
+    public void JumpToCollectBookFragment(){
+
+        if (mCollectBookFragment==null)
+            mCollectBookFragment=new collectBookFragment();
+        mActionBar.setTitle(R.string.nav_collect_book);
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
+        mTransaction.replace(R.id.container_frame, mCollectBookFragment);
+        mTransaction.commit();
+        if (mMenu!=null) {
+            mMenu.findItem(R.id.action_log_out).setVisible(false);
+            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+        }
+
+    }
     private void JumpToLoginFragment(){
         if(mLoginFragment==null)
             mLoginFragment=new loginFragment();
@@ -281,6 +299,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             JumpToBookFragment();
         }
 
+        if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
+            JumpToCollectBookFragment();
+        }
 //        if(menuItem.getItemId()==R.id.nav_course) {       //日程
 //            JumpToCourseFragment();
 //        }

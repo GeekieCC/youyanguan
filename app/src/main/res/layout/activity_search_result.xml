@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context="com.gusteauscuter.youyanguan.DepActivity.SearchResultActivity">
 
     <android.support.v7.widget.Toolbar
@@ -13,26 +14,66 @@
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ActionbarTheme" />
 
+    <SearchView
+        android:id="@+id/searchBookEditText"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:iconifiedByDefault="false"
+        android:inputType="textFilter"
+        android:queryHint="请输入要查找的图书"
+        android:text="@color/white"
+        android:layout_marginLeft="60dp"
+        android:background="@color/blue"/>
+
     <LinearLayout
         android:id="@+id/totalNumberLayout"
         android:layout_below="@id/id_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/margin_small"
+        android:layout_height="40dp"
         android:background="@color/gray_light"
         android:textColor="@color/gray"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
         <TextView
             android:layout_marginLeft="@dimen/margin_medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="共搜索到图书数量：" />
+            android:text="共搜索到：" />
 
         <TextView android:id="@+id/totalNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0" />
 
+        <RelativeLayout
+            android:id="@+id/searchConditionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:layout_alignParentRight="true"
+                android:id="@+id/NorthCheckBox"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="北校" />
+            <CheckBox
+                android:layout_toLeftOf="@+id/NorthCheckBox"
+                android:id="@+id/SouthCheckBox"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="南校"/>
+            <Spinner
+                android:layout_toLeftOf="@+id/SouthCheckBox"
+                android:id="@+id/spinner"
+                android:layout_width="70dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true"/>
+        </RelativeLayout>
 
     </LinearLayout>
 

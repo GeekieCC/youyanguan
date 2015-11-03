@@ -8,12 +8,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ShareActionProvider;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -24,14 +27,16 @@ import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
 import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
+import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.Objects;
 
 public class BookDetailActivity extends AppCompatActivity {
 
     private ProgressBar  mProgressBar;
-
+    private Object baseBook;
     //控件
     private ImageView bookPictureImageView;
     private TextView titleTextView;
@@ -48,7 +53,8 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView catalogTextView;
     private TextView pagesTextView;
     private TextView priceTextView;
-
+    private MenuItem menuCollection;
+    private MenuItem menuShare;
 
 
     @Override
@@ -56,7 +62,7 @@ public class BookDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initView();
         initData();
-
+//        collectBook();
     }
 
     private void initView() {
@@ -89,18 +95,89 @@ public class BookDetailActivity extends AppCompatActivity {
         pagesTextView = (TextView) findViewById(R.id.pages);
         priceTextView = (TextView) findViewById(R.id.price);
 
+        menuCollection=(MenuItem)findViewById(R.id.action_collection);
+        menuShare=(MenuItem)findViewById(R.id.action_share);
+
     }
 
     private  void initData(){
         Intent intent = this.getIntent();
-
-        Object baseBook = intent.getSerializableExtra("bookToShowDetail");
+        baseBook = intent.getSerializableExtra("bookToShowDetail");
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
         getBooksDetailAsy.execute(baseBook);
-
     }
 
+    private void collectBook(){
+        CrudTask crudTask = new CrudTask();
+        if (baseBook instanceof Book) {
 
+        }
+        if (baseBook instanceof ResultBook) {
+            crudTask.execute((ResultBook)baseBook);
+        }
+    }
+
+    //TODO 收藏图书的增删改查异步类
+    private class CrudTask extends AsyncTask<ResultBook, Void, Boolean> {
+        private boolean operation;// 操作为添加时，为true;操作为删除时，为false
+        @Override
+        protected void onPreExecute() {
+            mProgressBar.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(ResultBook... resultBooks) {
+            //操作成功与否
+            boolean result = false;
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+            if (!resultBooks[0].isCollected()) {
+                operation = true;
+                if (mDbHelper.addResultBook(resultBooks[0]) != -1) {
+                    resultBooks[0].setIsCollected(true);
+                    result = true;
+                }
+            } else {
+                operation = false;
+                if (mDbHelper.deleteResultBook(resultBooks[0]) != 0) {
+                    resultBooks[0].setIsCollected(false);
+                    result = true;
+                }
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            if (operation) {
+                if (result) {
+                    menuCollection.setTitle("取消收藏");
+                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplication(), "添加失败", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (result) {
+                    menuCollection.setTitle("收藏");
+                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplication(), "删除失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+            super.onPostExecute(result);
+        }
+    }
+
+    private void shareBook(){
+        Intent intent=new Intent(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
+        intent.putExtra(Intent.EXTRA_TEXT, "I have successfully share my message through my app");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(intent, getTitle()));
+
+    }
     private class GetBooksDetailAsy extends AsyncTask<Object, Void, BookDetail> {
         private boolean serverOK = true;
         @Override
@@ -287,11 +364,24 @@ public class BookDetailActivity extends AppCompatActivity {
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_book_detail, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.finish();
+                break;
+            case R.id.action_collection:
+                collectBook();
+                break;
+            case R.id.action_share:
+                shareBook();
                 break;
         }
         return super.onOptionsItemSelected(item);

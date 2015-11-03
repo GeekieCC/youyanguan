@@ -1,6 +1,7 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -10,10 +11,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,10 +40,7 @@ public class SearchResultActivity extends AppCompatActivity {
     private static final int FIRST_PAGE = 1;
 
     private List<ResultBook> mSearchBookList;
-    //传入参数
-    private String bookToSearch;
-    private String searchBookType;
-    private boolean isAllowedToBorrow;
+
     //控件
     private ScrollListView mListView;
     private ProgressBar mProgressBar;
@@ -57,20 +60,21 @@ public class SearchResultActivity extends AppCompatActivity {
     private int currentCount = 0;//当前搜索到的书的数目
 
 
-//    private boolean isConnected;
+    private SearchView searchBookEditText;
+    private Spinner searchBookTypeSpinner;
+    private CheckBox mSouthCheckBox;
+    private CheckBox mNorthCheckBox;
+
+    private String bookToSearch;
+    private String searchBookType="TITLE";
+    private boolean isAllowedToBorrow;
+    private boolean reSearch=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        initData();
-        initView();
-    }
-
-    private void initView() {
         setContentView(R.layout.activity_search_result);
-
         setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
         final ActionBar ab = getSupportActionBar();
-//        ab.setHomeAsUpIndicator(R.drawable.ic_back);
         ab.setDisplayHomeAsUpEnabled(true);
 
         mProgressBar=(ProgressBar) findViewById(R.id.progressBarRefreshBookSearched);
@@ -78,38 +82,124 @@ public class SearchResultActivity extends AppCompatActivity {
         mTotalNumber=(TextView) findViewById(R.id.totalNumber);
         mListView = (ScrollListView) findViewById(R.id.bookListView);
 
-        initData();
-        mListView.setOnBottomReachedListener(new ScrollListView.OnBottomReachedListener() {
+        searchBookTypeSpinner=(Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getApplicationContext(),
+                R.array.SearchBookType, R.layout.spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        searchBookTypeSpinner.setAdapter(adapter);
+        searchBookTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onBottomReached() {
-                //Toast.makeText(getApplicationContext(),"到底了",Toast.LENGTH_SHORT).show();
-                searchBook();
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
+                String type = searchBookTypeSpinner.getItemAtPosition(i).toString();
+                switch (type) {
+                    case "标题":
+                        searchBookType = "TITLE";
+                        break;
+                    case "作者":
+                        searchBookType = "AUTHOR";
+                        break;
+                    case "ISBN":
+                        searchBookType = "ISBN";
+                        break;
+                    case "ISSN":
+                        searchBookType = "ISBN.011$a";
+                        break;
+                    case "出版社":
+                        searchBookType = "PUBLISHER";
+                        break;
+                    case "分类号":
+                        searchBookType = "CLASSNO";
+                        break;
+                    case "主题词":
+                        searchBookType = "SUBJECT";
+                        break;
+                    case "统一刊号":
+                        searchBookType = "UNIONNO";
+                        break;
+                    case "馆藏条码":
+                        searchBookType = "BARCODE";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
+        mSouthCheckBox=(CheckBox)findViewById(R.id.SouthCheckBox);
+        mNorthCheckBox=(CheckBox)findViewById(R.id.NorthCheckBox);
+        initSearchCondition();
 
-    }
+        searchBookEditText = (SearchView) findViewById(R.id.searchBookEditText);
+        searchBookEditText.setSubmitButtonEnabled(true);
+        searchBookEditText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-    private  void initData(){
-        Intent intent = this.getIntent();
-        bookToSearch=(String)intent.getSerializableExtra("bookToSearch");
-        searchBookType=(String)intent.getSerializableExtra("searchBookType");
-        isAllowedToBorrow=(boolean) intent.getSerializableExtra("isAllowedToBorrow");
-        searchSN=(int) intent.getSerializableExtra("searchSN");
-        //// TOD: 2015/10/9 在这里从intent中获取一个整型参数，赋值给searchSN
-
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                reSearch=true;
+                searchBook();
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         mSearchBookList=new ArrayList<>();
         mAdapter = new SearchBookAdapter() ;
         mListView.setAdapter(mAdapter);
 
-        page = FIRST_PAGE;
-
-        searchBook();
+        mListView.setOnBottomReachedListener(new ScrollListView.OnBottomReachedListener() {
+            @Override
+            public void onBottomReached() {
+                //Toast.makeText(getApplicationContext(),"到底了",Toast.LENGTH_SHORT).show();
+                reSearch=false;
+                searchBook();
+            }
+        });
     }
 
+    public void initSearchCondition(){
+
+        SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
+        Boolean SouthChecked = shareData.getBoolean("South", false);
+        Boolean NorthChecked = shareData.getBoolean("North", true);
+        mSouthCheckBox.setChecked(SouthChecked);
+        mNorthCheckBox.setChecked(NorthChecked);
+
+    }
+
+    public void saveSearchCondition() {
+        SharedPreferences.Editor shareData =getApplication().getSharedPreferences("data", 0).edit();
+        shareData.putBoolean("South",mSouthCheckBox.isChecked());
+        shareData.putBoolean("North",mNorthCheckBox.isChecked());
+        shareData.commit();
+
+        //searchBookType;
+        isAllowedToBorrow = true;
+        if (mNorthCheckBox.isChecked()&&mSouthCheckBox.isChecked()){
+            searchSN= BookSearchEngine.BOTH_CAMPUS;
+        }else if(mNorthCheckBox.isChecked()){
+            searchSN=BookSearchEngine.NORTH_CAMPUS;
+        }else if(mSouthCheckBox.isChecked()){
+            searchSN= BookSearchEngine.SOUTH_CAMPUS;
+        }else{
+            isAllowedToBorrow = false;
+        }
+    }
 
     private void searchBook() {
+
+        if(reSearch){
+            page = FIRST_PAGE;
+            mTotalNumber.setText("0");
+            mSearchBookList=new ArrayList<>();
+            mAdapter.notifyDataSetChanged();
+            saveSearchCondition();
+            bookToSearch = searchBookEditText.getQuery().toString();
+        }
 
         boolean isConnected = NetworkConnectivity.isConnected(getApplication());
         if(isConnected){
@@ -122,7 +212,6 @@ public class SearchResultActivity extends AppCompatActivity {
             Toast.makeText(getApplication(),
                     R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private class SearchBookAdapter extends BaseAdapter {
@@ -228,7 +317,6 @@ public class SearchResultActivity extends AppCompatActivity {
 
                     CrudTask crudTask = new CrudTask();
                     crudTask.execute(mResultBook);
-
 
                 }
             });

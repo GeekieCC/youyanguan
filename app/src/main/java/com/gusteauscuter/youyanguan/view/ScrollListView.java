@@ -119,6 +119,7 @@ public class ScrollListView extends ListView implements AbsListView.OnScrollList
         isTriggeredOnce = b;
     }
 
+
     /**
      * Event listener.
      */

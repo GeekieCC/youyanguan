@@ -23,6 +23,9 @@
         android:checkable="true"/>
 
     <item
+        android:id="@+id/nav_collect_book"
+        android:title="@string/nav_collect_book" />
+    <item
         android:id="@+id/nav_search_book"
         android:icon="@drawable/ic_search_book"
         android:title="@string/nav_search_book"

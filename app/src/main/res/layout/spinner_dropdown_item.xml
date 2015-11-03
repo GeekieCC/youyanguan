@@ -24,4 +24,5 @@
     android:layout_width="match_parent"
     android:layout_height="15dp"
     android:textColor="@color/black"
-    android:ellipsize="marquee"/>
+    android:ellipsize="marquee"
+    android:textAlignment="inherit"/>
