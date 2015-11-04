@@ -10,6 +10,7 @@
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ActionbarTheme" />
 
+
     <ScrollView
         android:id="@+id/scrollViewBookDetail"
         android:layout_width="match_parent"

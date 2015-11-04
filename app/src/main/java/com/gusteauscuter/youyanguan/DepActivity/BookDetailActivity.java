@@ -55,7 +55,14 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView priceTextView;
     private MenuItem menuCollection;
     private MenuItem menuShare;
+    private Menu thisMenu;
+    private boolean isCollected;
+    private int position;
 
+    //判断图书类型
+    public static final int BOOK = 0;
+    public static final int RESULT_BOOK = 1;
+    private int baseBookType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +102,9 @@ public class BookDetailActivity extends AppCompatActivity {
         pagesTextView = (TextView) findViewById(R.id.pages);
         priceTextView = (TextView) findViewById(R.id.price);
 
+
         menuCollection=(MenuItem)findViewById(R.id.action_collection);
+//        menuCollection.setTitle("ji");
         menuShare=(MenuItem)findViewById(R.id.action_share);
 
     }
@@ -103,6 +112,16 @@ public class BookDetailActivity extends AppCompatActivity {
     private  void initData(){
         Intent intent = this.getIntent();
         baseBook = intent.getSerializableExtra("bookToShowDetail");
+        position = intent.getIntExtra("position", 0);
+
+        //TODO
+        if (baseBook instanceof ResultBook) {
+            isCollected = ((ResultBook) baseBook).isCollected();
+            baseBookType = RESULT_BOOK;
+        } else if (baseBook instanceof Book) {
+            baseBookType = BOOK;
+        }
+
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
         getBooksDetailAsy.execute(baseBook);
     }
@@ -150,21 +169,29 @@ public class BookDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            if (operation) {
-                if (result) {
+            if (result) {
+                if (operation) {
                     menuCollection.setTitle("取消收藏");
                     Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplication(), "添加失败", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                if (result) {
                     menuCollection.setTitle("收藏");
                     Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
+                }
+
+                //返回给上一个activity，
+                Intent intent = new Intent();
+                intent.putExtra("position", position);
+                intent.putExtra("isCollected", operation);
+                BookDetailActivity.this.setResult(0, intent);
+
+            } else {
+                if (operation) {
+                    Toast.makeText(getApplication(), "添加失败", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplication(), "删除失败", Toast.LENGTH_SHORT).show();
                 }
             }
+
             super.onPostExecute(result);
         }
     }
@@ -190,14 +217,14 @@ public class BookDetailActivity extends AppCompatActivity {
 
         @Override
         protected BookDetail doInBackground(Object... baseBook) {
-            BookDetail bookDetail = null;
+            BookDetail bookDetail = new BookDetail();
             try {
-                if (baseBook[0] instanceof Book) {
-                    bookDetail = new BookDetail();
+                if (baseBookType == BOOK) {
+//                    bookDetail = new BookDetail();
                     bookDetail.getBookDetail((Book) baseBook[0]);
 
-                } else if (baseBook[0] instanceof ResultBook) {
-                    bookDetail = new BookDetail();
+                } else if (baseBookType == RESULT_BOOK) {
+//                    bookDetail = new BookDetail();
                     bookDetail.getResultBookDetail((ResultBook) baseBook[0]);
                 }
             } catch (SocketTimeoutException e) {
@@ -367,8 +394,21 @@ public class BookDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_book_detail, menu);
+        menuCollection = menu.findItem(R.id.action_collection);
+
+        if (baseBookType == BOOK) {
+            menuCollection.setVisible(false);
+        } else if (baseBookType == RESULT_BOOK) {
+            if(isCollected){
+                menuCollection.setTitle("取消收藏");
+            }else {
+                menuCollection.setTitle("收藏");
+            }
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

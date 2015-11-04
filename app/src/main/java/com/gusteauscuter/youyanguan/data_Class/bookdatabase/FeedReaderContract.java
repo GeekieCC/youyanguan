@@ -19,6 +19,7 @@ public final class FeedReaderContract {
         public static final String COLUMN_NAME_PUBDATE = "PUBDATE";
         public static final String COLUMN_NAME_SEARCHNUM = "SEARCHNUM";
         public static final String COLUMN_NAME_BOOKID = "BOOKID";
+        public static final String COLUMN_NAME_BORROW_CONDITION = "BORROWABLE";
 
     }
 }

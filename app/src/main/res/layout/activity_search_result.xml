@@ -19,11 +19,10 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:iconifiedByDefault="false"
+        android:textColor="@color/white"
         android:inputType="textFilter"
         android:queryHint="请输入要查找的图书"
-        android:text="@color/white"
-        android:layout_marginLeft="60dp"
-        android:background="@color/blue"/>
+        android:layout_marginLeft="60dp"/>
 
     <LinearLayout
         android:id="@+id/totalNumberLayout"
@@ -39,7 +38,7 @@
             android:layout_marginLeft="@dimen/margin_medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="共搜索到：" />
+            android:text="数量：" />
 
         <TextView android:id="@+id/totalNumber"
             android:layout_width="wrap_content"

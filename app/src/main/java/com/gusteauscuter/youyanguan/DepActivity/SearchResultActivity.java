@@ -57,7 +57,7 @@ public class SearchResultActivity extends AppCompatActivity {
     private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
 
     private TextView mTotalNumber;
-    private int currentCount = 0;//当前搜索到的书的数目
+    private int currentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
 
 
     private SearchView searchBookEditText;
@@ -85,7 +85,7 @@ public class SearchResultActivity extends AppCompatActivity {
         searchBookTypeSpinner=(Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getApplicationContext(),
                 R.array.SearchBookType, R.layout.spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         searchBookTypeSpinner.setAdapter(adapter);
         searchBookTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -133,7 +133,7 @@ public class SearchResultActivity extends AppCompatActivity {
         initSearchCondition();
 
         searchBookEditText = (SearchView) findViewById(R.id.searchBookEditText);
-        searchBookEditText.setSubmitButtonEnabled(true);
+//        searchBookEditText.setSubmitButtonEnabled(true);
         searchBookEditText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
@@ -174,7 +174,7 @@ public class SearchResultActivity extends AppCompatActivity {
     public void saveSearchCondition() {
         SharedPreferences.Editor shareData =getApplication().getSharedPreferences("data", 0).edit();
         shareData.putBoolean("South",mSouthCheckBox.isChecked());
-        shareData.putBoolean("North",mNorthCheckBox.isChecked());
+        shareData.putBoolean("North", mNorthCheckBox.isChecked());
         shareData.commit();
 
         //searchBookType;
@@ -198,7 +198,7 @@ public class SearchResultActivity extends AppCompatActivity {
             mSearchBookList=new ArrayList<>();
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
-            bookToSearch = searchBookEditText.getQuery().toString();
+            bookToSearch = searchBookEditText.getQuery().toString().replaceAll("\\s", "");
         }
 
         boolean isConnected = NetworkConnectivity.isConnected(getApplication());
@@ -293,8 +293,9 @@ public class SearchResultActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("bookToShowDetail", mResultBook);
+                        bundle.putInt("position", position);
                         intent.putExtras(bundle);
-                        startActivity(intent);
+                        startActivityForResult(intent, 0);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                                 .show();
@@ -320,19 +321,6 @@ public class SearchResultActivity extends AppCompatActivity {
 
                 }
             });
-
-//            mHolder.mBookPicture.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                    Intent intent = new Intent(getApplication(), BookDetailActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putSerializable("bookToShowDetail", mSearchBookList.get(position));
-//                    bundle.putSerializable("type","bookSearched");
-//                    intent.putExtras(bundle);
-//                    startActivity(intent);
-//                }
-//            });
 
             return convertView;
         }
@@ -429,10 +417,12 @@ public class SearchResultActivity extends AppCompatActivity {
                     } else if (currentCount >= numOfBooks) {
                         Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
                     } else {
+                        mListView.setTriggeredOnce(false);
                         Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
                     }
                 }
             } else {
+                mListView.setTriggeredOnce(false);
                 Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
             super.onPostExecute(result);
@@ -485,6 +475,7 @@ public class SearchResultActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (operation) {
                 if (result) {
+
                     mAdapter.notifyDataSetChanged();
                     Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
                 } else {
@@ -501,6 +492,18 @@ public class SearchResultActivity extends AppCompatActivity {
             super.onPostExecute(result);
         }
 
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0 && resultCode == 0 && data != null) {
+            int position = data.getIntExtra("position", 0);
+            boolean operation = data.getBooleanExtra("isCollected", false);
+            ResultBook resultBook = (ResultBook) mAdapter.getItem(position);
+            resultBook.setIsCollected(operation);
+            mAdapter.notifyDataSetChanged();
+        }
 
     }
 }

@@ -135,7 +135,7 @@ public class ResultBook implements Serializable {
 	public String toString() {
 		return rowNumber + "||" + title + "||" + author + "||"
 	             + publisher + "||" + isbn + "||" + pubdate 
-	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable + "\n";
+	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable + isCollected + "\n";
 	}
 	
 	
@@ -195,6 +195,10 @@ public class ResultBook implements Serializable {
 
 	public boolean isCollected() {
 		return isCollected;
+	}
+
+	public void setIsBorrowable(boolean isBorrowable) {
+		this.isBorrowable = isBorrowable;
 	}
 
 	public void setIsCollected(boolean isCollected) {

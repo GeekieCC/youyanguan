@@ -26,6 +26,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
     }
     public void onCreate(SQLiteDatabase db) {
         String TEXT_TYPE = " TEXT";
+        String INTEGER_TYPE = " INTEGER";
         String NOT_NULL = " NOT NULL";
         String COMMA_SEP = ",";
         String SQL_CREATE_ENTRIES =
@@ -37,7 +38,8 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
                         FeedEntry.COLUMN_NAME_ISBN + TEXT_TYPE + COMMA_SEP +
                         FeedEntry.COLUMN_NAME_PUBDATE + TEXT_TYPE + COMMA_SEP +
                         FeedEntry.COLUMN_NAME_SEARCHNUM + TEXT_TYPE + COMMA_SEP +
-                        FeedEntry.COLUMN_NAME_BOOKID  + TEXT_TYPE + NOT_NULL +
+                        FeedEntry.COLUMN_NAME_BOOKID  + TEXT_TYPE + NOT_NULL + COMMA_SEP +
+                        FeedEntry.COLUMN_NAME_BORROW_CONDITION + INTEGER_TYPE +
                         " )";
 
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -74,7 +76,11 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         values.put(FeedEntry.COLUMN_NAME_PUBDATE, resultBook.getPubdate());
         values.put(FeedEntry.COLUMN_NAME_SEARCHNUM, resultBook.getSearchNum());
         values.put(FeedEntry.COLUMN_NAME_BOOKID, resultBook.getBookId());
-
+        if (resultBook.isBorrowable()) {
+            values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, 1);
+        } else {
+            values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, 0);
+        }
         // Insert the new row, returning the primary key value of the new row
         //the row ID of the newly inserted row, or -1 if an error occurred
         long newRowId = db.insert(FeedEntry.TABLE_NAME, null, values);
@@ -111,7 +117,14 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
                 resultBook.setPubdate(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_PUBDATE)));
                 resultBook.setSearchNum(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_SEARCHNUM)));
                 resultBook.setBookId(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BOOKID)));
+                int borrowCondition = cursor.getInt(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BORROW_CONDITION));
+                if (borrowCondition == 1) {
+                    resultBook.setIsBorrowable(true);
+                } else {
+                    resultBook.setIsBorrowable(false);
+                }
 
+                resultBook.setIsCollected(true);
                 bookLists.add(resultBook);
             } while (cursor.moveToNext());
         }

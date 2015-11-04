@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gusteauscuter.youyanguan.DepActivity.BookCollectionActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_small"
+            android:background="@color/gray_light"
+            android:textColor="@color/gray"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收藏图书数量：" />
+
+            <TextView android:id="@+id/totalNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/emptyInformation"
+            android:padding="@dimen/margin_large"
+            android:text="You didn't collect any books."
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <GridView android:id="@+id/bookListView"
+            android:numColumns="1"
+            android:divider="@android:color/white"
+            android:layout_marginLeft="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        </GridView>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center" />
+
+
+</RelativeLayout>
+

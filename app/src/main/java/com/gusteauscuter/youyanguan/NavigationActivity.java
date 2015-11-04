@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.view.GravityCompat;
 import android.os.Bundle;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -594,6 +593,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
                     ViewHelper.setPivotX(mContent, 0);
                     ViewHelper.setPivotY(mContent,
                             mContent.getMeasuredHeight() / 2);
+//                    ViewHelper.setAlpha(mContent, 0.5f);
                     mContent.invalidate();
                     ViewHelper.setScaleX(mContent, rightScale);
                     ViewHelper.setScaleY(mContent, rightScale);

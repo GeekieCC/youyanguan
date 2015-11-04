@@ -49,7 +49,7 @@
         android:tag="LEFT"
 
         android:theme="@style/drawerTheme"
-        android:background="#00000000" />
+        android:background="#11000000" />
     <!-- 控制背景透明，只能放在此处，放在style中无效-->
     <!--
         <android.support.design.widget.NavigationView
