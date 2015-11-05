@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/gray_light"
     tools:context="com.gusteauscuter.youyanguan.DepActivity.UserInforActivity">
 
     <android.support.v7.widget.Toolbar

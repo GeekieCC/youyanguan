@@ -42,6 +42,7 @@ public class UserInforActivity extends AppCompatActivity {
     }
 
     private void initView() {
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setContentView(R.layout.activity_user_infor);
 

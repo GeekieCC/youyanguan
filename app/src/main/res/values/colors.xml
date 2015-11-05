@@ -35,4 +35,8 @@
     <color name="book_color_9">#E64C3C</color>
     <color name="book_color_10">#f8901c</color>
 
+    <color name="teal">#009688</color>
+    <color name="black_87">#DD000000</color>
+    <color name="black_54">#89000000</color>
+
 </resources>

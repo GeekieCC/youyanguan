@@ -2,21 +2,20 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookFragment"
+    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffffff"
     android:orientation="vertical">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
-        android:text="华 工 查 询"
-        android:visibility="invisible"
+        android:text="/||/||  华工馆藏"
+        android:visibility="visible"
         android:textSize="20sp"
         android:padding="5dp"
         android:gravity="center"
-        android:textColor="@color/black"/>
+        android:textColor="@color/teal"/>
 
     <LinearLayout
         android:id="@+id/focusParentLayout"
@@ -42,13 +41,11 @@
             android:layout_margin="5dp" />
         <TextView
             android:id="@+id/searchBookScan"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:textSize="18sp"
-            android:padding="5dp"
-            android:text="扫码"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
             android:textColor="@color/black"
-            android:background="@color/blue_primary"
+            android:background="@drawable/ic_search_book"
             android:gravity="center_vertical"/>
 
     </LinearLayout>

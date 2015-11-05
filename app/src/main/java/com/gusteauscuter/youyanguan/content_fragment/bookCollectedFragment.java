@@ -4,6 +4,9 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,21 +28,18 @@ import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * A simple {searchBook Fragment} subclass.
  */
-public class collectBookFragment extends Fragment{
+public class bookCollectedFragment extends Fragment{
 
 
     private List<ResultBook> mBookList=new ArrayList<>();
     private GridView mListView;
-    private LayoutInflater mLayoutInflater;
     private ProgressBar mProgressBar;
 
     private CollectSearchBookAdapter mAdapter;
 
-    private TextView mTotalNumber;
     private TextView mEmptyInformation;
     private boolean IsCollectionCancled=false;
 
@@ -48,25 +48,26 @@ public class collectBookFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_book_collection, container, false);
-        mLayoutInflater=inflater;
-
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
-        mEmptyInformation.setVisibility(View.GONE);
-
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
-
-        mTotalNumber=(TextView) view.findViewById(R.id.totalNumber);
         mListView = (GridView) view.findViewById(R.id.bookListView);
 
-        mAdapter = new CollectSearchBookAdapter() ;
-        mListView.setAdapter(mAdapter);
-        mTotalNumber.setText(String.valueOf(mBookList.size()));
-
-
-        refreshBook();
+        initData();
 
         return view;
+    }
+
+    private void initData(){
+        if(mBookList==null) {
+            mBookList = new ArrayList<>();
+        }
+        if(mAdapter==null) {
+            mAdapter = new CollectSearchBookAdapter();
+        }
+        mListView.setAdapter(mAdapter);
+
+        refreshBook();
     }
 
     private void refreshBook(){
@@ -101,7 +102,7 @@ public class collectBookFragment extends Fragment{
         public View getView(final int position, View convertView, final ViewGroup container) {
 
             final ViewHolder mHolder;
-            final ResultBook mResultBook = mBookList.get(position);
+            final ResultBook mBook = mBookList.get(position);
 
             if (convertView == null) {
 
@@ -123,7 +124,7 @@ public class collectBookFragment extends Fragment{
             }
 
 
-            final boolean isBorrowable = mResultBook.isBorrowable();
+            final boolean isBorrowable = mBook.isBorrowable();
             if (isBorrowable) {
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
             } else {
@@ -132,11 +133,11 @@ public class collectBookFragment extends Fragment{
 
 
             // TO 设置Book对应属性
-            String title="【" + (position + 1) + "】"+mResultBook.getTitle();
-            String publisher="出版社："+mResultBook.getPublisher();
-            String pubdate="出版日期："+mResultBook.getPubdate();
-            String bookId="索书号："+mResultBook.getSearchNum();
-            String author="作者："+mResultBook.getAuthor();
+            String title="【" + (position + 1) + "】"+mBook.getTitle();
+            String publisher="出版社："+mBook.getPublisher();
+            String pubdate="出版日期："+mBook.getPubdate();
+            String bookId="索书号："+mBook.getSearchNum();
+            String author="作者："+mBook.getAuthor();
 
             mHolder.mTitle.setText(title);
             mHolder.mBookId.setText(bookId);
@@ -152,7 +153,7 @@ public class collectBookFragment extends Fragment{
                     if (isConnected) {
                         Intent intent = new Intent(getActivity(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("bookToShowDetail", mResultBook);
+                        bundle.putSerializable("bookToShowDetail", mBook);
                         bundle.putInt("position", position);
                         intent.putExtras(bundle);
                         startActivityForResult(intent, 0);
@@ -165,7 +166,7 @@ public class collectBookFragment extends Fragment{
             });
 
             // 对搜索出来的结果显示时，区别已收藏和未收藏图书
-            if (!mResultBook.isCollected()) {
+            if (!mBook.isCollected()) {
                 mHolder.mButton.setText("点击收藏");
             } else {
                 mHolder.mButton.setText("取消收藏");
@@ -177,7 +178,7 @@ public class collectBookFragment extends Fragment{
                     //Toast.makeText(getApplicationContext(), "收藏", Toast.LENGTH_SHORT).show();
 
                     CrudTask crudTask = new CrudTask();
-                    crudTask.execute(mResultBook);
+                    crudTask.execute(mBook);
 
                 }
             });
@@ -272,27 +273,29 @@ public class collectBookFragment extends Fragment{
 
         @Override
         protected void onPostExecute(List<ResultBook> resultBooks) {
-
             mBookList=resultBooks;
-            mAdapter.notifyDataSetChanged();
-            mTotalNumber.setText(String.valueOf(mBookList.size()));
-
+            refreshView();
             super.onPostExecute(resultBooks);
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == 0 && resultCode == 0 && data != null) {
-//            int position = data.getIntExtra("position", 0);
-//            boolean operation = data.getBooleanExtra("isCollected", false);
-//            ResultBook resultBook = (ResultBook) mAdapter.getItem(position);
-//            resultBook.setIsCollected(operation);
-//            mAdapter.notifyDataSetChanged();
-//        }
-        refreshBook();
-
+    private void refreshView(){
+        mAdapter.notifyDataSetChanged();
+        ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        String title=getResources().getString(R.string.nav_collect_book);
+        mActionBar.setTitle(title+"("+mBookList.size()+")");
+        if(mBookList.isEmpty()){
+            mEmptyInformation.setVisibility(View.VISIBLE);
+        }else{
+            mEmptyInformation.setVisibility(View.GONE);
+        }
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        refreshBook();
+    }
 
 }

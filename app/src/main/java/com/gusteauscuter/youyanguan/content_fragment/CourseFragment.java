@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CourseFragment extends Fragment {
+public class courseFragment extends Fragment {
 
     private GridLayout MondayRL;
 
@@ -40,7 +40,7 @@ public class CourseFragment extends Fragment {
     private List<Course> mCourseList;
     private CourseDatabase courseDatabase;
     private int width;
-    public CourseFragment() {
+    public courseFragment() {
         // Required empty public constructor
     }
 

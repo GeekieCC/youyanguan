@@ -16,8 +16,8 @@
 
     <string name="nav_home">日程管理</string>
     <string name="nav_course">课表管理</string>
-    <string name="nav_library">我的借阅</string>
-    <string name="nav_collect_book">图书收藏</string>
+    <string name="nav_book_borrowed">我的借阅</string>
+    <string name="nav_collect_book">我的收藏</string>
     <string name="nav_search_book">馆藏查询</string>
     <string name="nav_message">资讯定制</string>
     <string name="nav_more">更多功能待开发</string>

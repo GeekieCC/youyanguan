@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +31,13 @@ import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelp
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchResultActivity extends AppCompatActivity {
+public class SearchBookResultActivity extends AppCompatActivity {
 
     private static final int NUM_OF_BOOKS_PER_SEARCH = 5; // 带可借信息查询时，一次加载的图书数目
     private static final int FIRST_PAGE = 1;
@@ -60,7 +63,7 @@ public class SearchResultActivity extends AppCompatActivity {
     private int currentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
 
 
-    private SearchView searchBookEditText;
+    private SearchView mSearchView;
     private Spinner searchBookTypeSpinner;
     private CheckBox mSouthCheckBox;
     private CheckBox mNorthCheckBox;
@@ -72,7 +75,7 @@ public class SearchResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_result);
+        setContentView(R.layout.activity_search_book_result);
         setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
         final ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -132,16 +135,18 @@ public class SearchResultActivity extends AppCompatActivity {
         mNorthCheckBox=(CheckBox)findViewById(R.id.NorthCheckBox);
         initSearchCondition();
 
-        searchBookEditText = (SearchView) findViewById(R.id.searchBookEditText);
-//        searchBookEditText.setSubmitButtonEnabled(true);
-        searchBookEditText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
+//        dealwithSearchView();
+//        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                reSearch=true;
+                reSearch = true;
                 searchBook();
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
@@ -159,6 +164,24 @@ public class SearchResultActivity extends AppCompatActivity {
                 searchBook();
             }
         });
+    }
+
+    private void dealwithSearchView(){
+        try {
+//            Class argClass=mSearchView.getClass();
+            mSearchView.setSubmitButtonEnabled(true);
+            //指定某个私有属性
+            Field mVoiceButtonField = mSearchView.getClass().getDeclaredField("mVoiceButton");
+            mVoiceButtonField.setAccessible(true);
+            Class argClass=mVoiceButtonField.getClass();
+            ImageView mVoiceButton = (ImageView)mVoiceButtonField.get(mSearchView);
+//            Method[] methods=mVoiceButton.getClass().getDeclaredMethods();
+            mVoiceButton.setEnabled(true);
+            mVoiceButton.setImageDrawable(this.getResources().getDrawable(
+                    R.drawable.ic_search_book));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initSearchCondition(){
@@ -198,7 +221,7 @@ public class SearchResultActivity extends AppCompatActivity {
             mSearchBookList=new ArrayList<>();
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
-            bookToSearch = searchBookEditText.getQuery().toString().replaceAll("\\s", "");
+            bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
         }
 
         boolean isConnected = NetworkConnectivity.isConnected(getApplication());
@@ -506,4 +529,13 @@ public class SearchResultActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_search_book, menu);
+
+        return true;
+    }
+
 }

@@ -19,7 +19,7 @@
     <item
         android:id="@+id/nav_library"
         android:icon="@drawable/ic_library"
-        android:title="@string/nav_library"
+        android:title="@string/nav_book_borrowed"
         android:checkable="true"/>
 
     <item

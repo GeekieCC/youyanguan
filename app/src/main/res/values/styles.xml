@@ -5,11 +5,13 @@
 
     <style name="Theme.Base" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="android:windowAnimationStyle">@style/fade</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.Base" >
-        <item name="android:colorPrimaryDark">@color/white</item>
+        <item name="android:colorPrimaryDark">@android:color/transparent</item>
     </style>
+
 
     <style name="fade" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
@@ -18,27 +20,7 @@
         <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
     </style>
 
-    <style name="AppThemeTest" parent="Theme.Base">
-        <!-- Customize your theme here. -->
-        <!--导航栏底色-->
-        <!--状态栏底色-->
-        <!--导航栏上的标题颜色-->
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <!--Activity窗口的颜色-->
-        <item name="android:windowBackground">@android:color/darker_gray</item>
-        <!--按钮选中或者点击获得焦点后的颜色-->
-        <!--和 colorAccent相反，正常状态下按钮的颜色-->
 
-        <!--Button按钮正常状态颜色-->
-        <!--EditText 输入框中字体的颜色-->
-        <item name="android:editTextColor">@android:color/black</item>
-        <!--
-        <item name="android:activityCloseEnterAnimation">@android:anim/bounce_interpolator</item>
-        <item name="android:activityCloseExitAnimation">@android:anim/accelerate_decelerate_interpolator</item>
-        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
-        -->
-    </style>
     <style name="AppTheme" parent="Theme.Base">
         <!-- Customize your theme here. -->
         <!--导航栏底色-->
@@ -49,7 +31,7 @@
         <!--Activity窗口的颜色-->
         <item name="android:windowBackground">@android:color/white</item>
         <!--EditText 输入框中字体的颜色-->
-        <item name="android:editTextColor">@android:color/black</item>
+        <item name="android:editTextColor">@color/white</item>
     </style>
 
 
@@ -64,19 +46,20 @@
     <style name="ActionbarThemeTrans" parent="ActionbarTheme">
         <item name="android:background">@color/blue_trans</item>
     </style>
-    <style name="drawerTheme" parent="ThemeOverlay.AppCompat.Dark">
 
+    <style name="drawerTheme" parent="ThemeOverlay.AppCompat.Dark">
     </style>
 
     <style name="headerTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="android:paddingTop">32dp</item>
+        <item name="android:layout_centerHorizontal">true</item>
 
     </style>
 
     <style name="UserPicture" >
         <item name="android:layout_height">240dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@color/blue_trans_2</item>
+        <item name="android:background">@color/blue</item>
 
     </style>
 
@@ -91,7 +74,7 @@
     </style>
 
     <style name="ContainerTheme">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@android:color/white</item>
     </style>
 
 
@@ -137,10 +120,12 @@
     <style name="Widget" />
 
     <style name="Theme.Button.Login" parent="Widget">
-        <item name="android:textColor">@color/black</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_marginRight">10dp</item>
-
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:textColor">@color/black_54</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="Widget.SampleContentContainer">

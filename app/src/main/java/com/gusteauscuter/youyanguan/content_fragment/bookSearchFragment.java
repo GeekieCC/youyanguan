@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.gusteauscuter.youyanguan.DepActivity.SearchResultActivity;
+import com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity;
 import com.gusteauscuter.youyanguan.R;
 
-public class searchBookFragment extends Fragment{
+public class bookSearchFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -22,7 +22,7 @@ public class searchBookFragment extends Fragment{
         searchBookEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+                Intent intent = new Intent(getActivity(), SearchBookResultActivity.class);
                 startActivity(intent);
             }
         });

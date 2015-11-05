@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
-    tools:context="com.gusteauscuter.youyanguan.DepActivity.SearchResultActivity">
+    tools:context="com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/id_toolbar"
@@ -15,10 +15,12 @@
         android:theme="@style/ActionbarTheme" />
 
     <SearchView
+        android:visibility="visible"
         android:id="@+id/searchBookEditText"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:iconifiedByDefault="false"
+        app:searchHintIcon="@drawable/ic_search_book"
         android:textColor="@color/white"
         android:inputType="textFilter"
         android:queryHint="请输入要查找的图书"
@@ -79,10 +81,10 @@
     <com.gusteauscuter.youyanguan.view.ScrollListView
         android:layout_below="@id/totalNumberLayout"
         android:id="@+id/bookListView"
-        android:numColumns="1"
-        android:divider="@android:color/white"
+        style="@style/Widget.SampleDashboard.Grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:scrollbarStyle="outsideOverlay" >
     </com.gusteauscuter.youyanguan.view.ScrollListView>
 
     <ProgressBar

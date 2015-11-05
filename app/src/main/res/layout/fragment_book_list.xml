@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookFragment">
+    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment">
 
 
     <LinearLayout
@@ -11,27 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/margin_small"
-            android:background="@color/gray_light"
-            android:textColor="@color/gray"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="当前图书借阅数量：" />
-
-            <TextView android:id="@+id/totalNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="0" />
-
-        </LinearLayout>
-
         <TextView
+            android:visibility="gone"
             android:id="@+id/emptyInformation"
             android:padding="@dimen/margin_large"
             android:text="You didn't borrow any books."
@@ -52,7 +33,8 @@
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBarRefreshBookBorrowed"
+        android:id="@+id/progressBarRefresh"
+        android:visibility="gone"
         android:layout_gravity="center" />
 
 </FrameLayout>

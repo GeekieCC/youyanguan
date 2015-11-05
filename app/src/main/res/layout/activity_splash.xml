@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="@mipmap/splash" >
 
-
     <TextView
         android:id="@+id/versionNumber"
         android:layout_width="wrap_content"

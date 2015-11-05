@@ -3,12 +3,13 @@ package com.gusteauscuter.youyanguan.content_fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
+
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -37,20 +38,19 @@ import java.util.List;
 import java.util.Random;
 
 
-public class bookFragment extends Fragment {
+public class bookBorrowedFragment extends Fragment {
 
-    private List<Book> mBookList=new ArrayList<>();
+
     private GridView mListView;
-    private LayoutInflater mLayoutInflater;
+    private TextView mEmptyInformation;
+    private ProgressBar mProgressBar;
 
     private BookAdapter mAdapter;
-    private ProgressBar mProgressBar;
+    private List<Book> mBookList=new ArrayList<>();
 
     private userLogin mUserLogin=new userLogin();
     private boolean isFirstTime=true;
 
-    private TextView mTotalNumber;
-    private TextView mEmptyInformation;
     private boolean refreshColor=true;
     private int start=0;
 
@@ -58,47 +58,27 @@ public class bookFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        initDataFromActivity();
-
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
-        mLayoutInflater=inflater;
-
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
-        mEmptyInformation.setVisibility(View.GONE);
-
-        mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefreshBookBorrowed);
-        mProgressBar.setVisibility(View.INVISIBLE);
-
-        mTotalNumber=(TextView) view.findViewById(R.id.totalNumber);
+        mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefresh);
         mListView = (GridView) view.findViewById(R.id.bookListView);
-        // 处理侧滑事件
-//        mListView.setOnTouchListener(new View.OnTouchListener() {
-//            float x ,Ux ,y, Uy;
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        x = event.getX();
-//                        y = event.getY();
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        Ux = event.getX();
-//                        Uy = event.getY();
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//                        boolean c1=(Ux-x-50)>0;
-//                        boolean c2=Math.abs(Ux - x)>Math.abs(Uy - y);
-//                        if(c1&&c2){
-//                            ((NavigationActivity)getActivity()).openDrawer();
-//                            return true;
-//                        }
-//                }
-//                return false;
-//            }
-//        });
-        mAdapter = new BookAdapter() ;
+
+        initData();
+        RefreshView();
+        return view;
+    }
+
+    private void initData(){
+
+        mUserLogin=((NavigationActivity)getActivity()).getmLogin();
+
+        if(mBookList==null) {
+            mBookList = new ArrayList<>();
+        }
+        if(mAdapter==null) {
+            mAdapter = new BookAdapter();
+        }
         mListView.setAdapter(mAdapter);
-        mTotalNumber.setText(String.valueOf(mBookList.size()));
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -109,18 +89,8 @@ public class bookFragment extends Fragment {
                 }
             }
         }, 320);
-        return view;
-    }
 
-    /* @ WangCe
-    * TO  deal with dataChange with the "NavigationActivity"
-    * such as UserLogin, BookList if they are already existed
-    * so don't have to get data again
-    * */
-    private void initDataFromActivity(){
-        mUserLogin=((NavigationActivity)getActivity()).getmLogin();
     }
-
 
     public void RefreshData(){
         refreshColor=true;
@@ -136,7 +106,13 @@ public class bookFragment extends Fragment {
     }
 
     private class BookAdapter extends BaseAdapter {
-        //Book mBook = new Book();
+
+        private LayoutInflater mInflater;
+
+        public BookAdapter(){
+            this.mInflater = LayoutInflater.from(getActivity());
+        }
+
         @Override
         public int getCount() {
             return mBookList.size();
@@ -155,10 +131,11 @@ public class bookFragment extends Fragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup container) {
 
-            ViewHolder mHolder=null;
+            final ViewHolder mHolder;
+            final Book mBook = mBookList.get(position);
 
             if (convertView == null) {
-                convertView=mLayoutInflater.inflate(R.layout.card_book,container, false);
+                convertView=mInflater.inflate(R.layout.card_book,container, false);
                 mHolder =new ViewHolder();
                 mHolder.mButtonBorrow=(Button) convertView.findViewById(R.id.button_Borrow);
                 mHolder.mBookPicture=(ImageView) convertView.findViewById(R.id.BookPicture);
@@ -176,10 +153,10 @@ public class bookFragment extends Fragment {
             mHolder.mButtonBorrow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mBookList.get(position).getBorrowedTime() < mBookList.get(position).getMaxBorrowTime()) {
+                    if (mBook.getBorrowedTime() < mBook.getMaxBorrowTime()) {
                         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
                         if(isConnected){
-                            RenewBookAsy renewBookAsy = new RenewBookAsy(mBookList.get(position));
+                            RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
                             renewBookAsy.execute(mUserLogin.getUsername(), mUserLogin.getPassword());
                         } else{
                             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
@@ -198,7 +175,7 @@ public class bookFragment extends Fragment {
                     if(isConnected){
                         Intent intent =new Intent(getActivity(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("bookToShowDetail", mBookList.get(position));
+                        bundle.putSerializable("bookToShowDetail", mBook);
                         intent.putExtras(bundle);
                         startActivity(intent);
                     }else{
@@ -208,10 +185,10 @@ public class bookFragment extends Fragment {
             });
 
             // TO 设置Book对应属性
-            String name=mBookList.get(position).getTitle();
-            String borrowDay="借阅:"+mBookList.get(position).getBorrowDay();
-            String returnDay="归还:"+mBookList.get(position).getReturnDay();
-            String borrowedTime="续借次数:"+  mBookList.get(position).getBorrowedTime()+"/"+ mBookList.get(position).getMaxBorrowTime();
+            String name=mBook.getTitle();
+            String borrowDay="借阅:"+mBook.getBorrowDay();
+            String returnDay="归还:"+mBook.getReturnDay();
+            String borrowedTime="续借次数:"+  mBook.getBorrowedTime()+"/"+ mBook.getMaxBorrowTime();
 
             mHolder.mName.setText( name.toString());
             mHolder.mBorrowDay.setText(borrowDay.toString());
@@ -241,7 +218,6 @@ public class bookFragment extends Fragment {
 
             return convertView;
             }
-
 
         public final class ViewHolder{
             public Button mButtonBorrow;
@@ -288,17 +264,8 @@ public class bookFragment extends Fragment {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
-                    if (result == null) {
-                        mTotalNumber.setText("0");
-                        mEmptyInformation.setVisibility(View.VISIBLE);
-                    } else {
-                        mBookList = result;
-                        SortBookList();
-                        mTotalNumber.setText(String.valueOf(mBookList.size()));
-                        ((NavigationActivity) getActivity()).setmBookList(mBookList);
-                        mAdapter.notifyDataSetChanged();
-                    }
-
+                    mBookList=result;
+                    RefreshView();
                     Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT)
                             .show();
 
@@ -349,12 +316,11 @@ public class bookFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Book> result) {
 
-            mProgressBar.setVisibility(View.INVISIBLE);
+            mProgressBar.setVisibility(View.GONE);
             if (serverOK) {
                 if (result != null) {
                     mBookList=result;
-                    SortBookList();
-                    mAdapter.notifyDataSetChanged();
+                    RefreshView();
                     Toast.makeText(getActivity(), "续借成功，自动续期30天" , Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
@@ -363,6 +329,21 @@ public class bookFragment extends Fragment {
                 Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+
+    private void RefreshView(){
+        SortBookList();
+        mAdapter.notifyDataSetChanged();
+        ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        String title=getResources().getString(R.string.nav_book_borrowed);
+        mActionBar.setTitle(title+"("+mBookList.size()+")");
+        if(!isFirstTime&&mBookList.isEmpty()){
+            mEmptyInformation.setVisibility(View.VISIBLE);
+        }else{
+            mEmptyInformation.setVisibility(View.GONE);
+        }
+
     }
 
     private void SortBookList(){

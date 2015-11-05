@@ -52,7 +52,7 @@
             android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name=".DepActivity.SearchResultActivity"
+            android:name=".DepActivity.SearchBookResultActivity"
             android:label="@string/title_activity_search_result"
             android:theme="@style/AppTheme" >
         </activity>

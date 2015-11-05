@@ -54,8 +54,6 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView pagesTextView;
     private TextView priceTextView;
     private MenuItem menuCollection;
-    private MenuItem menuShare;
-    private Menu thisMenu;
     private boolean isCollected;
     private int position;
 
@@ -69,7 +67,6 @@ public class BookDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initView();
         initData();
-//        collectBook();
     }
 
     private void initView() {
@@ -102,11 +99,6 @@ public class BookDetailActivity extends AppCompatActivity {
         pagesTextView = (TextView) findViewById(R.id.pages);
         priceTextView = (TextView) findViewById(R.id.price);
 
-
-        menuCollection=(MenuItem)findViewById(R.id.action_collection);
-//        menuCollection.setTitle("ji");
-        menuShare=(MenuItem)findViewById(R.id.action_share);
-
     }
 
     private  void initData(){
@@ -118,6 +110,7 @@ public class BookDetailActivity extends AppCompatActivity {
         if (baseBook instanceof ResultBook) {
             isCollected = ((ResultBook) baseBook).isCollected();
             baseBookType = RESULT_BOOK;
+
         } else if (baseBook instanceof Book) {
             baseBookType = BOOK;
         }
@@ -171,10 +164,10 @@ public class BookDetailActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (result) {
                 if (operation) {
-                    menuCollection.setTitle("取消收藏");
+                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_collect_cancle);
                     Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
                 } else {
-                    menuCollection.setTitle("收藏");
+                    menuCollection.setTitle("收藏").setIcon(R.drawable.ic_collect);
                     Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
                 }
 
@@ -320,30 +313,64 @@ public class BookDetailActivity extends AppCompatActivity {
             headerRow.addView(statusHeader);
 
             locationTable.addView(headerRow);
+            boolean isNoBookEnanbled=true;
+            boolean isChecking=false;
 
 
             for (int i = 0; i < locationInfoLists.size(); i++) {
                 LocationInformation locationInfo = locationInfoLists.get(i);
-                TableRow tr = new TableRow(getApplicationContext());
-                tr.setLayoutParams(new TableRow.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-                String tableColor = "#BBDEFB";
-                TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
-                TextView detailLocation = createRowTextView(locationInfo.getDetailLocation(),tableColor);
-                TextView searchNum = createRowTextView(locationInfo.getSearchNum(),tableColor);
-                TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
+                Boolean conditon1=!locationInfo.getLocation().contains("停");
+                Boolean conditon2=!locationInfo.getDetailLocation().contains("停");
+//                Boolean conditon3=!locationInfo.getStatus().contains("验收");
 
-                tr.addView(location);
-                tr.addView(detailLocation);
-//                tr.addView(searchNum);
-                tr.addView(status);
+                if(conditon1&&conditon2){
+//                    if(conditon3){
+                        isNoBookEnanbled=false;
+                        TableRow tr = new TableRow(getApplicationContext());
+                        tr.setLayoutParams(new TableRow.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-                locationTable.addView(tr);
+                        String tableColor = "#BBDEFB";
+                        TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
+                        TextView detailLocation = createRowTextView(OptimLocation(locationInfo.getDetailLocation()),tableColor);
+                        //                TextView searchNum = createRowTextView(locationInfo.getSearchNum(),tableColor);
+                        TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
 
+                        tr.addView(location);
+                        tr.addView(detailLocation);
+                        //                tr.addView(searchNum);
+                        tr.addView(status);
+
+                        locationTable.addView(tr);
+//                    }else{
+//                        isChecking=true;
+//                    }
+
+                }
             }
 
+            if(isNoBookEnanbled){
+                TextView emptyInfor = createRowTextView("本书已全部暂停外借","#BBDEFB");
+                locationTable.addView(emptyInfor);
+            }
+        }
 
+        // 优化图书馆藏位置的显示
+        private String OptimLocation(String location){
+            String op1="(";
+            String op2="（";
+            String add="\n";
+            if(location.contains(op1)){
+                int index=location.indexOf(op1);
+                int end=location.length()-1;
+                return location.substring(0,index-1)+add+location.substring(index,end);
+            }else if(location.contains(op2)){
+                int index=location.indexOf(op2);
+                int end=location.length();
+                return location.substring(0,index)+add+location.substring(index,end);
+            }else
+                return location;
         }
 
 
@@ -400,9 +427,9 @@ public class BookDetailActivity extends AppCompatActivity {
             menuCollection.setVisible(false);
         } else if (baseBookType == RESULT_BOOK) {
             if(isCollected){
-                menuCollection.setTitle("取消收藏");
+                menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_collect_cancle);
             }else {
-                menuCollection.setTitle("收藏");
+                menuCollection.setTitle("收藏").setIcon(R.drawable.ic_collect);
             }
         }
 
