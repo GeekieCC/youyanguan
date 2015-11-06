@@ -1,7 +1,9 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -12,10 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.ShareActionProvider;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -28,7 +32,9 @@ import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
 import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.util.ScreenShot;
 
+import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +62,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private MenuItem menuCollection;
     private boolean isCollected;
     private int position;
+    private ScrollView shareView;
 
     //判断图书类型
     public static final int BOOK = 0;
@@ -80,8 +87,9 @@ public class BookDetailActivity extends AppCompatActivity {
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        bookPictureImageView = (ImageView) findViewById(R.id.BookPicture);
+        shareView=(ScrollView)findViewById(R.id.scrollViewBookDetail);
 
+        bookPictureImageView = (ImageView) findViewById(R.id.BookPicture);
         titleTextView = (TextView) findViewById(R.id.title);
         authorTextView = (TextView) findViewById(R.id.author);
         publisherTextView = (TextView) findViewById(R.id.publisher);
@@ -190,10 +198,21 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     private void shareBook(){
+
+        View v = getWindow().findViewById(Window.ID_ANDROID_CONTENT);///获得根视图
+        int top2 = v.getTop();///状态栏标题栏的总高度,所以标题栏的高度为top2-top
+        int width = v.getWidth();///视图的宽度,这个宽度好像总是最大的那个
+        int height = v.getHeight();////视图的高度，不包括状态栏和标题栏
+        String stringFileName="sdcard/_share_Book.png";
+        ScreenShot.shoot(stringFileName,shareView);
+//        Bitmap share_shot=ScreenShot.takeScreenShot(shareView);
+
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
-        intent.putExtra(Intent.EXTRA_TEXT, "I have successfully share my message through my app");
+        intent.putExtra(Intent.EXTRA_TEXT, "a wonderful book through YouYanGuan");
+//        intent.putExtra("bitmap", share_shot);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, getTitle()));
 

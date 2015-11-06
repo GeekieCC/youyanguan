@@ -16,20 +16,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/id_toolbar"
-        android:paddingLeft="10dp">
+        android:paddingLeft="10dp"
+        android:background="@color/white">
 
         <LinearLayout
+            android:id="@+id/share_layoutView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+            android:background="@color/white">
+
 
             <LinearLayout
                 android:id="@+id/top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@color/white">
+
 
                 <ImageView
                     android:id="@+id/BookPicture"
@@ -37,14 +43,16 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/book0" />
+                    android:src="@drawable/book0"
+                    android:background="@color/white"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="2"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:background="@color/white">
 
                     <TextView
                         android:id="@+id/title"
@@ -98,7 +106,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:shrinkColumns="1"
-                android:stretchColumns="*">
+                android:stretchColumns="*"
+                android:background="@color/white">
 
             </TableLayout>
 
@@ -107,25 +116,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@color/white">
 
                 <TextView
                     android:id="@+id/author_description"
                     style="@style/BookDetail.Bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"/>
 
                 <TextView
                     android:id="@+id/book_description"
                     style="@style/BookDetail.Bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"/>
 
                 <TextView
                     android:id="@+id/catalog"
                     style="@style/BookDetail.Bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"/>
 
                 <TextView
                     android:id="@+id/pages"
@@ -137,7 +150,8 @@
                     android:id="@+id/price"
                     style="@style/BookDetail.Bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"/>
 
                 <!--<TextView-->
                 <!--android:id="@+id/BookDetail"-->

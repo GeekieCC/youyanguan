@@ -6,7 +6,8 @@
     <color name="gray">#66000000</color>
     <color name="gray_light">#11000000</color>
 
-    <color name="blue">#027FD4</color>
+    <color name="blue">#009688</color>
+    <color name="blue1">#027FD4</color>
     <color name="blue_primary">#3f51b5</color>
     <color name="blue_gray">#607d8b</color>
     <color name="blue_trans">#48027FD4</color>

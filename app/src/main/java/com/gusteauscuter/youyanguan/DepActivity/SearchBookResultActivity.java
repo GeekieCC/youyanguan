@@ -41,6 +41,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
     private static final int NUM_OF_BOOKS_PER_SEARCH = 5; // 带可借信息查询时，一次加载的图书数目
     private static final int FIRST_PAGE = 1;
+    private static final int FIRST_SEARCH = 1;
 
     private List<ResultBook> mSearchBookList;
 
@@ -53,7 +54,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private int numOfPages = 0;
     private int numOfBooks = 0;
     //带可借信息查询时，一个页面的第几次查询
-    private int ithSearch = 1;
+    private int ithSearch = FIRST_SEARCH;
     private int page;
     
     //// TOD: 2015/10/9 从searchBookFragment传一个整形的常量给searchSN
@@ -72,6 +73,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private String searchBookType="TITLE";
     private boolean isAllowedToBorrow;
     private boolean reSearch=true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -216,9 +218,12 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private void searchBook() {
 
         if(reSearch){
+
+            ithSearch = FIRST_SEARCH;
             page = FIRST_PAGE;
+            currentCount = 0;
             mTotalNumber.setText("0");
-            mSearchBookList=new ArrayList<>();
+            mSearchBookList.clear();
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
             bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
@@ -292,6 +297,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 } else {
                     mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
                 }
+            } else {
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
             }
 
             // TO 设置Book对应属性
@@ -372,11 +379,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
         @Override
         protected List<ResultBook> doInBackground(String... args) {
             List<ResultBook> resultBookLists = null;
-            if ((page == 1 && ithSearch == 1) || (currentCount != numOfBooks)) {
+            if ((page == FIRST_PAGE && ithSearch == FIRST_SEARCH) || (currentCount != numOfBooks)) {
                 try {
                     BookSearchEngine engine = new BookSearchEngine();
                     engine.searchBook(args[0], args[1], page);
-                    if (page == 1) {
+                    if (page == FIRST_PAGE && ithSearch == FIRST_SEARCH) {
                         numOfBooks = engine.getNumOfBooks();
                         numOfPages = engine.getNumOfPages();
                     }
@@ -387,7 +394,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
                             resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
                             if (resultBookLists != null) {
                                 if (ithSearch >= numOfSearchesOnThisPage) {
-                                    ithSearch = 1;
+                                    ithSearch = FIRST_SEARCH;
                                     page++;
                                 } else {
                                     ithSearch++;
