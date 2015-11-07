@@ -20,7 +20,15 @@
         android:background="@mipmap/bk5">
         <FrameLayout
             style="@style/UserPicture"
-            android:text="@string/check_update" />
+            android:text="@string/check_update" >
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginRight="50dp"
+                android:src="@drawable/ic_gusteauscuter"
+                android:layout_gravity="center|right"/>
+        </FrameLayout>
     </LinearLayout>
 
 

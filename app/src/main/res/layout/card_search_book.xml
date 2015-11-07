@@ -27,12 +27,7 @@
                     android:layout_height="wrap_content"
                     android:text="book"
                     android:layout_marginBottom="5dp"/>
-                <Button
-                    android:id="@+id/collect_book"
-                    android:layout_weight="0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="收藏"/>
+
         </LinearLayout>
 
             <LinearLayout
@@ -86,6 +81,14 @@
 
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/collect_book"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|right"
+            android:gravity="center"
+            android:text="点击收藏"/>
 
     </android.support.v7.widget.CardView>
 

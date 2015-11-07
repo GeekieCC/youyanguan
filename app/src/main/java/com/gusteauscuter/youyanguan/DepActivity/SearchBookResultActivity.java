@@ -337,8 +337,12 @@ public class SearchBookResultActivity extends AppCompatActivity {
             // 对搜索出来的结果显示时，区别已收藏和未收藏图书
             if (!mResultBook.isCollected()) {
                 mHolder.mButton.setText("点击收藏");
+                mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
+                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.teal));
             } else {
                 mHolder.mButton.setText("取消收藏");
+                mHolder.mButton.setTextColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.gray_light));
             }
             // 收藏和取消收藏的动作监听
             mHolder.mButton.setOnClickListener(new View.OnClickListener() {

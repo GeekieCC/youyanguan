@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 
@@ -42,7 +43,18 @@ public class ScreenShot {
         bitmap = Bitmap.createBitmap(scrollView.getWidth(), h,
                 Bitmap.Config.RGB_565);
         final Canvas canvas = new Canvas(bitmap);
-        scrollView.draw(canvas);
+        scrollView.getChildAt(0).draw(canvas);
+        return bitmap;
+    }
+
+    public static Bitmap getBitmapByView(View view) {
+        Bitmap bitmap = null;
+        // 创建对应大小的bitmap
+        bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
+                Bitmap.Config.RGB_565);
+        final Canvas canvas = new Canvas(bitmap);
+        view.setBackgroundColor(Color.parseColor("#ffffff"));
+        view.draw(canvas);
         return bitmap;
     }
 
@@ -171,6 +183,9 @@ public class ScreenShot {
         ScreenShot.saveAsImg(ScreenShot.getBitmapByView(scrollView), strFileName);
     }
 
+    public static void shoot(String strFileName,View view) {
+        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(view), strFileName);
+    }
     // 程序入口
     public static void shoot(String strFileName,Activity activity) {
         ScreenShot.savePic(ScreenShot.takeScreenShot(activity), strFileName);
