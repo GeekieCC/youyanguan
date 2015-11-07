@@ -22,6 +22,8 @@
     style="?android:attr/spinnerDropDownItemStyle"
     android:singleLine="true"
     android:layout_width="match_parent"
-    android:layout_height="15dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
     android:textColor="@color/black"
-    android:ellipsize="marquee"/>
+    android:ellipsize="marquee"
+    android:textAlignment="inherit"/>

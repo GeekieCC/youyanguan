@@ -21,6 +21,7 @@
         <TextView
             android:text="学号："
             android:textSize="20sp"
+            android:textColor="@color/black_54"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center" />
@@ -30,6 +31,7 @@
             android:layout_height="match_parent"
             android:ems="12"
             android:inputType="number"
+            android:textColor="@color/black_54"
             android:layout_gravity="center_horizontal"
             android:shadowRadius="2.0" />
     </LinearLayout>
@@ -42,6 +44,7 @@
         <TextView
             android:text="密码："
             android:textSize="20sp"
+            android:textColor="@color/black_54"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center" />
@@ -51,6 +54,7 @@
             android:layout_height="match_parent"
             android:inputType="textPassword"
             android:ems="12"
+            android:textColor="@color/black_54"
             android:layout_gravity="center_horizontal"
             android:shadowRadius="2.0" />
     </LinearLayout>
@@ -62,24 +66,18 @@
         android:orientation="horizontal">
         <Button
             style="@style/Theme.Button.Login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/button_cancel"
-            android:text="取  消"
-            android:textSize="20sp"
-            android:padding="2dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:text="取  消"/>
         <Button
             style="@style/Theme.Button.Login"
-            android:layout_weight="1"
-            android:id="@+id/button_login_library"
-            android:text="登  陆"
-            android:textSize="20sp"
-            android:padding="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:layout_weight="1"
+            android:id="@+id/button_login_library"
+            android:text="登  陆"/>
 
     </LinearLayout>
 

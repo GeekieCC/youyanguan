@@ -3,6 +3,7 @@ package com.gusteauscuter.youyanguan.content_fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -42,6 +43,32 @@ public class homeFragment extends Fragment {
         mHomeItemList=new ArrayList<>();
 
         mListView = (GridView) view.findViewById(R.id.homeListView);
+        // 处理侧滑事件
+        mListView.setOnTouchListener(new View.OnTouchListener() {
+            float x ,Ux ,y, Uy;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        x = event.getX();
+                        y = event.getY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        Ux = event.getX();
+                        Uy = event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        boolean c1=(Ux-x-50)>0;
+                        boolean c2=Math.abs(Ux - x)>Math.abs(Uy - y);
+                        if(c1&&c2){
+                            ((NavigationActivity)getActivity()).openDrawer();
+                            return true;
+                        }
+                }
+                return false;
+            }
+        });
+
         mAdapter = new HomeItemAdapter() ;
         ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
 

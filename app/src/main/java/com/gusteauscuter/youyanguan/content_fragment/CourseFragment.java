@@ -9,6 +9,7 @@ import android.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.DepActivity.AddCourseActivity;
 import com.gusteauscuter.youyanguan.DepActivity.CourseDetailActivity;
+import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.gusteauscuter.youyanguan.data_Class.course.CourseDatabase;
@@ -30,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CourseFragment extends Fragment {
+public class courseFragment extends Fragment {
 
     private GridLayout MondayRL;
 
@@ -38,7 +40,7 @@ public class CourseFragment extends Fragment {
     private List<Course> mCourseList;
     private CourseDatabase courseDatabase;
     private int width;
-    public CourseFragment() {
+    public courseFragment() {
         // Required empty public constructor
     }
 
@@ -60,7 +62,6 @@ public class CourseFragment extends Fragment {
 
         DayRL=new GridLayout[]{MondayRL,TuesdayRL,WednesdayRL,
                 ThurdayRL,FridayRL,SaturdayRL,SundayRL};
-
 
         ViewTreeObserver vto = MondayRL.getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -173,7 +174,7 @@ public class CourseFragment extends Fragment {
     class OnClickCourseListener implements View.OnClickListener {
 
         public void onClick(View v) {
-            // TODO Auto-generated method stub
+            // TODO course detail
             String title;
             title = (String) ((TextView)v.findViewById(R.id.title)).getText();
             Toast.makeText(getActivity(), "你点击的是:" + title,

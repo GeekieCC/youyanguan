@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.Serializable;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class ResultBook implements Serializable {
 	private String type;
 	private String bookId;
 	private boolean isBorrowable;
+	private boolean isCollected = false;
 	
 	
 	public boolean isBorrowable() {
@@ -39,18 +41,18 @@ public class ResultBook implements Serializable {
 	}
 	
 	
-	public void getResultBookWithBorrowInfo(Element element) {
+	public void getResultBookWithBorrowInfo(Element element) throws SocketTimeoutException {
 		getResultBookHelper(element);
 		isBorrowable = isBorrowableHelper();
 	}
 
-	public void getResultBookWithBorrowInfo(Element element, int searchSN) {
+	public void getResultBookWithBorrowInfo(Element element, int searchSN) throws SocketTimeoutException {
 		getResultBookHelper(element);
 		isBorrowable = isBorrowableHelperSN(searchSN);
 	}
 
 
-	private boolean isBorrowableHelperSN(int searchSN) {
+	private boolean isBorrowableHelperSN(int searchSN) throws SocketTimeoutException {
 		String detailLink = buildDetailLink(bookId);
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
@@ -74,7 +76,7 @@ public class ResultBook implements Serializable {
 		return false;
 	}
 	
-	private boolean isBorrowableHelper() {
+	private boolean isBorrowableHelper() throws SocketTimeoutException {
 		
 		String detailLink = buildDetailLink(bookId);
 		String detailHtml = getHtml(detailLink);
@@ -108,7 +110,7 @@ public class ResultBook implements Serializable {
 		return locationLists;
 	}
 	
-	private String getHtml(String link) {
+	private String getHtml(String link) throws SocketTimeoutException {
 		return HttpUtil.getHtml(link);
 	}
 	
@@ -133,7 +135,7 @@ public class ResultBook implements Serializable {
 	public String toString() {
 		return rowNumber + "||" + title + "||" + author + "||"
 	             + publisher + "||" + isbn + "||" + pubdate 
-	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable;
+	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable + isCollected + "\n";
 	}
 	
 	
@@ -163,4 +165,43 @@ public class ResultBook implements Serializable {
 		return searchNum;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	public void setPubdate(String pubdate) {
+		this.pubdate = pubdate;
+	}
+
+	public void setSearchNum(String searchNum) {
+		this.searchNum = searchNum;
+	}
+
+	public void setBookId(String bookId) {
+		this.bookId = bookId;
+	}
+
+	public boolean isCollected() {
+		return isCollected;
+	}
+
+	public void setIsBorrowable(boolean isBorrowable) {
+		this.isBorrowable = isBorrowable;
+	}
+
+	public void setIsCollected(boolean isCollected) {
+		this.isCollected = isCollected;
+	}
 }

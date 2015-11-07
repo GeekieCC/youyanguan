@@ -26,17 +26,19 @@ import android.widget.Toast;
 import android.view.MotionEvent;
 
 
+import com.gusteauscuter.youyanguan.DepActivity.UserInforActivity;
+import com.gusteauscuter.youyanguan.content_fragment.bookCollectedFragment;
+import com.gusteauscuter.youyanguan.content_fragment.courseFragment;
 import com.gusteauscuter.youyanguan.content_fragment.homeFragment;
 import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
-import com.gusteauscuter.youyanguan.content_fragment.CourseFragment;
-import com.gusteauscuter.youyanguan.content_fragment.searchBookFragment;
+import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
 import com.gusteauscuter.youyanguan.content_fragment.settingFragment;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.HomeItem;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.nineoldandroids.view.ViewHelper;
 
-import com.gusteauscuter.youyanguan.content_fragment.bookFragment;
+import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
 import com.gusteauscuter.youyanguan.data_Class.userLogin;
 
 import java.util.ArrayList;
@@ -52,17 +54,18 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         GestureDetector.OnGestureListener {
 
     private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
+    private NavigationView mNavigationViewLeft;
     private ActionBar mActionBar=null;
     private userLogin mUserLogin;
     private FrameLayout mContentFramelayout;
 
-    private bookFragment mBookFragment;
-    private CourseFragment mCourseFragment;
+    private bookBorrowedFragment mBookBorrowedFragment;
+    private bookCollectedFragment mBookCollectedFragment;
+    private courseFragment mCourseFragment;
     private homeFragment mHomeFragment;
     private settingFragment mSettingFragment;
     private loginFragment mLoginFragment;
-    private searchBookFragment mSearchBookFragment;
+    private bookSearchFragment mBookSearchFragment;
 
     private List<Book> mBookList =new ArrayList<>();
     private List<Course> mCourseList =new ArrayList<>();
@@ -106,9 +109,21 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     public void initView() {
 
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
         setContentView(R.layout.activity_navigation_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
-        mNavigationView = (NavigationView) findViewById(R.id.id_nv_menu);
+        mNavigationViewLeft = (NavigationView) findViewById(R.id.id_nv_menu);
+        findViewById(R.id.header).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
+                startActivity(intent);
+
+            }
+        });
+//        mNavigationViewRight = (NavigationView) findViewById(R.id.id_nv_menu_right);
         mContentFramelayout = (FrameLayout) findViewById(R.id.container_frame);
 
         mContentFramelayout.setOnClickListener(this);
@@ -118,19 +133,17 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
         mActionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        setupDrawerContent(mNavigationView);
+        setupDrawerContent(mNavigationViewLeft);
+//        setupDrawerContent(mNavigationViewRight);
 
         mGestureDetector = new GestureDetector(this);
         FrameLayout touchArea = (FrameLayout) findViewById(R.id.container_frame);
         touchArea.setOnTouchListener(this);
         touchArea.setLongClickable(true);
 
-        JumpToHomeFragment();
-//        JumpToBookFragment();
-//        JumpToSearchBookFragment();
+        JumpToSearchBookFragment();
 
     }
-
 
     private void JumpToHomeFragment() {
         if (mHomeFragment==null)
@@ -142,46 +155,46 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTransaction.commit();
 
         if (mMenu != null) {
-            mMenu.findItem(R.id.action_feedback).setVisible(true);
-            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+//            mMenu.findItem(R.id.action_feedback).setVisible(true);
+//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         }
 
     }
 
-    private void JumpToCourseFragment(){
-        if(mCourseFragment==null)
-            mCourseFragment=new CourseFragment();
-        mActionBar.setTitle(R.string.nav_course);
-        FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-        mTransaction.replace(R.id.container_frame, mCourseFragment);
-        mTransaction.commit();
-
-        if (mMenu!=null) {
-            mMenu.findItem(R.id.action_feedback).setVisible(true);
-            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
-            mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
-        }
-
-    }
+//    private void JumpToCourseFragment(){
+//        if(mCourseFragment==null)
+//            mCourseFragment=new courseFragment();
+//        mActionBar.setTitle(R.string.nav_course);
+//        FragmentManager mFragmentManager = getFragmentManager();
+//        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
+//        mTransaction.replace(R.id.container_frame, mCourseFragment);
+//        mTransaction.commit();
+//
+//        if (mMenu!=null) {
+////            mMenu.findItem(R.id.action_feedback).setVisible(true);
+////            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+//            mMenu.findItem(R.id.action_log_out).setVisible(false);
+//            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+//        }
+//
+//    }
 
     public void JumpToBookFragment(){
 
         if (mUserLogin.IsLogined()){
-            if (mBookFragment==null)
-                mBookFragment=new bookFragment();
-            mActionBar.setTitle(R.string.nav_library);
+            if (mBookBorrowedFragment ==null)
+                mBookBorrowedFragment =new bookBorrowedFragment();
+            mActionBar.setTitle(R.string.nav_book_borrowed);
             FragmentManager mFragmentManager = getFragmentManager();
             FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-            mTransaction.replace(R.id.container_frame, mBookFragment);
+            mTransaction.replace(R.id.container_frame, mBookBorrowedFragment);
             mTransaction.commit();
 
             if (mMenu!=null) {
-                mMenu.findItem(R.id.action_feedback).setVisible(true);
-                mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+//                mMenu.findItem(R.id.action_feedback).setVisible(true);
+//                mMenu.findItem(R.id.action_open_drawer).setVisible(true);
                 mMenu.findItem(R.id.action_log_out).setVisible(true);
                 mMenu.findItem(R.id.action_refresh_book).setVisible(true);
             }
@@ -190,6 +203,21 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         }
     }
 
+    public void JumpToCollectBookFragment(){
+
+        if (mBookCollectedFragment ==null)
+            mBookCollectedFragment =new bookCollectedFragment();
+        mActionBar.setTitle(R.string.nav_collect_book);
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
+        mTransaction.replace(R.id.container_frame, mBookCollectedFragment);
+        mTransaction.commit();
+        if (mMenu!=null) {
+            mMenu.findItem(R.id.action_log_out).setVisible(false);
+            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+        }
+
+    }
     private void JumpToLoginFragment(){
         if(mLoginFragment==null)
             mLoginFragment=new loginFragment();
@@ -200,8 +228,8 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTransaction.commit();
 
         if (mMenu!=null) {
-            mMenu.findItem(R.id.action_feedback).setVisible(true);
-            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+//            mMenu.findItem(R.id.action_feedback).setVisible(true);
+//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         }
@@ -209,17 +237,17 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     }
 
     private void JumpToSearchBookFragment(){
-        if(mSearchBookFragment==null)
-            mSearchBookFragment=new searchBookFragment();
+        if(mBookSearchFragment ==null)
+            mBookSearchFragment =new bookSearchFragment();
         mActionBar.setTitle(R.string.nav_search_book);
         FragmentManager mFragmentManager = getFragmentManager();
         FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-        mTransaction.replace(R.id.container_frame, mSearchBookFragment);
+        mTransaction.replace(R.id.container_frame, mBookSearchFragment);
         mTransaction.commit();
 
         if (mMenu!=null) {
-            mMenu.findItem(R.id.action_feedback).setVisible(true);
-            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+//            mMenu.findItem(R.id.action_feedback).setVisible(true);
+//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         }
@@ -236,8 +264,8 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTransaction.commit();
 
         if (mMenu!=null) {
-            mMenu.findItem(R.id.action_feedback).setVisible(false);
-            mMenu.findItem(R.id.action_open_drawer).setVisible(false);
+//            mMenu.findItem(R.id.action_feedback).setVisible(false);
+//            mMenu.findItem(R.id.action_open_drawer).setVisible(false);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         }
@@ -250,7 +278,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
                     @Override
                     public boolean onNavigationItemSelected(final MenuItem menuItem) {
-                        menuItem.setChecked(false);
+//                        menuItem.setChecked(false);
                         mDrawerLayout.closeDrawers();
                         JumpFromNavigation(menuItem);
                         return true;
@@ -263,17 +291,20 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         // 导航栏动作，跳转到子页面
 
         arg=menuItem.toString();
-        if(menuItem.getItemId()==R.id.nav_home) {     //首页
-            JumpToHomeFragment();
-        }
+//        if(menuItem.getItemId()==R.id.nav_home) {     //首页
+//            JumpToHomeFragment();
+//        }
 
         if(menuItem.getItemId()==R.id.nav_library) {    //图书馆
             JumpToBookFragment();
         }
 
-        if(menuItem.getItemId()==R.id.nav_course) {       //日程
-            JumpToCourseFragment();
+        if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
+            JumpToCollectBookFragment();
         }
+//        if(menuItem.getItemId()==R.id.nav_course) {       //日程
+//            JumpToCourseFragment();
+//        }
 
         if(menuItem.getItemId()==R.id.nav_search_book) {       //Search
             JumpToSearchBookFragment();
@@ -283,12 +314,12 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             JumpToSettingFragment();
         }
 
-        if(menuItem.getItemId()==R.id.nav_course) {       //日程
-            mMenu.findItem(R.id.action_add_course).setVisible(true);
-
-        }else{
-            mMenu.findItem(R.id.action_add_course).setVisible(false);
-        }
+//        if(menuItem.getItemId()==R.id.nav_course) {       //日程
+//            mMenu.findItem(R.id.action_add_course).setVisible(true);
+//
+//        }else{
+//            mMenu.findItem(R.id.action_add_course).setVisible(false);
+//        }
 
     }
 
@@ -301,8 +332,8 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         /*  I don't know why it doesn't work --
         *  -->   mMenu.setGroupVisible(R.id.groupDefault,false);
         * */
-        mMenu.findItem(R.id.action_feedback).setVisible(true);
-        mMenu.findItem(R.id.action_open_drawer).setVisible(true);
+        mMenu.findItem(R.id.action_feedback).setVisible(false);
+        mMenu.findItem(R.id.action_open_drawer).setVisible(false);
         mMenu.findItem(R.id.action_log_out).setVisible(false);
         mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         mMenu.findItem(R.id.action_add_course).setVisible(false);
@@ -331,7 +362,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             shareData.putBoolean("ISLOGINED",false);
             shareData.commit();
 
-            mBookFragment=new bookFragment();
+            mBookBorrowedFragment =new bookBorrowedFragment();
             mLoginFragment=new loginFragment();
             JumpToLoginFragment();
 
@@ -340,7 +371,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             return true;
 
         }else if (item.getItemId()==R.id.action_refresh_book) {
-            mBookFragment.RefreshData();
+            mBookBorrowedFragment.RefreshData();
             return true;
         }else if(item.getItemId()==R.id.action_add_course){
             mCourseFragment.startAddCourseActivity();
@@ -354,7 +385,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     public void SendEmailIntent(String fromWhere){
         Intent data=new Intent(Intent.ACTION_SENDTO);
         data.setData(Uri.parse("mailto:gusteauscuter@163.com"));
-        data.putExtra(Intent.EXTRA_SUBJECT, "【反馈建议/"+fromWhere+"】");
+        data.putExtra(Intent.EXTRA_SUBJECT, "【反馈建议/" + fromWhere + "】");
         data.putExtra(Intent.EXTRA_TEXT, "详细情况：\n");
         startActivity(data);
     }
@@ -386,7 +417,6 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             intent.addCategory(Intent.CATEGORY_HOME);
             startActivity(intent);
             finish();
-            //System.exit(0);
 
         }
     }
@@ -416,27 +446,6 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         return this.mUserLogin;
     }
 
-    public void setmCourse(List<Course> mCourseList ){
-        this.mCourseList=mCourseList;
-        RefreshHomeItemList();
-    }
-
-    public List<Course> getmCourse(){
-        if(mCourseList==null)
-            mCourseList=new ArrayList<>();
-        return mCourseList;
-    }
-
-    public void setmBookList(List<Book> mBookList ){
-        this.mBookList=mBookList;
-        RefreshHomeItemList();
-    }
-
-    public List<Book> getmBookList(){
-        if(mBookList==null)
-            mBookList=new ArrayList<>();
-        return mBookList;
-    }
 
 
     public List<HomeItem> getmHomeItemList(){
@@ -482,50 +491,48 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 /////////////////////////////////////////////////////////////////
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        // TODO Auto-generated method stub
+        // TOD Auto-generated method stub
         Log.i("touch", "touch");
         return mGestureDetector.onTouchEvent(event);
+
     }
     @Override
     public boolean onDown(MotionEvent e) {
-        // TODO Auto-generated method stub
+        // TOD Auto-generated method stub
         return false;
     }
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
                            float velocityY) {
-        // TODO Auto-generated method stub
-        if (e1.getX()-e2.getX() > FLING_MIN_DISTANCE
-                && Math.abs(velocityX) > FLING_MIN_VELOCITY
-                && Math.abs(velocityX) >Math.abs(velocityY)) {
-            // Fling left
-//            Toast.makeText(this, "向左手势", Toast.LENGTH_SHORT).show();
-        } else if (e2.getX()-e1.getX() > FLING_MIN_DISTANCE
+        // TOD Auto-generated method stub
+        if (e2.getX()-e1.getX() > FLING_MIN_DISTANCE
                 && Math.abs(velocityX) > FLING_MIN_VELOCITY
                 && Math.abs(velocityX) >Math.abs(velocityY)) {
             // Fling right
 //            Toast.makeText(this, "向右手势", Toast.LENGTH_SHORT).show();
             mDrawerLayout.openDrawer(GravityCompat.START);
+            return false;
         }
+
         return false;
     }
     @Override
     public void onLongPress(MotionEvent e) {
-        // TODO Auto-generated method stub
+        // TOD Auto-generated method stub
     }
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
                             float distanceY) {
-        // TODO Auto-generated method stub
+        // TOD Auto-generated method stub
         return false;
     }
     @Override
     public void onShowPress(MotionEvent e) {
-        // TODO Auto-generated method stub
+        // TOD Auto-generated method stub
     }
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-        // TODO Auto-generated method stub
+        // TOD Auto-generated method stub
         return false;
     }
 
@@ -546,16 +553,19 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
                 if (drawerView.getTag().equals("LEFT")) {
 
-                    float leftScale = 1 - 0.3f * scale;
+                    float leftScale = 1 - 0.25f * scale;
 
                     ViewHelper.setScaleX(mMenu, leftScale);
                     ViewHelper.setScaleY(mMenu, leftScale);
-                    ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
+                    ViewHelper.setAlpha(mMenu, 1.f);
+//                    ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
+
                     ViewHelper.setTranslationX(mContent,
                             mMenu.getMeasuredWidth() * (1 - scale));
                     ViewHelper.setPivotX(mContent, 0);
                     ViewHelper.setPivotY(mContent,
                             mContent.getMeasuredHeight() / 2);
+//                    ViewHelper.setAlpha(mContent, 0.5f);
                     mContent.invalidate();
                     ViewHelper.setScaleX(mContent, rightScale);
                     ViewHelper.setScaleY(mContent, rightScale);
