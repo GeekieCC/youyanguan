@@ -4,4 +4,10 @@
     tools:context="com.gusteauscuter.youyanguan.DepActivity.AddCourseActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item
+        android:id="@+id/action_search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_search_book"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:title="@string/nav_search_book"/>
 </menu>

@@ -1,106 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookFragment"
+    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <TextView
-        android:padding="@dimen/margin_large"
-        android:text="华南理工大学图书馆\n馆藏查询"
-        android:gravity="center"
-        android:layout_margin="20dp"
-        android:textSize="20sp"
-        android:textColor="@color/black"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <View style="@style/HorizontalDivider"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:text="/||/||  华工馆藏"
+        android:visibility="visible"
+        android:textSize="20sp"
+        android:padding="5dp"
+        android:gravity="center"
+        android:textColor="@color/teal"/>
 
     <LinearLayout
+        android:id="@+id/focusParentLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:background="@color/blue_trans">
-
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"/>
-
-            <SearchView
-                android:id="@+id/searchBookEditText"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:iconifiedByDefault="false"
-                android:inputType="textFilter"
-                android:queryHint="请输入要查找的图书"
-                android:textColor="@color/black"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"/>
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blue"
-            android:text="查    询"/>
-    </LinearLayout>
-
-    <View style="@style/HorizontalDivider"/>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp"
-        android:paddingRight="10dp"
-        android:layout_gravity="center_vertical">
-
-        <CheckBox
-            android:layout_alignParentRight="true"
-            android:id="@+id/NorthCheckBox"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:text="北校"
-            android:checked="true" />
-        <CheckBox
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/NorthCheckBox"
-            android:id="@+id/SouthCheckBox"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:text="南校"
-            android:checked="true" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:padding="0dp"
+        android:background="@color/blue_trans_2" >
 
         <TextView
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:id="@+id/emptyInformation"
-            android:text="@string/check_toKnow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </RelativeLayout>
+            android:id="@+id/searchBook"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:text=" 请输入要查找的图书"
+            android:textSize="18sp"
+            android:padding="5dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/gray"
+            android:layout_margin="5dp" />
+        <TextView
+            android:id="@+id/searchBookScan"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/black"
+            android:background="@drawable/ic_search_book"
+            android:gravity="center_vertical"/>
 
-    <View style="@style/HorizontalDivider"/>
+    </LinearLayout>
 
 </LinearLayout>
 

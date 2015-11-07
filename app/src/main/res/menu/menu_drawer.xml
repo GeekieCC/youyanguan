@@ -7,19 +7,25 @@
         android:icon="@drawable/ic_home"
         android:title="@string/nav_home"
         android:checkable="true"/>
-
     <item
         android:id="@+id/nav_course"
         android:icon="@drawable/ic_course"
         android:title="@string/nav_course"
         android:checkable="true"/>
+
 -->
+
+
     <item
         android:id="@+id/nav_library"
-        android:icon="@drawable/ic_library"
-        android:title="@string/nav_library"
+        android:icon="@drawable/ic_book_borrowed"
+        android:title="@string/nav_book_borrowed"
         android:checkable="true"/>
 
+    <item
+        android:id="@+id/nav_collect_book"
+        android:icon="@drawable/ic_book_collected"
+        android:title="@string/nav_collect_book" />
     <item
         android:id="@+id/nav_search_book"
         android:icon="@drawable/ic_search_book"

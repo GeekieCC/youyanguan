@@ -8,7 +8,7 @@
     android:layout_marginRight="0dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    tools:context="com.gusteauscuter.youyanguan.content_fragment.CourseFragment">
+    tools:context="com.gusteauscuter.youyanguan.content_fragment.courseFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
