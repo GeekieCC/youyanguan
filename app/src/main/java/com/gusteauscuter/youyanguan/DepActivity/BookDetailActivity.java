@@ -326,14 +326,13 @@ public class BookDetailActivity extends AppCompatActivity {
             boolean isChecking=false;
 
 
-            for (int i = 0; i < locationInfoLists.size(); i++) {
-                LocationInformation locationInfo = locationInfoLists.get(i);
+            for (LocationInformation locationInfo : locationInfoLists) {
 
-                Boolean conditon1=!locationInfo.getLocation().contains("停");
-                Boolean conditon2=!locationInfo.getDetailLocation().contains("停");
+                boolean condition1=!locationInfo.getLocation().contains("停");
+                boolean condition2=!locationInfo.getDetailLocation().contains("停");
 //                Boolean conditon3=!locationInfo.getStatus().contains("验收");
 
-                if(conditon1&&conditon2){
+                if(condition1 && condition2){
 //                    if(conditon3){
                         isNoBookEnanbled=false;
                         TableRow tr = new TableRow(getApplicationContext());

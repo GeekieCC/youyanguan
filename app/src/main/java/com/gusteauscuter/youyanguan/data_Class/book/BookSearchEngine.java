@@ -75,27 +75,7 @@ public class BookSearchEngine {
 		return resultBookLists;
 	}
 	
-	
-//	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch) {
-//		List<ResultBook> resultBookLists = new ArrayList<ResultBook>();
-//		if (numOfBooks == 0 || pageNum > numOfPages) return null;
-//		Elements elements = doc.getElementsByTag("tr");
-//		elements.remove(0);
-//		List<Element> elementLists = null;
-//		int start = (ithSearch - 1) * numOfBooksPerSearch;
-//		if (ithSearch < numOfSearchesOnThisPage) {
-//			elementLists = elements.subList(start, start + numOfBooksPerSearch);
-//		} else {
-//			elementLists = elements.subList(start, numOfBooksOnThisPage);
-//		}
-//
-//		for (Element element : elementLists) {
-//			ResultBook book = new ResultBook();
-//			book.getResultBookWithBorrowInfo(element);
-//			resultBookLists.add(book);
-//		}
-//		return resultBookLists;
-//	}
+
 	
 	
 	public int getNumOfPages() {
@@ -145,7 +125,7 @@ public class BookSearchEngine {
 
 	}
 
-	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch, int searchSN) throws SocketTimeoutException{
+	public List<ResultBook> getBooksOnPageWithBorrowInfo(int pageNum, int numOfBooksPerSearch, int ithSearch) throws SocketTimeoutException{
 		List<ResultBook> resultBookLists = new ArrayList<ResultBook>();
 		if (numOfBooks == 0 || pageNum > numOfPages) return null;
 		Elements elements = doc.getElementsByTag("tr");
@@ -160,7 +140,7 @@ public class BookSearchEngine {
 
 		for (Element element : elementLists) {
 			ResultBook book = new ResultBook();
-			book.getResultBookWithBorrowInfo(element, searchSN);
+			book.getResultBookWithBorrowInfo(element);
 			resultBookLists.add(book);
 		}
 		return resultBookLists;

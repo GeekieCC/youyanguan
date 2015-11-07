@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:iconifiedByDefault="false"
-        app:searchHintIcon="@drawable/ic_search_book"
+        android:searchHintIcon="@drawable/ic_search_book"
         android:textColor="@color/white"
         android:inputType="textFilter"
         android:queryHint="请输入要查找的图书"

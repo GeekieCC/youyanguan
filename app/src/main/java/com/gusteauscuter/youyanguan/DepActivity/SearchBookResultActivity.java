@@ -290,10 +290,14 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
 
             if (isAllowedToBorrow) {
-                boolean isBorrowable = mResultBook.isBorrowable();
-                if (isBorrowable) {
+                int borrowCondition = mResultBook.getBorrowCondition();
+                if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
                     mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
-                } else {
+                } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
+                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
+                } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
+                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
+                } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
                     mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
                 }
             } else {
@@ -394,7 +398,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
                     if (isAllowedToBorrow) {
                         int numOfSearchesOnThisPage = engine.getNumOfSearchesOnThisPage(page, NUM_OF_BOOKS_PER_SEARCH);
                         if (page <= numOfPages) {
-                            resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
+                            resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch);
                             if (resultBookLists != null) {
                                 if (ithSearch >= numOfSearchesOnThisPage) {
                                     ithSearch = FIRST_SEARCH;
