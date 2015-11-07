@@ -1,9 +1,11 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -135,25 +138,24 @@ public class SearchBookResultActivity extends AppCompatActivity {
         mSouthCheckBox=(CheckBox)findViewById(R.id.SouthCheckBox);
         mNorthCheckBox=(CheckBox)findViewById(R.id.NorthCheckBox);
         initSearchCondition();
-
+        mSearchBookList=new ArrayList<>();
         mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
 //        dealwithSearchView();
 //        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.requestFocus();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
             @Override
             public boolean onQueryTextSubmit(String query) {
                 reSearch = true;
                 searchBook();
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
         });
-        mSearchBookList=new ArrayList<>();
+
         mAdapter = new SearchBookAdapter() ;
         mListView.setAdapter(mAdapter);
 
@@ -215,9 +217,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     }
 
     private void searchBook() {
-
         if(reSearch){
-
             ithSearch = FIRST_SEARCH;
             page = FIRST_PAGE;
             currentCount = 0;
@@ -226,14 +226,24 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
             bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
+            hideSoftInput(); //收起软键盘
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    searchBookHelper();
+                }
+            }, 500); //收起软键盘需要一定时间
+        } else {
+            searchBookHelper();
         }
+    }
 
+    private void searchBookHelper() {
         boolean isConnected = NetworkConnectivity.isConnected(getApplication());
         if(isConnected){
             mListView.setTriggeredOnce(true);
             SearchBookAsyTask searchBookAsyTask=new SearchBookAsyTask();
             searchBookAsyTask.execute(bookToSearch, searchBookType);
-
         }else{
             mListView.setTriggeredOnce(false);
             Toast.makeText(getApplication(),
@@ -543,7 +553,12 @@ public class SearchBookResultActivity extends AppCompatActivity {
             resultBook.setIsCollected(operation);
             mAdapter.notifyDataSetChanged();
         }
+        mListView.requestFocus();
+    }
 
+    private boolean hideSoftInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        return imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0); //强制隐藏键盘
     }
 
     @Override
