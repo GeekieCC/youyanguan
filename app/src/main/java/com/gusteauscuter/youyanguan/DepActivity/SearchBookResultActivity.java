@@ -32,7 +32,6 @@ import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -452,7 +451,9 @@ public class SearchBookResultActivity extends AppCompatActivity {
                         Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
                     } else {
                         mListView.setTriggeredOnce(false);
-                        Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
+                        page++;
+                        ithSearch = FIRST_SEARCH;
+                        //Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
                     }
                 }
             } else {
