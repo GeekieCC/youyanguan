@@ -70,8 +70,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
     private SearchView mSearchView;
     private Spinner searchBookTypeSpinner;
-    private CheckBox mSouthCheckBox;
-    private CheckBox mNorthCheckBox;
+    private CheckBox borrowConditionCheckBox;
 
     private String bookToSearch;
     private String searchBookType="TITLE";
@@ -139,8 +138,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
         });
 
-        mSouthCheckBox=(CheckBox)findViewById(R.id.SouthCheckBox);
-        mNorthCheckBox=(CheckBox)findViewById(R.id.NorthCheckBox);
+        borrowConditionCheckBox = (CheckBox) findViewById(R.id.borrowConditionCheckBox);
         initSearchCondition();
         mSearchBookList=new ArrayList<>();
         mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
@@ -194,24 +192,18 @@ public class SearchBookResultActivity extends AppCompatActivity {
         }
     }
 
-    public void initSearchCondition(){
-
+    private void initSearchCondition(){
         SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
-        Boolean SouthChecked = shareData.getBoolean("South", false);
-        Boolean NorthChecked = shareData.getBoolean("North", true);
-        mSouthCheckBox.setChecked(SouthChecked);
-        mNorthCheckBox.setChecked(NorthChecked);
-
+        boolean borrowCondition = shareData.getBoolean("borrowCondition", false);
+        borrowConditionCheckBox.setChecked(borrowCondition);
     }
 
-    public void saveSearchCondition() {
+    private void saveSearchCondition() {
         SharedPreferences.Editor shareData =getApplication().getSharedPreferences("data", 0).edit();
-        shareData.putBoolean("South",mSouthCheckBox.isChecked());
-        shareData.putBoolean("North", mNorthCheckBox.isChecked());
+        shareData.putBoolean("borrowCondition",borrowConditionCheckBox.isChecked());
         shareData.commit();
 
-        //searchBookType;
-        if (mNorthCheckBox.isChecked() || mSouthCheckBox.isChecked()){
+        if (borrowConditionCheckBox.isChecked()){
             checkBorrowCondition = true;
         } else {
             checkBorrowCondition = false;

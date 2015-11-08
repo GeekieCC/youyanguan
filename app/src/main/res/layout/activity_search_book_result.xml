@@ -57,18 +57,13 @@
 
             <CheckBox
                 android:layout_alignParentRight="true"
-                android:id="@+id/NorthCheckBox"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="查看" />
-            <CheckBox
-                android:layout_toLeftOf="@+id/NorthCheckBox"
-                android:id="@+id/SouthCheckBox"
+                android:id="@+id/borrowConditionCheckBox"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:text="查看"/>
+
             <Spinner
-                android:layout_toLeftOf="@+id/SouthCheckBox"
+                android:layout_toLeftOf="@id/borrowConditionCheckBox"
                 android:id="@+id/spinner"
                 android:layout_width="70dp"
                 android:layout_height="20dp"
