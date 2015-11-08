@@ -31,7 +31,7 @@ public class BookDetail {
 	private String pubdate="";
 
 	private boolean isDoubanExisting;
-
+	private String searchNum = "";
 	//馆藏信息
 	private List<LocationInformation> locationLists;
 	private String isbn = "";
@@ -49,7 +49,7 @@ public class BookDetail {
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
 		isbn = getISBN(detailDoc);
-		getLocationInfo(detailDoc);
+		getLocationInfoAndSearchNum(detailDoc);
 		if (!isbn.isEmpty()) {
 			String doubanUrl = DOUBAN_BASE_URL + isbn;
 			JSONObject doubanJson = getDetailJson(doubanUrl);
@@ -76,7 +76,7 @@ public class BookDetail {
 		Document detailDoc = Jsoup.parse(detailHtml);
 		isbn = resultBook.getIsbn();
 		//处理detialHtml
-		getLocationInfo(detailDoc);
+		getLocationInfoAndSearchNum(detailDoc);
 		if (!isbn.isEmpty()) {
 			String doubanUrl = DOUBAN_BASE_URL + isbn;
 			JSONObject doubanJson = getDetailJson(doubanUrl);
@@ -134,7 +134,7 @@ public class BookDetail {
 		return detailLink;
 	}
 
-	private void getLocationInfo(Document doc) {
+	private void getLocationInfoAndSearchNum(Document doc) {
 		locationLists = new ArrayList<LocationInformation>();
 		Elements tableElements = doc.getElementsByTag("tbody");
 		Elements trElements = tableElements.last().getElementsByTag("tr");
@@ -143,6 +143,7 @@ public class BookDetail {
 			LocationInformation locationInfo = new LocationInformation(tr);
 			locationLists.add(locationInfo);
 		}
+		searchNum = locationLists.get(0).getSearchNum();
 	}
 
 	private void initIVar(JSONObject doubanJson) throws SocketTimeoutException {
@@ -304,6 +305,16 @@ public class BookDetail {
 		return locationLists;
 	}
 
+	public List<LocationInformation> getLocationInfoWithoutStopped() {
+		List<LocationInformation> result = new ArrayList<>();
+		for (LocationInformation locationInformation : locationLists) {
+			if (!locationInformation.getLocation().contains("停") && !locationInformation.getDetailLocation().contains("停")) {
+				result.add(locationInformation);
+			}
+		}
+		return result;
+	}
+
 	public String getIsbn() {
 		if (isbn.isEmpty()) {
 			return "暂无";
@@ -313,4 +324,11 @@ public class BookDetail {
 
 	}
 
+	public String getSearchNum() {
+		if (searchNum.isEmpty()) {
+			return "暂无";
+		} else {
+			return searchNum;
+		}
+	}
 }
