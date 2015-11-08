@@ -35,6 +35,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.exception.WrongPageException;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
 import java.lang.reflect.Field;
@@ -234,7 +235,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
             bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
-            hideSoftInput(); //收起软键盘
+            SoftInputUtil.hideSoftInput(this, mSearchView); //收起软键盘
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -569,11 +570,6 @@ public class SearchBookResultActivity extends AppCompatActivity {
         }
         mAdapter.notifyDataSetChanged();
         mListView.requestFocus();
-    }
-
-    private boolean hideSoftInput() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        return imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0); //强制隐藏键盘
     }
 
     @Override
