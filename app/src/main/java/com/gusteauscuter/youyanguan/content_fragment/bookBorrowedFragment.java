@@ -264,7 +264,7 @@ public class bookBorrowedFragment extends Fragment {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
-                    mBookList=result;
+                    if (result != null) mBookList = result;
                     RefreshView();
                     Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT)
                             .show();
