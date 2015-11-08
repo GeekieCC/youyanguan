@@ -147,6 +147,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
         mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
 //        dealwithSearchView();
 //        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setIconified(false);
         mSearchView.requestFocus();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
