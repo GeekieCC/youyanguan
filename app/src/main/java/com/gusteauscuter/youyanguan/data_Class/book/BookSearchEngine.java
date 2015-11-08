@@ -2,6 +2,8 @@ package com.gusteauscuter.youyanguan.data_Class.book;
 
 
 
+import com.gusteauscuter.youyanguan.exception.WrongPageException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -54,7 +56,7 @@ public class BookSearchEngine {
 		
 	}
 	
-	public void searchBook(String searchContent, String searchCriteria, int page) throws SocketTimeoutException {
+	public void searchBook(String searchContent, String searchCriteria, int page) throws SocketTimeoutException, WrongPageException {
 		this.searchContent = searchContent;
 		this.searchCriteria = searchCriteria;
 		doc = searchBookHelper(page);
@@ -94,9 +96,14 @@ public class BookSearchEngine {
 //		return searchCriteria;
 //	}
 
-	private void howMany(Document doc) {
+	private void howMany(Document doc) throws WrongPageException {
 		Elements pTag = doc.getElementsByTag("p");
-		Elements fontTag = pTag.last().getElementsByTag("font");
+		Elements fontTag = null;
+		try {
+			fontTag = pTag.last().getElementsByTag("font");
+		} catch (NullPointerException e) {
+			throw new WrongPageException("发生了缺页异常");
+		}
 		numOfBooks = Integer.parseInt(fontTag.get(1).text());
 		numOfBooksPerPage = Integer.parseInt(fontTag.get(2).text());
 		numOfPages = (int) Math.ceil((double) numOfBooks / numOfBooksPerPage);

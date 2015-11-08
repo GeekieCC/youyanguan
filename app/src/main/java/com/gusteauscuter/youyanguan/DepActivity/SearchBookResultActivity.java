@@ -33,6 +33,7 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.exception.WrongPageException;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
@@ -391,6 +392,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private class SearchBookAsyTask extends AsyncTask<String, Void, List<ResultBook>> {
 
         private boolean serverOK = true; //处理服务器异常
+        private boolean pageOK = true; //处理缺页异常
 
         @Override
         protected void onPreExecute(){
@@ -444,6 +446,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
                 } catch (SocketTimeoutException e) {
                     serverOK = false;
+                } catch (WrongPageException e) {
+                    pageOK = false;
                 } catch (Exception e) {
                     //serverOK = false;
                     e.printStackTrace();
@@ -457,24 +461,29 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.INVISIBLE);
 
             if (serverOK) {
-                mTotalNumber.setText(String.valueOf(numOfBooks));
-                if (numOfBooks == 0) {
-                    Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
-                }else {
-                    if (result != null) {
-                        mSearchBookList.addAll(result);
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setTriggeredOnce(false);
-                        currentCount = mListView.getCount();
-                    } else if (currentCount >= numOfBooks) {
-                        Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mListView.setTriggeredOnce(false);
-                        page++;
-                        ithSearch = FIRST_SEARCH;
-                        //Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
+                if (pageOK) {
+                    mTotalNumber.setText(String.valueOf(numOfBooks));
+                    if (numOfBooks == 0) {
+                        Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
+                    }else {
+                        if (result != null) {
+                            mSearchBookList.addAll(result);
+                            mAdapter.notifyDataSetChanged();
+                            mListView.setTriggeredOnce(false);
+                            currentCount = mListView.getCount();
+                        } else if (currentCount >= numOfBooks) {
+                            Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplication(), "未知异常", Toast.LENGTH_SHORT).show();
+                        }
                     }
+                } else {
+                    page++;
+                    ithSearch = FIRST_SEARCH;
+                    mListView.setTriggeredOnce(false);
+                    Toast.makeText(getApplication(), "缺页异常", Toast.LENGTH_SHORT).show();
                 }
+
             } else {
                 mListView.setTriggeredOnce(false);
                 Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
