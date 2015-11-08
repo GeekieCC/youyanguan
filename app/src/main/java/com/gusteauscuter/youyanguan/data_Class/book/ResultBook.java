@@ -18,6 +18,7 @@ public class ResultBook implements Serializable {
     public static int BORTH_YES = 1;
 	public static int NORTH_ONLY = 3;
     public static int SOUTH_ONLY = 4;
+	public static int UNKNOWN = 5;
 
 	private int rowNumber;
 	private String title;
@@ -28,7 +29,7 @@ public class ResultBook implements Serializable {
 	private String searchNum;
 	private String type;
 	private String bookId;
-	private int borrowCondition;
+	private int borrowCondition = UNKNOWN;
 	private boolean isCollected = false;
 	
 	

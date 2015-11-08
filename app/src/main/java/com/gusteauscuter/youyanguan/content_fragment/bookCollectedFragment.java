@@ -133,6 +133,8 @@ public class bookCollectedFragment extends Fragment{
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
+            } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
             }
 
 
