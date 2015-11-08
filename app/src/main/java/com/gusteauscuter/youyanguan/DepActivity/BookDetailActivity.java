@@ -165,20 +165,21 @@ public class BookDetailActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (result) {
-                if (operation) {
-                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
-                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
-                    finish();
-                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
-                }
 
                 //返回给上一个activity，
                 Intent intent = new Intent();
                 intent.putExtra("position", position);
                 intent.putExtra("isCollected", operation);
                 BookDetailActivity.this.setResult(0, intent);
+
+                if (operation) {
+                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
+                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
+                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
 
             } else {
                 if (operation) {

@@ -3,6 +3,7 @@ package com.gusteauscuter.youyanguan.DepActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.lzyzsd.randomcolor.RandomColor;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
@@ -75,6 +77,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private String searchBookType="TITLE";
     private boolean isAllowedToBorrow;
     private boolean reSearch=true;
+
+    private RandomColor randomColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +154,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 searchBook();
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
@@ -163,10 +168,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
             @Override
             public void onBottomReached() {
                 //Toast.makeText(getApplicationContext(),"到底了",Toast.LENGTH_SHORT).show();
-                reSearch=false;
+                reSearch = false;
                 searchBook();
             }
         });
+        randomColor = new RandomColor();
     }
 
     private void dealwithSearchView(){
@@ -291,7 +297,6 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 mHolder.mBookId=((TextView) convertView.findViewById(R.id.searchBook_BookId));
                 mHolder.mAuthor=((TextView) convertView.findViewById(R.id.searchBook_Author));
                 mHolder.mButton = (Button) convertView.findViewById(R.id.collect_book);
-
                 convertView.setTag(mHolder);
 
             } else{
@@ -299,19 +304,17 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
 
 
-            if (isAllowedToBorrow) {
-                int borrowCondition = mResultBook.getBorrowCondition();
-                if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
-                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
-                } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
-                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
-                } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
-                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
-                } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
-                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
-                }
-            } else {
+            int borrowCondition = mResultBook.getBorrowCondition();
+            if (borrowCondition == ResultBook.UNKNOWN) { // 不知道可借信息
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
+            } else if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
+            } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
+            } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
+            } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
             }
 
             // TO 设置Book对应属性
@@ -326,11 +329,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mHolder.mAuthor.setText(author);
             mHolder.mPublisher.setText(publisher);
             mHolder.mPubdate.setText(pubdate);
+            convertView.setBackgroundColor(mResultBook.getColor());
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    int color = randomColor.randomColor(Color.parseColor("#FFC0CB"), RandomColor.SaturationType.RANDOM, RandomColor.Luminosity.LIGHT);
+                    mResultBook.setColor(color);
                     boolean isConnected = NetworkConnectivity.isConnected(getApplicationContext());
                     if (isConnected) {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
@@ -551,8 +556,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
             boolean operation = data.getBooleanExtra("isCollected", false);
             ResultBook resultBook = (ResultBook) mAdapter.getItem(position);
             resultBook.setIsCollected(operation);
-            mAdapter.notifyDataSetChanged();
         }
+        mAdapter.notifyDataSetChanged();
         mListView.requestFocus();
     }
 

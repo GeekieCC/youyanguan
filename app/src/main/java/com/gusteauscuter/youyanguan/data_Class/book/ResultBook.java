@@ -1,5 +1,7 @@
 package com.gusteauscuter.youyanguan.data_Class.book;
 
+import android.graphics.Color;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,9 +33,18 @@ public class ResultBook implements Serializable {
 	private String bookId;
 	private int borrowCondition = UNKNOWN;
 	private boolean isCollected = false;
-	
-	
-	public int getBorrowCondition() {
+
+    private int color = Color.parseColor("#FFFFFF");
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getBorrowCondition() {
 		return borrowCondition;
 	}
 	
