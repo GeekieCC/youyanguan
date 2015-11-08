@@ -1,6 +1,5 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -64,7 +62,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private int page;
     
     //// TOD: 2015/10/9 从searchBookFragment传一个整形的常量给searchSN
-    private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
+    //private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
 
     private TextView mTotalNumber;
     private int currentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
@@ -77,7 +75,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
     private String bookToSearch;
     private String searchBookType="TITLE";
-    private boolean isAllowedToBorrow;
+    private boolean checkBorrowCondition = false; //是否检查可借状况
     private boolean reSearch=true;
 
     private RandomColor randomColor;
@@ -213,15 +211,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
         shareData.commit();
 
         //searchBookType;
-        isAllowedToBorrow = true;
-        if (mNorthCheckBox.isChecked()&&mSouthCheckBox.isChecked()){
-            searchSN= BookSearchEngine.BOTH_CAMPUS;
-        }else if(mNorthCheckBox.isChecked()){
-            searchSN=BookSearchEngine.NORTH_CAMPUS;
-        }else if(mSouthCheckBox.isChecked()){
-            searchSN= BookSearchEngine.SOUTH_CAMPUS;
-        }else{
-            isAllowedToBorrow = false;
+        if (mNorthCheckBox.isChecked() || mSouthCheckBox.isChecked()){
+            checkBorrowCondition = true;
         }
     }
 
@@ -414,7 +405,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
                         numOfPages = engine.getNumOfPages();
                     }
 
-                    if (isAllowedToBorrow) {
+                    if (checkBorrowCondition) {
                         int numOfSearchesOnThisPage = engine.getNumOfSearchesOnThisPage(page, NUM_OF_BOOKS_PER_SEARCH);
                         if (page <= numOfPages) {
                             resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch);
