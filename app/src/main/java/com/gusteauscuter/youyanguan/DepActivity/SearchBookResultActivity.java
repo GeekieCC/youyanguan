@@ -213,6 +213,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
         //searchBookType;
         if (mNorthCheckBox.isChecked() || mSouthCheckBox.isChecked()){
             checkBorrowCondition = true;
+        } else {
+            checkBorrowCondition = false;
         }
     }
 
