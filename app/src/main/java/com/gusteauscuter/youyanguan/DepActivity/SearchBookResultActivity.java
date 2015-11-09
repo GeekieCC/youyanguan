@@ -103,33 +103,15 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
                 String type = searchBookTypeSpinner.getItemAtPosition(i).toString();
                 switch (type) {
-                    case "标题":
-                        searchBookType = "TITLE";
-                        break;
-                    case "作者":
-                        searchBookType = "AUTHOR";
-                        break;
-                    case "ISBN":
-                        searchBookType = "ISBN";
-                        break;
-                    case "ISSN":
-                        searchBookType = "ISBN.011$a";
-                        break;
-                    case "出版社":
-                        searchBookType = "PUBLISHER";
-                        break;
-                    case "分类号":
-                        searchBookType = "CLASSNO";
-                        break;
-                    case "主题词":
-                        searchBookType = "SUBJECT";
-                        break;
-                    case "统一刊号":
-                        searchBookType = "UNIONNO";
-                        break;
-                    case "馆藏条码":
-                        searchBookType = "BARCODE";
-                        break;
+                    case "标题": searchBookType = "TITLE"; break;
+                    case "作者": searchBookType = "AUTHOR"; break;
+                    case "ISBN": searchBookType = "ISBN"; break;
+                    case "ISSN": searchBookType = "ISBN.011$a"; break;
+                    case "出版社": searchBookType = "PUBLISHER"; break;
+                    case "分类号": searchBookType = "CLASSNO"; break;
+                    case "主题词": searchBookType = "SUBJECT"; break;
+                    case "统一刊号": searchBookType = "UNIONNO"; break;
+                    case "馆藏条码": searchBookType = "BARCODE"; break;
                 }
             }
 
@@ -201,7 +183,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private void saveSearchCondition() {
         SharedPreferences.Editor shareData =getApplication().getSharedPreferences("data", 0).edit();
         shareData.putBoolean("borrowCondition",borrowConditionCheckBox.isChecked());
-        shareData.commit();
+        shareData.apply();
 
         if (borrowConditionCheckBox.isChecked()){
             checkBorrowCondition = true;

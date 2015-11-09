@@ -58,9 +58,9 @@
             <CheckBox
                 android:layout_alignParentRight="true"
                 android:id="@+id/borrowConditionCheckBox"
-                android:layout_width="70dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="查看"/>
+                android:text="查看可借状态"/>
 
             <Spinner
                 android:layout_toLeftOf="@id/borrowConditionCheckBox"
@@ -77,7 +77,7 @@
     <com.gusteauscuter.youyanguan.view.ScrollListView
         android:layout_below="@id/totalNumberLayout"
         android:id="@+id/bookListView"
-        style="@style/Widget.SampleDashboard.Grid"
+        android:divider="@color/red"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbarStyle="outsideOverlay" >

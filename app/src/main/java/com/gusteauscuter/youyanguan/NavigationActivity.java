@@ -56,7 +56,6 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationViewLeft;
     private ActionBar mActionBar=null;
-    private userLogin mUserLogin;
     private FrameLayout mContentFramelayout;
 
     private bookBorrowedFragment mBookBorrowedFragment;
@@ -70,10 +69,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     private List<Book> mBookList =new ArrayList<>();
     private List<Course> mCourseList =new ArrayList<>();
     private List<HomeItem> mHomeItemList =new ArrayList<>();
+    private boolean mIsLogined ;
 
     public Menu mMenu;
-
-    private boolean IsFirstTime =true;
 
     GestureDetector mGestureDetector;
     private static final int FLING_MIN_DISTANCE = 50;
@@ -85,25 +83,19 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initData();
         initView();
         initEvents();
         Bmob.initialize(this, "213c7ff4ff5c05bee43e1b5f803ee7cd");
-        //BmobUpdateAgent.initAppVersion(this);
         BmobUpdateAgent.update(this);
     }
 
     /**
      *
      */
-    // TODO updateData such as mBookList,mCourseList,mHomeList
-    public void initData(){
-
+    // TO updateData such as mBookList,mCourseList,mHomeList
+    public boolean readLoginstate(){
         SharedPreferences shareData = getSharedPreferences("data", 0);
-        String username = shareData.getString("USERNAME", "");
-        String password = shareData.getString("PASSWORD", "");
-        boolean isLogined = shareData.getBoolean("ISLOGINED", false);
-        mUserLogin = new userLogin(username, password, isLogined);
+        return shareData.getBoolean("ISLOGINED", false);
     }
 
 
@@ -183,31 +175,28 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     public void JumpToBookFragment(){
 
-        if (mUserLogin.IsLogined()){
-            if (mBookBorrowedFragment ==null)
-                mBookBorrowedFragment =new bookBorrowedFragment();
-            mActionBar.setTitle(R.string.nav_book_borrowed);
-            FragmentManager mFragmentManager = getFragmentManager();
-            FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-            mTransaction.replace(R.id.container_frame, mBookBorrowedFragment);
-            mTransaction.commit();
+        if (mBookBorrowedFragment ==null)
+            mBookBorrowedFragment =new bookBorrowedFragment();
+//            mActionBar.setTitle(R.string.nav_book_borrowed);
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
+        mTransaction.replace(R.id.container_frame, mBookBorrowedFragment);
+        mTransaction.commit();
 
-            if (mMenu!=null) {
+        if (mMenu!=null) {
 //                mMenu.findItem(R.id.action_feedback).setVisible(true);
 //                mMenu.findItem(R.id.action_open_drawer).setVisible(true);
-                mMenu.findItem(R.id.action_log_out).setVisible(true);
-                mMenu.findItem(R.id.action_refresh_book).setVisible(true);
-            }
-        } else{
-            JumpToLoginFragment();
+            mMenu.findItem(R.id.action_log_out).setVisible(true);
+            mMenu.findItem(R.id.action_refresh_book).setVisible(true);
         }
+
     }
 
     public void JumpToCollectBookFragment(){
 
         if (mBookCollectedFragment ==null)
             mBookCollectedFragment =new bookCollectedFragment();
-        mActionBar.setTitle(R.string.nav_collect_book);
+//        mActionBar.setTitle(R.string.nav_collect_book);
         FragmentManager mFragmentManager = getFragmentManager();
         FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
         mTransaction.replace(R.id.container_frame, mBookCollectedFragment);
@@ -296,7 +285,13 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 //        }
 
         if(menuItem.getItemId()==R.id.nav_library) {    //图书馆
-            JumpToBookFragment();
+            mIsLogined=readLoginstate();
+
+            if (mIsLogined){
+                JumpToBookFragment();
+            }else{
+                JumpToLoginFragment();
+            }
         }
 
         if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
@@ -357,10 +352,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         }else if (item.getItemId()==R.id.action_log_out) {
 
-//            mUserLogin=new userLogin();
             SharedPreferences.Editor shareData =getSharedPreferences("data",0).edit();
             shareData.putBoolean("ISLOGINED",false);
-            shareData.commit();
+            shareData.apply();
 
             mBookBorrowedFragment =new bookBorrowedFragment();
             mLoginFragment=new loginFragment();
@@ -432,24 +426,6 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     public void onClick(View v) {
         //?
 
-    }
-
-    public userLogin getmLogin(){
-        return mUserLogin;
-    }
-
-    public void setmUserLogin(userLogin mUserLogin){
-        this.mUserLogin=mUserLogin;
-    }
-
-    public userLogin getmUserLogin(){
-        return this.mUserLogin;
-    }
-
-
-
-    public List<HomeItem> getmHomeItemList(){
-        return this.mHomeItemList;
     }
 
     private void RefreshHomeItemList(){

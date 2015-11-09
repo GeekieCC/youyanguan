@@ -39,7 +39,6 @@
     <!--style name="ActionbarTheme" parent="Theme.AppCompat.Light.DarkActionBar"!-->
     <style name="ActionbarTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="android:background">@color/blue</item>
-        <item name="android:fitsSystemWindows">true</item>
     </style>
 
 
