@@ -63,10 +63,8 @@ public class loginFragment extends Fragment {
                     @Override
                     public void run() {
                         if (disableDoubleClick) {
-                            disableDoubleClick = false;
                             doLogin();
                         }
-
                     }
                 }, 500); //收起软键盘需要一定时间
 
@@ -103,14 +101,12 @@ public class loginFragment extends Fragment {
             if (username.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
                 IsFiveTimes++;
-                disableDoubleClick = true;
             } else {
                 AsyLoginLibrary myAsy = new AsyLoginLibrary();
                 myAsy.execute(username, pass);
             }
 
         } else {
-            disableDoubleClick = true;
             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                     .show();
         }
@@ -121,6 +117,7 @@ public class loginFragment extends Fragment {
         private boolean isLogined = false;
         @Override
         protected void onPreExecute() {
+            disableDoubleClick = false; // 在执行异步类之前，将此变量置否，防止双击多次执行doLogin方法，而实例化多个AsyLoginLibrary对象
             mProgressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
