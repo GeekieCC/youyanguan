@@ -110,6 +110,7 @@ public class loginFragment extends Fragment {
             }
 
         } else {
+            disableDoubleClick = true;
             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                     .show();
         }
