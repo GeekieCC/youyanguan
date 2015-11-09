@@ -1,5 +1,7 @@
 package com.gusteauscuter.youyanguan.data_Class.book;
 
+import android.graphics.Color;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,7 +15,13 @@ import java.util.List;
 public class ResultBook implements Serializable {
 	
 	private static final String DETAIL_BASE_URL = "http://202.38.232.10/opac/servlet/opac.go";
-	
+
+    public static int BORTH_NOT = 0;
+    public static int BORTH_YES = 1;
+	public static int NORTH_ONLY = 3;
+    public static int SOUTH_ONLY = 4;
+	public static int UNKNOWN = 5;
+
 	private int rowNumber;
 	private String title;
 	private String author;
@@ -23,12 +31,21 @@ public class ResultBook implements Serializable {
 	private String searchNum;
 	private String type;
 	private String bookId;
-	private boolean isBorrowable;
+	private int borrowCondition = UNKNOWN;
 	private boolean isCollected = false;
-	
-	
-	public boolean isBorrowable() {
-		return isBorrowable;
+
+    private int color = Color.parseColor("#FFFFFF");
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getBorrowCondition() {
+		return borrowCondition;
 	}
 	
 	public ResultBook() {
@@ -41,18 +58,20 @@ public class ResultBook implements Serializable {
 	}
 	
 	
+//	public void getResultBookWithBorrowInfo(Element element) throws SocketTimeoutException {
+//		getResultBookHelper(element);
+//		isBorrowable = isBorrowableHelper();
+//	}
+
 	public void getResultBookWithBorrowInfo(Element element) throws SocketTimeoutException {
 		getResultBookHelper(element);
-		isBorrowable = isBorrowableHelper();
-	}
-
-	public void getResultBookWithBorrowInfo(Element element, int searchSN) throws SocketTimeoutException {
-		getResultBookHelper(element);
-		isBorrowable = isBorrowableHelperSN(searchSN);
+		borrowCondition = checkBorrowCondition();
 	}
 
 
-	private boolean isBorrowableHelperSN(int searchSN) throws SocketTimeoutException {
+	private int checkBorrowCondition() throws SocketTimeoutException {
+        boolean south = false;
+        boolean north = false;
 		String detailLink = buildDetailLink(bookId);
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
@@ -62,34 +81,33 @@ public class ResultBook implements Serializable {
 			String detailLocation = locInfo.getDetailLocation();
 			String status = locInfo.getStatus();
 			if (!location.contains("停") && !detailLocation.contains("停") && status.contains("在馆")) {
-				if (searchSN == BookSearchEngine.BOTH_CAMPUS) {
-					return true;
-				} else if (searchSN == BookSearchEngine.NORTH_CAMPUS && (location.contains("北") || detailLocation.contains("北"))) {
-					return true;
-				} else if (searchSN == BookSearchEngine.SOUTH_CAMPUS && (location.contains("南") || detailLocation.contains("南"))) {
-					return true;
+                if ((location.contains("北") || detailLocation.contains("北"))) {
+					north = true;
+				} else if ((location.contains("南") || detailLocation.contains("南"))) {
+					south = true;
 				}
-
 			}
 		}
-
-		return false;
+        if (!south && !north) return BORTH_NOT;
+        if (south && north) return BORTH_YES;
+        if (south && !north) return SOUTH_ONLY;
+        return NORTH_ONLY;
 	}
 	
-	private boolean isBorrowableHelper() throws SocketTimeoutException {
-		
-		String detailLink = buildDetailLink(bookId);
-		String detailHtml = getHtml(detailLink);
-		Document detailDoc = Jsoup.parse(detailHtml);
-		List<LocationInformation> locationLists = getLocationInfo(detailDoc);
-		for (LocationInformation locInfo : locationLists) {
-			if (!locInfo.getLocation().contains("停") && !locInfo.getDetailLocation().contains("停") && locInfo.getStatus().contains("在馆")) {
-				return true;
-			} 
-		}
-		
-		return false;
-	}
+//	private boolean isBorrowableHelper() throws SocketTimeoutException {
+//
+//		String detailLink = buildDetailLink(bookId);
+//		String detailHtml = getHtml(detailLink);
+//		Document detailDoc = Jsoup.parse(detailHtml);
+//		List<LocationInformation> locationLists = getLocationInfo(detailDoc);
+//		for (LocationInformation locInfo : locationLists) {
+//			if (!locInfo.getLocation().contains("停") && !locInfo.getDetailLocation().contains("停") && locInfo.getStatus().contains("在馆")) {
+//				return true;
+//			}
+//		}
+//
+//		return false;
+//	}
 	
 	private String buildDetailLink(String bookId) {
 		//http://202.38.232.10/opac/servlet/opac.go?cmdACT=query.bookdetail&bookid=1124335&marcformat=&libcode=&source=
@@ -135,7 +153,7 @@ public class ResultBook implements Serializable {
 	public String toString() {
 		return rowNumber + "||" + title + "||" + author + "||"
 	             + publisher + "||" + isbn + "||" + pubdate 
-	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + isBorrowable + isCollected + "\n";
+	             + "||" + searchNum + "||" + type + "||" + bookId + "||" + borrowCondition + isCollected + "\n";
 	}
 	
 	
@@ -197,8 +215,8 @@ public class ResultBook implements Serializable {
 		return isCollected;
 	}
 
-	public void setIsBorrowable(boolean isBorrowable) {
-		this.isBorrowable = isBorrowable;
+	public void setBorrowCondition(int borrowCondition) {
+		this.borrowCondition = borrowCondition;
 	}
 
 	public void setIsCollected(boolean isCollected) {

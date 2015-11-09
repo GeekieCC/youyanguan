@@ -165,20 +165,21 @@ public class BookDetailActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (result) {
-                if (operation) {
-                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
-                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
-                    finish();
-                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
-                }
 
                 //返回给上一个activity，
                 Intent intent = new Intent();
                 intent.putExtra("position", position);
                 intent.putExtra("isCollected", operation);
                 BookDetailActivity.this.setResult(0, intent);
+
+                if (operation) {
+                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
+                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
+                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
 
             } else {
                 if (operation) {
@@ -266,6 +267,7 @@ public class BookDetailActivity extends AppCompatActivity {
         //将整个详情页分为三大部分，第一部分，图片右侧区域,不包括图片
         private void inflateTopRight(BookDetail bookDetail) {
             titleTextView.setText("【书名】" + bookDetail.getTitle());
+            searchNumHeaderTextView.setText("【索书号】" + bookDetail.getSearchNum());
             authorTextView.setText("【作者】" + bookDetail.getAuthor());
             publisherTextView.setText("【出版社】" + bookDetail.getPublisher());
             pubdateTextView.setText("【出版日期】" + bookDetail.getPubdate());
@@ -303,64 +305,39 @@ public class BookDetailActivity extends AppCompatActivity {
         //将整个详情页分为三大部分，第二部分，馆藏信息
         private void inflateTable(BookDetail bookDetail) {
 
-            List<LocationInformation> locationInfoLists = bookDetail.getLocationInfo();
+            List<LocationInformation> locationInfoLists = bookDetail.getLocationInfoWithoutStopped();
 
-            if(locationInfoLists.size()!=0) {
-                searchNumHeaderTextView.setText("【索书号】" + locationInfoLists.get(0).getSearchNum());
-            }
+            String headerColor = "#2196F3"; // 表头颜色
+            String tableColor = "#BBDEFB"; // 表格颜色
 
-            String headerColor = "#2196F3";
             TextView locationHeader = createRowTextView("馆址", headerColor);
             TextView detailLocationHeader = createRowTextView("馆藏地", headerColor);
-//            TextView searchNumHeader = createRowTextView("索书号", headerColor);
             TextView statusHeader = createRowTextView("状态", headerColor);
 
             TableRow headerRow = new TableRow(getApplicationContext());
             headerRow.addView(detailLocationHeader);
             headerRow.addView(locationHeader);
-//            headerRow.addView(searchNumHeader);
             headerRow.addView(statusHeader);
 
             locationTable.addView(headerRow);
-            boolean isNoBookEnanbled=true;
-            boolean isChecking=false;
+            for (LocationInformation locationInfo : locationInfoLists) {
+                TableRow tr = new TableRow(getApplicationContext());
+                tr.setLayoutParams(new TableRow.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+                TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
+                TextView detailLocation = createRowTextView(OptimLocation(locationInfo.getDetailLocation()),tableColor);
+                TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
 
-            for (int i = 0; i < locationInfoLists.size(); i++) {
-                LocationInformation locationInfo = locationInfoLists.get(i);
+                tr.addView(location);
+                tr.addView(detailLocation);
+                tr.addView(status);
 
-                Boolean conditon1=!locationInfo.getLocation().contains("停");
-                Boolean conditon2=!locationInfo.getDetailLocation().contains("停");
-//                Boolean conditon3=!locationInfo.getStatus().contains("验收");
-
-                if(conditon1&&conditon2){
-//                    if(conditon3){
-                        isNoBookEnanbled=false;
-                        TableRow tr = new TableRow(getApplicationContext());
-                        tr.setLayoutParams(new TableRow.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                        String tableColor = "#BBDEFB";
-                        TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
-                        TextView detailLocation = createRowTextView(OptimLocation(locationInfo.getDetailLocation()),tableColor);
-                        //                TextView searchNum = createRowTextView(locationInfo.getSearchNum(),tableColor);
-                        TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
-
-                        tr.addView(location);
-                        tr.addView(detailLocation);
-                        //                tr.addView(searchNum);
-                        tr.addView(status);
-
-                        locationTable.addView(tr);
-//                    }else{
-//                        isChecking=true;
-//                    }
-
-                }
+                locationTable.addView(tr);
             }
 
-            if(isNoBookEnanbled){
-                TextView emptyInfor = createRowTextView("本书已全部暂停外借","#BBDEFB");
+            if(locationInfoLists.isEmpty()){
+                TextView emptyInfor = createRowTextView("本书已全部暂停外借",tableColor);
                 locationTable.addView(emptyInfor);
             }
         }

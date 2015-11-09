@@ -124,10 +124,16 @@ public class bookCollectedFragment extends Fragment{
             }
 
 
-            final boolean isBorrowable = mBook.isBorrowable();
-            if (isBorrowable) {
+            int borrowCondition = mBook.getBorrowCondition();
+            if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
-            } else {
+            } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
+            } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
+            } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
+            } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
             }
 
