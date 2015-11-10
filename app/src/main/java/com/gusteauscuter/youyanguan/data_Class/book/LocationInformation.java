@@ -29,10 +29,19 @@ public class LocationInformation {
 	}
 	
 	public String getLocation() {
-		return location;
+		return optimizeLocation(location);
 	}
 	public String getDetailLocation() {
-		return detailLocation;
+		return optimizeLocation(detailLocation);
+	}
+
+	private String optimizeLocation(String s) {
+		String split = "（";
+		int position = s.indexOf(split);
+		if (position == -1) {
+			return s;
+		}
+		return s.substring(0, position).trim() + "\n" + s.substring(position).trim();
 	}
 	public String getSearchNum() {
 		return searchNum;
