@@ -34,6 +34,8 @@ public class loginFragment extends Fragment {
     private Button loginButton;
     private Button cancelButton;
     private ProgressBar mProgressBar;
+    private int IsFiveTimes=1;
+    private boolean disableDoubleClick = true; // 防治连击登陆按钮造成的闪退
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,7 +62,9 @@ public class loginFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        doLogin();
+                        if (disableDoubleClick) {
+                            doLogin();
+                        }
                     }
                 }, 500); //收起软键盘需要一定时间
 
@@ -87,7 +91,6 @@ public class loginFragment extends Fragment {
     private void doLogin() {
         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
         if (isConnected) {
-            int IsFiveTimes=1;
             String username = userNameEditText.getText().toString();
             String pass = passEditText.getText().toString();
             if (IsFiveTimes == 5) {
@@ -114,6 +117,7 @@ public class loginFragment extends Fragment {
         private boolean isLogined = false;
         @Override
         protected void onPreExecute() {
+            disableDoubleClick = false; // 在执行异步类之前，将此变量置否，防止双击多次执行doLogin方法，而实例化多个AsyLoginLibrary对象
             mProgressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
@@ -137,7 +141,6 @@ public class loginFragment extends Fragment {
 
         @Override
         protected void onPostExecute(userLogin result) {
-
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
@@ -145,10 +148,12 @@ public class loginFragment extends Fragment {
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
                     SaveData(result.getUsername(),result.getPassword());
                 } else {
+                    disableDoubleClick = true;
                     Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT)
                             .show();
                 }
             } else {
+                disableDoubleClick = true;
                 Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
 
