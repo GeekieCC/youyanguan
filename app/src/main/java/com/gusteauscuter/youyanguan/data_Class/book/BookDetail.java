@@ -40,8 +40,16 @@ public class BookDetail {
 
 	}
 
+	public void getBookDetail(BaseBook baseBook) throws SocketTimeoutException{
+		if (baseBook instanceof Book) {
+            getBookDetailHelper((Book) baseBook);
+        } else if (baseBook instanceof ResultBook) {
+            getResultBookDetail((ResultBook) baseBook);
+        }
+	}
+
 	//新方法1
-	public void getBookDetail(Book book) throws SocketTimeoutException {
+	public void getBookDetailHelper(Book book) throws SocketTimeoutException {
 		title=book.getTitle();
 		author = book.getAuthor();
 

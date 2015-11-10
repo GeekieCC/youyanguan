@@ -5,7 +5,7 @@ import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 
-public class Book implements Serializable {
+public class Book extends BaseBook implements Serializable {
 	// 更新书籍ItemBook代码
 
 	private int rowNumber;
@@ -24,6 +24,7 @@ public class Book implements Serializable {
 	private String renewLink;
 
 	private String detailLink;
+    private String bookId;
 
 	public String toString() {
 		//return name + "(" + author + ")" + "(" + borrowDay + ")" + "(" + returnDay + ")";
@@ -40,6 +41,9 @@ public class Book implements Serializable {
 
 		detailLink = "http://202.38.232.10/opac" +
 				elements.get(2).select("a").first().attr("href").substring(2); //详情页链接
+		String find = "bookid=";
+		String s1 = detailLink.substring(detailLink.indexOf(find) + find.length());
+		bookId = s1.substring(0, s1.indexOf('&'));
 
 		int index1 = titleAndAuthor.indexOf('/');
 		title = titleAndAuthor.substring(0, index1);

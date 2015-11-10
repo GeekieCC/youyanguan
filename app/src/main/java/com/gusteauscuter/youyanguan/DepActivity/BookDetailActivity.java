@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.data_Class.book.BaseBook;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
 import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
@@ -36,7 +37,7 @@ import java.util.List;
 public class BookDetailActivity extends AppCompatActivity {
 
     private ProgressBar  mProgressBar;
-    private Object baseBook;
+    private BaseBook baseBook;
     //控件
     private ImageView bookPictureImageView;
     private TextView titleTextView;
@@ -54,14 +55,14 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView pagesTextView;
     private TextView priceTextView;
     private MenuItem menuCollection;
-    private boolean isCollected;
+//    private boolean isCollected;
     private int position;
     private LinearLayout shareView;
 
     //判断图书类型
     public static final int BOOK = 0;
     public static final int RESULT_BOOK = 1;
-    private int baseBookType;
+    //private int baseBookType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,17 +106,11 @@ public class BookDetailActivity extends AppCompatActivity {
 
     private  void initData(){
         Intent intent = this.getIntent();
-        baseBook = intent.getSerializableExtra("bookToShowDetail");
+        baseBook = (BaseBook) intent.getSerializableExtra("bookToShowDetail");
         position = intent.getIntExtra("position", 0);
 
         //TODO
-        if (baseBook instanceof ResultBook) {
-            isCollected = ((ResultBook) baseBook).isCollected();
-            baseBookType = RESULT_BOOK;
 
-        } else if (baseBook instanceof Book) {
-            baseBookType = BOOK;
-        }
 
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
         getBooksDetailAsy.execute(baseBook);
@@ -208,7 +203,7 @@ public class BookDetailActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(intent, getTitle()));
 
     }
-    private class GetBooksDetailAsy extends AsyncTask<Object, Void, BookDetail> {
+    private class GetBooksDetailAsy extends AsyncTask<BaseBook, Void, BookDetail> {
         private boolean serverOK = true;
         @Override
         protected void onPreExecute(){
@@ -219,17 +214,18 @@ public class BookDetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected BookDetail doInBackground(Object... baseBook) {
+        protected BookDetail doInBackground(BaseBook... baseBook) {
             BookDetail bookDetail = new BookDetail();
             try {
-                if (baseBookType == BOOK) {
-//                    bookDetail = new BookDetail();
-                    bookDetail.getBookDetail((Book) baseBook[0]);
-
-                } else if (baseBookType == RESULT_BOOK) {
-//                    bookDetail = new BookDetail();
-                    bookDetail.getResultBookDetail((ResultBook) baseBook[0]);
-                }
+//                if (baseBookType == BOOK) {
+////                    bookDetail = new BookDetail();
+//                    bookDetail.getBookDetail((Book) baseBook[0]);
+//
+//                } else if (baseBookType == RESULT_BOOK) {
+////                    bookDetail = new BookDetail();
+//                    bookDetail.getResultBookDetail((ResultBook) baseBook[0]);
+//                }
+                bookDetail.getBookDetail(baseBook[0]);
             } catch (SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
@@ -409,16 +405,26 @@ public class BookDetailActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_book_detail, menu);
         menuCollection = menu.findItem(R.id.action_collection);
 
-        if (baseBookType == BOOK) {
-            menuCollection.setVisible(false);
-        } else if (baseBookType == RESULT_BOOK) {
+//        if (baseBookType == BOOK) {
+//            menuCollection.setVisible(false);
+//        } else if (baseBookType == RESULT_BOOK) {
+//            if(isCollected){
+//                menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
+//            }else {
+//                menuCollection.setTitle("收藏").setIcon(R.drawable.ic_action_collect);
+//            }
+//        }
+
+        if (baseBook instanceof ResultBook) {
+            boolean isCollected = ((ResultBook) baseBook).isCollected();
             if(isCollected){
                 menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
             }else {
                 menuCollection.setTitle("收藏").setIcon(R.drawable.ic_action_collect);
             }
+        } else if (baseBook instanceof Book) {
+            menuCollection.setVisible(false);
         }
-
         return super.onCreateOptionsMenu(menu);
     }
 
