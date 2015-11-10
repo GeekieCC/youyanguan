@@ -194,7 +194,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
     private void initSearchCondition(){
         SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
-        boolean borrowCondition = shareData.getBoolean("borrowCondition", false);
+        boolean borrowCondition = shareData.getBoolean("borrowCondition", true);
         borrowConditionCheckBox.setChecked(borrowCondition);
     }
 
