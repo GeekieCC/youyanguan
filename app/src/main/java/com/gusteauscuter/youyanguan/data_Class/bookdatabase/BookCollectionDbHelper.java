@@ -118,6 +118,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
                 bookLists.add(resultBook);
             } while (cursor.moveToNext());
         }
+        db.close();
         // return contact list
         return bookLists;
     }
@@ -128,7 +129,9 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
      */
     public int getBookCollectionsCount() {
         SQLiteDatabase db = this.getWritableDatabase();
-        return getBookCollectionsCountHelper(db);
+        int result = getBookCollectionsCountHelper(db);
+        db.close();
+        return result;
     }
 
     private int getBookCollectionsCountHelper(SQLiteDatabase db) {
@@ -160,7 +163,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         // Issue SQL statement.
         //the number of rows affected if a whereClause is passed in, 0 otherwise.
         int num = db.delete(FeedEntry.TABLE_NAME, selection, selectionArgs);
-
+        db.close();
         return num;
     }
 
@@ -172,7 +175,9 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int numOfBooks = getBookCollectionsCountHelper(db);
         if (numOfBooks == 0) return -1; //当前收藏图书为零，无需清空
-        return db.delete(FeedEntry.TABLE_NAME, "1", null);
+        int result = db.delete(FeedEntry.TABLE_NAME, "1", null);
+        db.close();
+        return result;
     }
 
 //    /**
