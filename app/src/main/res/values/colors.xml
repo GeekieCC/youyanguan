@@ -1,7 +1,5 @@
 <resources>
 
-    <color name="transparent">#00000000</color>
-
     <color name="black">#ff000000</color>
 
     <color name="gray_dark">#ff222222</color>

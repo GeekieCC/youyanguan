@@ -87,9 +87,7 @@ public class homeFragment extends Fragment {
 * */
     private void initDataFromActivity(){
 
-        //TODO 初始化数据
-//        mHomeItemList=((NavigationActivity)getActivity()).getmHomeItemList();
-
+        mHomeItemList=((NavigationActivity)getActivity()).getmHomeItemList();
         if (mHomeItemList.size()==0)
             emptyInformation.setText("暂无日程，请添加");
 //            mHomeItemList.add(new HomeItem());

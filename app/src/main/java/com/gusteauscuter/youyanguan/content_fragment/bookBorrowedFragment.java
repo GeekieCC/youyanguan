@@ -3,7 +3,6 @@ package com.gusteauscuter.youyanguan.content_fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,10 +48,8 @@ public class bookBorrowedFragment extends Fragment {
     private BookAdapter mAdapter;
     private List<Book> mBookList=new ArrayList<>();
 
+    private userLogin mUserLogin=new userLogin();
     private boolean isFirstTime=true;
-    private String mUsername ;
-    private String mPassword ;
-    private boolean mIsLogined ;
 
     private boolean refreshColor=true;
     private int start=0;
@@ -73,10 +70,7 @@ public class bookBorrowedFragment extends Fragment {
 
     private void initData(){
 
-        SharedPreferences shareData = getActivity().getSharedPreferences("data", 0);
-        mUsername = shareData.getString("USERNAME", "");
-        mPassword = shareData.getString("PASSWORD", "");
-        mIsLogined = shareData.getBoolean("ISLOGINED", false);
+        mUserLogin=((NavigationActivity)getActivity()).getmLogin();
 
         if(mBookList==null) {
             mBookList = new ArrayList<>();
@@ -104,7 +98,7 @@ public class bookBorrowedFragment extends Fragment {
 
         if(isConnected){
             GetBooksAsy getBooksAsy=new GetBooksAsy();
-            getBooksAsy.execute(mUsername,mPassword);
+            getBooksAsy.execute(mUserLogin.getUsername(),mUserLogin.getPassword());
         }else{
             Toast.makeText(getActivity(), R.string.internet_not_connected
                     , Toast.LENGTH_SHORT).show();
@@ -163,7 +157,7 @@ public class bookBorrowedFragment extends Fragment {
                         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
                         if(isConnected){
                             RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
-                            renewBookAsy.execute(mUsername, mPassword);
+                            renewBookAsy.execute(mUserLogin.getUsername(), mUserLogin.getPassword());
                         } else{
                             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                         }
@@ -339,7 +333,7 @@ public class bookBorrowedFragment extends Fragment {
 
 
     private void RefreshView(){
-//        SortBookList();
+        SortBookList();
         mAdapter.notifyDataSetChanged();
         ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         String title=getResources().getString(R.string.nav_book_borrowed);

@@ -34,25 +34,18 @@ public class loginFragment extends Fragment {
     private Button loginButton;
     private Button cancelButton;
     private ProgressBar mProgressBar;
-    private int IsFiveTimes=1;
-    private boolean isAsyRunning;
-
-    private String mUsername ;
-    private String mPassword ;
-    private boolean mIsLogined ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_login_library, container, false);
-        initData();
 
         userNameEditText = (EditText) view.findViewById(R.id.id_username);
         passEditText = (EditText) view.findViewById(R.id.id_passward_library);
 
-        userNameEditText.setText(mUsername);
-        passEditText.setText(mPassword);
+        userNameEditText.setText(((NavigationActivity) getActivity()).getmUserLogin().getUsername());
+        passEditText.setText(((NavigationActivity) getActivity()).getmUserLogin().getPassword());
         userNameEditText.hasFocus();
 
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
@@ -84,59 +77,35 @@ public class loginFragment extends Fragment {
                     public void run() {
                         ((NavigationActivity) getActivity()).openDrawer();
                     }
-                }, 50); //收起软键盘需要一定时间
+                }, 500); //收起软键盘需要一定时间
             }
         });
 
         return view;
     }
 
-    public void initData(){
-
-        SharedPreferences shareData = getActivity().getSharedPreferences("data", 0);
-        mUsername = shareData.getString("USERNAME", "");
-        mPassword = shareData.getString("PASSWORD", "");
-        mIsLogined = shareData.getBoolean("ISLOGINED", false);
-        isAsyRunning=false;
-    }
-
-
     private void doLogin() {
-
-        if(!isAsyRunning) {
-            isAsyRunning=true;
-            loginButton.setEnabled(false);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    isAsyRunning = false;
-                    loginButton.setEnabled(true);
-                }
-            }, 150); //避免连击造成闪退
-
-            boolean isConnected = NetworkConnectivity.isConnected(getActivity());
-            if (isConnected) {
-                String username = userNameEditText.getText().toString();
-                String pass = passEditText.getText().toString();
-                if (IsFiveTimes == 5) {
-                    username = "201421003124";
-                    pass = "ziqian930209";
-                    IsFiveTimes = 1;
-                }
-
-                if (username.isEmpty() || pass.isEmpty()) {
-                    Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
-                    IsFiveTimes++;
-                } else {
-                        Toast.makeText(getActivity(), "check！", Toast.LENGTH_SHORT).show();
-                        AsyLoginLibrary myAsy = new AsyLoginLibrary();
-                        myAsy.execute(username, pass);
-                }
-
-            } else {
-                Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
-                        .show();
+        boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+        if (isConnected) {
+            int IsFiveTimes=1;
+            String username = userNameEditText.getText().toString();
+            String pass = passEditText.getText().toString();
+            if (IsFiveTimes == 5) {
+                username = "201421003124";
+                pass = "ziqian930209";
             }
+
+            if (username.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
+                IsFiveTimes++;
+            } else {
+                AsyLoginLibrary myAsy = new AsyLoginLibrary();
+                myAsy.execute(username, pass);
+            }
+
+        } else {
+            Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -172,6 +141,7 @@ public class loginFragment extends Fragment {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
+                    ((NavigationActivity)getActivity()).setmUserLogin(result);
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
                     SaveData(result.getUsername(),result.getPassword());
                 } else {
@@ -189,7 +159,7 @@ public class loginFragment extends Fragment {
             shareData.putString("USERNAME",username);
             shareData.putString("PASSWORD", pass);
             shareData.putBoolean("ISLOGINED", true);
-            shareData.apply();
+            shareData.commit();
         }
     }
 
