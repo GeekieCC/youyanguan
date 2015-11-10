@@ -12,7 +12,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResultBook extends BaseBook implements Serializable {
+public class ResultBook implements BaseBook, Serializable {
 	
 	private static final String DETAIL_BASE_URL = "http://202.38.232.10/opac/servlet/opac.go";
 

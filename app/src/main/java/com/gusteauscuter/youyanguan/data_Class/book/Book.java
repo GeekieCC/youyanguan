@@ -5,8 +5,10 @@ import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 
-public class Book extends BaseBook implements Serializable {
+public class Book implements BaseBook, Serializable {
 	// 更新书籍ItemBook代码
+
+    private static final String DETAIL_BASE_LINK = "http://202.38.232.10/opac";
 
 	private int rowNumber;
 	private String barcode;
@@ -39,7 +41,7 @@ public class Book extends BaseBook implements Serializable {
 		barcode = elements.get(1).text();		
 		String titleAndAuthor = elements.get(2).text();
 
-		detailLink = "http://202.38.232.10/opac" +
+		detailLink = DETAIL_BASE_LINK +
 				elements.get(2).select("a").first().attr("href").substring(2); //详情页链接
 		String find = "bookid=";
 		String s1 = detailLink.substring(detailLink.indexOf(find) + find.length());
@@ -162,5 +164,8 @@ public class Book extends BaseBook implements Serializable {
 	public String getRenewLink() {
 		return renewLink;
 	}
-	
+
+    public String getBookId() {
+        return bookId;
+    }
 }

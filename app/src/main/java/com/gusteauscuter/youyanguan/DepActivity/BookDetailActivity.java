@@ -1,6 +1,7 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,6 +29,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
 import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 
 import java.io.File;
@@ -58,6 +60,8 @@ public class BookDetailActivity extends AppCompatActivity {
 //    private boolean isCollected;
     private int position;
     private LinearLayout shareView;
+
+    private ACache mCache;
 
     //判断图书类型
     public static final int BOOK = 0;
@@ -110,7 +114,7 @@ public class BookDetailActivity extends AppCompatActivity {
         position = intent.getIntExtra("position", 0);
 
         //TODO
-
+        mCache = ACache.get(this);
 
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
         getBooksDetailAsy.execute(baseBook);
@@ -204,6 +208,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
     private class GetBooksDetailAsy extends AsyncTask<BaseBook, Void, BookDetail> {
+        private Bitmap bitmap;
         private boolean serverOK = true;
         @Override
         protected void onPreExecute(){
@@ -225,7 +230,16 @@ public class BookDetailActivity extends AppCompatActivity {
 ////                    bookDetail = new BookDetail();
 //                    bookDetail.getResultBookDetail((ResultBook) baseBook[0]);
 //                }
+
                 bookDetail.getBookDetail(baseBook[0]);
+                bitmap = mCache.getAsBitmap(bookDetail.getBookId());
+                if (bitmap == null) {
+                    bitmap = bookDetail.getPicture();
+                    if (bitmap != null) {
+                        mCache.put(bookDetail.getBookId(), bitmap);
+                    }
+                }
+
             } catch (SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
@@ -244,8 +258,8 @@ public class BookDetailActivity extends AppCompatActivity {
                 inflateTopRight(result);
                 inflateTable(result);
 
-                if (result.isDoubanExisting()) {
-                    bookPictureImageView.setImageBitmap(result.getPicture());
+                if (bitmap != null) {
+                    bookPictureImageView.setImageBitmap(bitmap);
                     inflateBottom(result);
 
                 } else {
