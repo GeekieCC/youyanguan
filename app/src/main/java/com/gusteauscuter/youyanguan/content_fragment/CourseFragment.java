@@ -1,29 +1,21 @@
 package com.gusteauscuter.youyanguan.content_fragment;
 
 
-import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.GridLayout;
-import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.DepActivity.AddCourseActivity;
 import com.gusteauscuter.youyanguan.DepActivity.CourseDetailActivity;
-import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.gusteauscuter.youyanguan.data_Class.course.CourseDatabase;

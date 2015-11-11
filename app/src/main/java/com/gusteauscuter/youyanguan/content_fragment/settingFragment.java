@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.DepActivity.AboutActivity;
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 
 import cn.bmob.v3.listener.BmobUpdateListener;
 import cn.bmob.v3.update.BmobUpdateAgent;
@@ -36,7 +37,11 @@ public class settingFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        boolean isConnected = NetworkConnectivity.isConnected(getActivity().getApplicationContext());
+                        if (!isConnected) {
+                            Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         BmobUpdateAgent.setUpdateListener(new BmobUpdateListener() {
                             @Override
                             public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {

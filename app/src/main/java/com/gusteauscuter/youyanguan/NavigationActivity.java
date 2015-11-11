@@ -186,7 +186,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         if (mUserLogin.IsLogined()){
             if (mBookBorrowedFragment ==null)
                 mBookBorrowedFragment =new bookBorrowedFragment();
-            mActionBar.setTitle(R.string.nav_book_borrowed);
+//            mActionBar.setTitle(R.string.nav_book_borrowed);
             FragmentManager mFragmentManager = getFragmentManager();
             FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
             mTransaction.replace(R.id.container_frame, mBookBorrowedFragment);
@@ -207,7 +207,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         if (mBookCollectedFragment ==null)
             mBookCollectedFragment =new bookCollectedFragment();
-        mActionBar.setTitle(R.string.nav_collect_book);
+//        mActionBar.setTitle(R.string.nav_collect_book);
         FragmentManager mFragmentManager = getFragmentManager();
         FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
         mTransaction.replace(R.id.container_frame, mBookCollectedFragment);

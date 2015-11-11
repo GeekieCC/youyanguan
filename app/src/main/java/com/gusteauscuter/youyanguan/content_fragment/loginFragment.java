@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.userLogin;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
+import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
@@ -29,12 +31,11 @@ public class loginFragment extends Fragment {
 
     private EditText userNameEditText;
     private EditText passEditText;
-
+    private Button loginButton;
+    private Button cancelButton;
     private ProgressBar mProgressBar;
-
     private int IsFiveTimes=1;
-
-
+    private boolean disableDoubleClick = true; // 防治连击登陆按钮造成的闪退
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,54 +53,63 @@ public class loginFragment extends Fragment {
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        Button loginButton = (Button) view.findViewById(R.id.button_login_library);
+        loginButton = (Button) view.findViewById(R.id.button_login_library);
         loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-
-                boolean isConnected = NetworkConnectivity.isConnected(getActivity());
-                if (isConnected) {
-                    try {
-
-                        String username = userNameEditText.getText().toString();
-                        String pass = passEditText.getText().toString();
-
-                        if (IsFiveTimes == 5) {
-                            username = "201421003124";
-                            pass = "ziqian930209";
-//                            IsThreeTimes=1;
+                SoftInputUtil.hideSoftInput(getActivity(), loginButton);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (disableDoubleClick) {
+                            doLogin();
                         }
-
-                        if (username.isEmpty() || pass.isEmpty()) {
-                            Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT)
-                                    .show();
-                            IsFiveTimes++;
-                        } else {
-                            AsyLoginLibrary myAsy = new AsyLoginLibrary();
-                            myAsy.execute(username, pass);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                } else {
-                    Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
-                            .show();
-                }
+                }, 500); //收起软键盘需要一定时间
 
             }
         });
 
-        Button cancelButton = (Button) view.findViewById(R.id.button_cancel);
+        cancelButton = (Button) view.findViewById(R.id.button_cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
-                ((NavigationActivity) getActivity()).openDrawer();
+                SoftInputUtil.hideSoftInput(getActivity(), cancelButton);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((NavigationActivity) getActivity()).openDrawer();
+                    }
+                }, 500); //收起软键盘需要一定时间
             }
         });
 
         return view;
+    }
+
+    private void doLogin() {
+        boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+        if (isConnected) {
+            String username = userNameEditText.getText().toString();
+            String pass = passEditText.getText().toString();
+            if (IsFiveTimes == 5) {
+                username = "201421003124";
+                pass = "ziqian930209";
+            }
+
+            if (username.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
+                IsFiveTimes++;
+            } else {
+                AsyLoginLibrary myAsy = new AsyLoginLibrary();
+                myAsy.execute(username, pass);
+            }
+
+        } else {
+            Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     private class AsyLoginLibrary extends AsyncTask<String, Void, userLogin> {
@@ -107,6 +117,7 @@ public class loginFragment extends Fragment {
         private boolean isLogined = false;
         @Override
         protected void onPreExecute() {
+            disableDoubleClick = false; // 在执行异步类之前，将此变量置否，防止双击多次执行doLogin方法，而实例化多个AsyLoginLibrary对象
             mProgressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
@@ -130,7 +141,6 @@ public class loginFragment extends Fragment {
 
         @Override
         protected void onPostExecute(userLogin result) {
-
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
@@ -138,10 +148,12 @@ public class loginFragment extends Fragment {
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
                     SaveData(result.getUsername(),result.getPassword());
                 } else {
+                    disableDoubleClick = true;
                     Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT)
                             .show();
                 }
             } else {
+                disableDoubleClick = true;
                 Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
             }
 

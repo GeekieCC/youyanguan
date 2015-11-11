@@ -2,8 +2,10 @@ package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,15 +26,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.lzyzsd.randomcolor.RandomColor;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.exception.WrongPageException;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +62,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private int page;
     
     //// TOD: 2015/10/9 从searchBookFragment传一个整形的常量给searchSN
-    private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
+    //private int searchSN = BookSearchEngine.NORTH_CAMPUS; // 搜索南北两校为0，搜索北校为1，搜索南校
 
     private TextView mTotalNumber;
     private int currentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
@@ -66,13 +70,14 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
     private SearchView mSearchView;
     private Spinner searchBookTypeSpinner;
-    private CheckBox mSouthCheckBox;
-    private CheckBox mNorthCheckBox;
+    private CheckBox borrowConditionCheckBox;
 
     private String bookToSearch;
     private String searchBookType="TITLE";
-    private boolean isAllowedToBorrow;
+    private boolean checkBorrowCondition = false; //是否检查可借状况
     private boolean reSearch=true;
+
+    private RandomColor randomColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,15 +138,15 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
         });
 
-        mSouthCheckBox=(CheckBox)findViewById(R.id.SouthCheckBox);
-        mNorthCheckBox=(CheckBox)findViewById(R.id.NorthCheckBox);
+        borrowConditionCheckBox = (CheckBox) findViewById(R.id.borrowConditionCheckBox);
         initSearchCondition();
-
+        mSearchBookList=new ArrayList<>();
         mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
 //        dealwithSearchView();
 //        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setIconified(false);
+        mSearchView.requestFocus();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
             @Override
             public boolean onQueryTextSubmit(String query) {
                 reSearch = true;
@@ -154,7 +159,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 return false;
             }
         });
-        mSearchBookList=new ArrayList<>();
+
         mAdapter = new SearchBookAdapter() ;
         mListView.setAdapter(mAdapter);
 
@@ -162,10 +167,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
             @Override
             public void onBottomReached() {
                 //Toast.makeText(getApplicationContext(),"到底了",Toast.LENGTH_SHORT).show();
-                reSearch=false;
+                reSearch = false;
                 searchBook();
             }
         });
+        randomColor = new RandomColor();
     }
 
     private void dealwithSearchView(){
@@ -186,39 +192,26 @@ public class SearchBookResultActivity extends AppCompatActivity {
         }
     }
 
-    public void initSearchCondition(){
-
+    private void initSearchCondition(){
         SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
-        Boolean SouthChecked = shareData.getBoolean("South", false);
-        Boolean NorthChecked = shareData.getBoolean("North", true);
-        mSouthCheckBox.setChecked(SouthChecked);
-        mNorthCheckBox.setChecked(NorthChecked);
-
+        boolean borrowCondition = shareData.getBoolean("borrowCondition", true);
+        borrowConditionCheckBox.setChecked(borrowCondition);
     }
 
-    public void saveSearchCondition() {
+    private void saveSearchCondition() {
         SharedPreferences.Editor shareData =getApplication().getSharedPreferences("data", 0).edit();
-        shareData.putBoolean("South",mSouthCheckBox.isChecked());
-        shareData.putBoolean("North", mNorthCheckBox.isChecked());
+        shareData.putBoolean("borrowCondition",borrowConditionCheckBox.isChecked());
         shareData.commit();
 
-        //searchBookType;
-        isAllowedToBorrow = true;
-        if (mNorthCheckBox.isChecked()&&mSouthCheckBox.isChecked()){
-            searchSN= BookSearchEngine.BOTH_CAMPUS;
-        }else if(mNorthCheckBox.isChecked()){
-            searchSN=BookSearchEngine.NORTH_CAMPUS;
-        }else if(mSouthCheckBox.isChecked()){
-            searchSN= BookSearchEngine.SOUTH_CAMPUS;
-        }else{
-            isAllowedToBorrow = false;
+        if (borrowConditionCheckBox.isChecked()){
+            checkBorrowCondition = true;
+        } else {
+            checkBorrowCondition = false;
         }
     }
 
     private void searchBook() {
-
         if(reSearch){
-
             ithSearch = FIRST_SEARCH;
             page = FIRST_PAGE;
             currentCount = 0;
@@ -227,14 +220,24 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
             bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
+            SoftInputUtil.hideSoftInput(this, mSearchView); //收起软键盘
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    searchBookHelper();
+                }
+            }, 500); //收起软键盘需要一定时间
+        } else {
+            searchBookHelper();
         }
+    }
 
+    private void searchBookHelper() {
         boolean isConnected = NetworkConnectivity.isConnected(getApplication());
         if(isConnected){
             mListView.setTriggeredOnce(true);
             SearchBookAsyTask searchBookAsyTask=new SearchBookAsyTask();
             searchBookAsyTask.execute(bookToSearch, searchBookType);
-
         }else{
             mListView.setTriggeredOnce(false);
             Toast.makeText(getApplication(),
@@ -282,7 +285,6 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 mHolder.mBookId=((TextView) convertView.findViewById(R.id.searchBook_BookId));
                 mHolder.mAuthor=((TextView) convertView.findViewById(R.id.searchBook_Author));
                 mHolder.mButton = (Button) convertView.findViewById(R.id.collect_book);
-
                 convertView.setTag(mHolder);
 
             } else{
@@ -290,15 +292,17 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
 
 
-            if (isAllowedToBorrow) {
-                boolean isBorrowable = mResultBook.isBorrowable();
-                if (isBorrowable) {
-                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
-                } else {
-                    mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
-                }
-            } else {
+            int borrowCondition = mResultBook.getBorrowCondition();
+            if (borrowCondition == ResultBook.UNKNOWN) { // 不知道可借信息
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
+            } else if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
+            } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
+            } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
+            } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
+                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
             }
 
             // TO 设置Book对应属性
@@ -313,11 +317,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mHolder.mAuthor.setText(author);
             mHolder.mPublisher.setText(publisher);
             mHolder.mPubdate.setText(pubdate);
+            convertView.setBackgroundColor(mResultBook.getColor());
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    int color = randomColor.randomColor(Color.parseColor("#FFC0CB"), RandomColor.SaturationType.RANDOM, RandomColor.Luminosity.LIGHT);
+                    mResultBook.setColor(color);
                     boolean isConnected = NetworkConnectivity.isConnected(getApplicationContext());
                     if (isConnected) {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
@@ -373,6 +379,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private class SearchBookAsyTask extends AsyncTask<String, Void, List<ResultBook>> {
 
         private boolean serverOK = true; //处理服务器异常
+        private boolean pageOK = true; //处理缺页异常
 
         @Override
         protected void onPreExecute(){
@@ -392,10 +399,10 @@ public class SearchBookResultActivity extends AppCompatActivity {
                         numOfPages = engine.getNumOfPages();
                     }
 
-                    if (isAllowedToBorrow) {
+                    if (checkBorrowCondition) {
                         int numOfSearchesOnThisPage = engine.getNumOfSearchesOnThisPage(page, NUM_OF_BOOKS_PER_SEARCH);
                         if (page <= numOfPages) {
-                            resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch, searchSN);
+                            resultBookLists = engine.getBooksOnPageWithBorrowInfo(page, NUM_OF_BOOKS_PER_SEARCH, ithSearch);
                             if (resultBookLists != null) {
                                 if (ithSearch >= numOfSearchesOnThisPage) {
                                     ithSearch = FIRST_SEARCH;
@@ -426,6 +433,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
                 } catch (SocketTimeoutException e) {
                     serverOK = false;
+                } catch (WrongPageException e) {
+                    pageOK = false;
                 } catch (Exception e) {
                     //serverOK = false;
                     e.printStackTrace();
@@ -439,22 +448,29 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.INVISIBLE);
 
             if (serverOK) {
-                mTotalNumber.setText(String.valueOf(numOfBooks));
-                if (numOfBooks == 0) {
-                    Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
-                }else {
-                    if (result != null) {
-                        mSearchBookList.addAll(result);
-                        mAdapter.notifyDataSetChanged();
-                        mListView.setTriggeredOnce(false);
-                        currentCount = mListView.getCount();
-                    } else if (currentCount >= numOfBooks) {
-                        Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mListView.setTriggeredOnce(false);
-                        Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
+                if (pageOK) {
+                    mTotalNumber.setText(String.valueOf(numOfBooks));
+                    if (numOfBooks == 0) {
+                        Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
+                    }else {
+                        if (result != null) {
+                            mSearchBookList.addAll(result);
+                            mAdapter.notifyDataSetChanged();
+                            mListView.setTriggeredOnce(false);
+                            currentCount = mListView.getCount();
+                        } else if (currentCount >= numOfBooks) {
+                            Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplication(), "未知异常", Toast.LENGTH_SHORT).show();
+                        }
                     }
+                } else {
+                    page++;
+                    ithSearch = FIRST_SEARCH;
+                    mListView.setTriggeredOnce(false);
+                    Toast.makeText(getApplication(), "缺页异常", Toast.LENGTH_SHORT).show();
                 }
+
             } else {
                 mListView.setTriggeredOnce(false);
                 Toast.makeText(getApplication(), R.string.server_failed, Toast.LENGTH_SHORT).show();
@@ -536,9 +552,9 @@ public class SearchBookResultActivity extends AppCompatActivity {
             boolean operation = data.getBooleanExtra("isCollected", false);
             ResultBook resultBook = (ResultBook) mAdapter.getItem(position);
             resultBook.setIsCollected(operation);
-            mAdapter.notifyDataSetChanged();
         }
-
+        mAdapter.notifyDataSetChanged();
+        mListView.requestFocus();
     }
 
     @Override

@@ -76,11 +76,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         values.put(FeedEntry.COLUMN_NAME_PUBDATE, resultBook.getPubdate());
         values.put(FeedEntry.COLUMN_NAME_SEARCHNUM, resultBook.getSearchNum());
         values.put(FeedEntry.COLUMN_NAME_BOOKID, resultBook.getBookId());
-        if (resultBook.isBorrowable()) {
-            values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, 1);
-        } else {
-            values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, 0);
-        }
+        values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, resultBook.getBorrowCondition());
         // Insert the new row, returning the primary key value of the new row
         //the row ID of the newly inserted row, or -1 if an error occurred
         long newRowId = db.insert(FeedEntry.TABLE_NAME, null, values);
@@ -117,17 +113,12 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
                 resultBook.setPubdate(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_PUBDATE)));
                 resultBook.setSearchNum(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_SEARCHNUM)));
                 resultBook.setBookId(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BOOKID)));
-                int borrowCondition = cursor.getInt(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BORROW_CONDITION));
-                if (borrowCondition == 1) {
-                    resultBook.setIsBorrowable(true);
-                } else {
-                    resultBook.setIsBorrowable(false);
-                }
-
+                resultBook.setBorrowCondition(cursor.getInt(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BORROW_CONDITION)));
                 resultBook.setIsCollected(true);
                 bookLists.add(resultBook);
             } while (cursor.moveToNext());
         }
+        db.close();
         // return contact list
         return bookLists;
     }
@@ -138,7 +129,9 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
      */
     public int getBookCollectionsCount() {
         SQLiteDatabase db = this.getWritableDatabase();
-        return getBookCollectionsCountHelper(db);
+        int result = getBookCollectionsCountHelper(db);
+        db.close();
+        return result;
     }
 
     private int getBookCollectionsCountHelper(SQLiteDatabase db) {
@@ -170,7 +163,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         // Issue SQL statement.
         //the number of rows affected if a whereClause is passed in, 0 otherwise.
         int num = db.delete(FeedEntry.TABLE_NAME, selection, selectionArgs);
-
+        db.close();
         return num;
     }
 
@@ -182,7 +175,9 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int numOfBooks = getBookCollectionsCountHelper(db);
         if (numOfBooks == 0) return -1; //当前收藏图书为零，无需清空
-        return db.delete(FeedEntry.TABLE_NAME, "1", null);
+        int result = db.delete(FeedEntry.TABLE_NAME, "1", null);
+        db.close();
+        return result;
     }
 
 //    /**
