@@ -28,6 +28,8 @@ public class Book implements BaseBook, Serializable {
 	private String detailLink;
     private String bookId;
 
+	private byte[] picture = null;
+
 	public String toString() {
 		//return name + "(" + author + ")" + "(" + borrowDay + ")" + "(" + returnDay + ")";
 		return rowNumber + "||" + barcode + "||" + title + "||" + author + "||"  + volume + "||"  + libraryName + "||"
@@ -168,4 +170,12 @@ public class Book implements BaseBook, Serializable {
     public String getBookId() {
         return bookId;
     }
+
+	public byte[] getPicture() {
+		return picture;
+	}
+
+	public void setPicture(byte[] picture) {
+		this.picture = picture;
+	}
 }

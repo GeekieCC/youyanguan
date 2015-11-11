@@ -492,6 +492,13 @@ public class ACache {
         return Utils.Bytes2Bimap(getAsBinary(key));
     }
 
+    public byte[] getAsBitmap2Bytes(String key) {
+        if (getAsBinary(key) == null) {
+            return null;
+        }
+        return getAsBinary(key);
+    }
+
     // =======================================
     // ============= drawable 数据 读写 =============
     // =======================================
@@ -823,7 +830,7 @@ public class ACache {
                 return null;
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            bm.compress(Bitmap.CompressFormat.PNG, 100, baos);//采用PNG格式无损压缩
             return baos.toByteArray();
         }
 
