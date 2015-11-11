@@ -271,14 +271,14 @@ public class SearchBookResultActivity extends AppCompatActivity {
         public View getView(final int position, View convertView, final ViewGroup container) {
 
             final ViewHolder mHolder;
-            final ResultBook mResultBook = mSearchBookList.get(position);
-
+            final ResultBook mBook = mSearchBookList.get(position);
             if (convertView == null) {
 
                 convertView=mInflater.inflate(R.layout.card_search_book, container, false);
 
                 mHolder =new ViewHolder();
-                mHolder.mBookPicture=(ImageView) convertView.findViewById(R.id.searchBookPicture);
+                mHolder.mSearchBookStateNorth =(ImageView) convertView.findViewById(R.id.searchBookStateNorth);
+                mHolder.mSearchBookStateSouth=(ImageView) convertView.findViewById(R.id.searchBookStateSouth);
                 mHolder.mTitle=((TextView) convertView.findViewById(R.id.searchBook_Title));
                 mHolder.mPublisher=((TextView) convertView.findViewById(R.id.searchBook_Publisher));
                 mHolder.mPubdate=((TextView) convertView.findViewById(R.id.searchBook_Pubdate));
@@ -292,43 +292,48 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
 
 
-            int borrowCondition = mResultBook.getBorrowCondition();
-            if (borrowCondition == ResultBook.UNKNOWN) { // 不知道可借信息
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
-            } else if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
+            int borrowCondition = mBook.getBorrowCondition();
+            if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_blue);
             } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_white);
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_white);
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_blue);
+            } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_black);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_black);
             }
 
             // TO 设置Book对应属性
-            String title="【" + (position + 1) + "】"+mResultBook.getTitle();
-            String publisher="出版社："+mResultBook.getPublisher();
-            String pubdate="出版日期："+mResultBook.getPubdate();
-            String bookId="索书号："+mResultBook.getSearchNum();
-            String author="作者："+mResultBook.getAuthor();
+            String title="【" + (position + 1) + "】"+mBook.getTitle();
+            String publisher="出版社："+mBook.getPublisher();
+            String pubdate="出版日期："+mBook.getPubdate();
+            String bookId="索书号："+mBook.getSearchNum();
+            String author="作者："+mBook.getAuthor();
 
             mHolder.mTitle.setText(title);
             mHolder.mBookId.setText(bookId);
             mHolder.mAuthor.setText(author);
             mHolder.mPublisher.setText(publisher);
             mHolder.mPubdate.setText(pubdate);
-            convertView.setBackgroundColor(mResultBook.getColor());
+            convertView.setBackgroundColor(mBook.getColor());
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int color = randomColor.randomColor(Color.parseColor("#FFC0CB"), RandomColor.SaturationType.RANDOM, RandomColor.Luminosity.LIGHT);
-                    mResultBook.setColor(color);
+                    mBook.setColor(color);
                     boolean isConnected = NetworkConnectivity.isConnected(getApplicationContext());
                     if (isConnected) {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("bookToShowDetail", mResultBook);
+                        bundle.putSerializable("bookToShowDetail", mBook);
                         bundle.putInt("position", position);
                         intent.putExtras(bundle);
                         startActivityForResult(intent, 0);
@@ -341,7 +346,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
             });
 
             // 对搜索出来的结果显示时，区别已收藏和未收藏图书
-            if (!mResultBook.isCollected()) {
+            if (!mBook.isCollected()) {
                 mHolder.mButton.setText("点击收藏");
                 mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
                 mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.teal));
@@ -357,7 +362,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
                     //Toast.makeText(getApplicationContext(), "收藏", Toast.LENGTH_SHORT).show();
 
                     CrudTask crudTask = new CrudTask();
-                    crudTask.execute(mResultBook);
+                    crudTask.execute(mBook);
 
                 }
             });
@@ -366,7 +371,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
         }
 
         public final class ViewHolder{
-            public ImageView mBookPicture;
+            public ImageView mSearchBookStateNorth;
+            public ImageView mSearchBookStateSouth;
             public TextView mTitle;
             public TextView mPublisher;
             public TextView mPubdate;
