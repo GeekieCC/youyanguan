@@ -180,7 +180,6 @@ public class bookBorrowedFragment extends Fragment {
                         bundle.putSerializable("bookToShowDetail", mBook);
                         bundle.putInt("position", position);
                         intent.putExtras(bundle);
-                        //// TODO: 2015/11/11
                         int requestCode = (mBook.getPicture() != null) ? HAS_PICTURE : HAS_NO_PICTURE;
                         startActivityForResult(intent, requestCode);
                     }else{
@@ -267,6 +266,7 @@ public class bookBorrowedFragment extends Fragment {
             }
             return bookLists;
         }
+
 
         //为图书加载图片
         private void inflatePicture(List<Book> bookLists) {
@@ -355,13 +355,12 @@ public class bookBorrowedFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == HAS_NO_PICTURE && resultCode == 1) {
+        if (requestCode == HAS_NO_PICTURE && resultCode == BookDetailActivity.PICTURE_RESULT_CODE) {
             byte[] picture = data.getByteArrayExtra("picture");
             int position = data.getIntExtra("position", 0);
             mBookList.get(position).setPicture(picture);
             RefreshView();
         }
-
     }
 
     private void RefreshView(){

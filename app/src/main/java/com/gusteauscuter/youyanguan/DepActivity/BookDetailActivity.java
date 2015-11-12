@@ -23,11 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.book.BaseBook;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
 import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
+import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
@@ -39,8 +39,11 @@ import java.util.List;
 
 public class BookDetailActivity extends AppCompatActivity {
 
+    public static final int PICTURE_RESULT_CODE = 1;
+    public static final int COLLECT_RESULT_CODE = 2;
+
     private ProgressBar  mProgressBar;
-    private BaseBook baseBook;
+    private SimpleBaseBook simpleBaseBook;
     //控件
     private ImageView bookPictureImageView;
     private TextView titleTextView;
@@ -63,10 +66,11 @@ public class BookDetailActivity extends AppCompatActivity {
     private LinearLayout shareView;
 
     private ACache mCache;
-
+    private SimpleBaseBook bookToCollect;
+    private boolean isBookCollected = false;
     //判断图书类型
-    public static final int BOOK = 0;
-    public static final int RESULT_BOOK = 1;
+//    public static final int BOOK = 0;
+//    public static final int RESULT_BOOK = 1;
     //private int baseBookType;
 
     @Override
@@ -111,28 +115,32 @@ public class BookDetailActivity extends AppCompatActivity {
 
     private  void initData(){
         Intent intent = this.getIntent();
-        baseBook = (BaseBook) intent.getSerializableExtra("bookToShowDetail");
+        simpleBaseBook = (SimpleBaseBook) intent.getSerializableExtra("bookToShowDetail");
         position = intent.getIntExtra("position", 0);
 
         //TODO
         mCache = ACache.get(this);
 
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
-        getBooksDetailAsy.execute(baseBook);
+        getBooksDetailAsy.execute(simpleBaseBook);
     }
 
     private void collectBook(){
         CrudTask crudTask = new CrudTask();
-        if (baseBook instanceof Book) {
-
-        }
-        if (baseBook instanceof ResultBook) {
-            crudTask.execute((ResultBook)baseBook);
+        if (simpleBaseBook instanceof Book) {
+            if (bookToCollect != null) {
+                bookToCollect.setIsCollected(isBookCollected);
+                crudTask.execute(bookToCollect);
+            }
+        } else if (simpleBaseBook instanceof ResultBook) {
+            crudTask.execute((ResultBook) simpleBaseBook);
+        } else {
+            crudTask.execute(simpleBaseBook);
         }
     }
 
     //TODO 收藏图书的增删改查异步类
-    private class CrudTask extends AsyncTask<ResultBook, Void, Boolean> {
+    private class CrudTask extends AsyncTask<SimpleBaseBook, Void, Boolean> {
         private boolean operation;// 操作为添加时，为true;操作为删除时，为false
         @Override
         protected void onPreExecute() {
@@ -141,20 +149,20 @@ public class BookDetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(ResultBook... resultBooks) {
+        protected Boolean doInBackground(SimpleBaseBook... simpleBaseBooks) {
             //操作成功与否
             boolean result = false;
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-            if (!resultBooks[0].isCollected()) {
+            if (!simpleBaseBooks[0].isCollected()) {
                 operation = true;
-                if (mDbHelper.addResultBook(resultBooks[0]) != -1) {
-                    resultBooks[0].setIsCollected(true);
+                if (mDbHelper.addBook(simpleBaseBooks[0]) != -1) {
+                    simpleBaseBooks[0].setIsCollected(true);
                     result = true;
                 }
             } else {
                 operation = false;
-                if (mDbHelper.deleteResultBook(resultBooks[0]) != 0) {
-                    resultBooks[0].setIsCollected(false);
+                if (mDbHelper.deleteBook(simpleBaseBooks[0]) != 0) {
+                    simpleBaseBooks[0].setIsCollected(false);
                     result = true;
                 }
             }
@@ -170,15 +178,21 @@ public class BookDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra("position", position);
                 intent.putExtra("isCollected", operation);
-                BookDetailActivity.this.setResult(0, intent);
+                BookDetailActivity.this.setResult(COLLECT_RESULT_CODE, intent);
 
                 if (operation) {
+                    isBookCollected = true;
                     menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
                     Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
                 } else {
-                    menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
+                    isBookCollected = false;
                     Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
-                    finish();
+                    //除了在借的书的详情里，其他的点完取消收藏，就finish掉
+                    if (simpleBaseBook instanceof Book) {
+                        menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
+                    } else {
+                        finish();
+                    }
                 }
 
             } else {
@@ -208,7 +222,8 @@ public class BookDetailActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(intent, getTitle()));
 
     }
-    private class GetBooksDetailAsy extends AsyncTask<BaseBook, Void, BookDetail> {
+    //// TODO: 2015/11/13 将第一个参数改为BaseBok
+    private class GetBooksDetailAsy extends AsyncTask<SimpleBaseBook, Void, BookDetail> {
         private Bitmap bitmap;
         private boolean serverOK = true;
         @Override
@@ -220,19 +235,11 @@ public class BookDetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected BookDetail doInBackground(BaseBook... baseBook) {
+        protected BookDetail doInBackground(SimpleBaseBook... simpleBaseBooks) {
             BookDetail bookDetail = new BookDetail();
             try {
-//                if (baseBookType == BOOK) {
-////                    bookDetail = new BookDetail();
-//                    bookDetail.getBookDetail((Book) baseBook[0]);
-//
-//                } else if (baseBookType == RESULT_BOOK) {
-////                    bookDetail = new BookDetail();
-//                    bookDetail.getResultBookDetail((ResultBook) baseBook[0]);
-//                }
 
-                bookDetail.getBookDetail(baseBook[0]);
+                bookDetail.getBookDetail(simpleBaseBooks[0]);
                 bitmap = mCache.getAsBitmap(bookDetail.getBookId());
                 if (bitmap == null) {
                     bitmap = bookDetail.getPicture();
@@ -259,6 +266,19 @@ public class BookDetailActivity extends AppCompatActivity {
                 inflateTopRight(result);
                 inflateTable(result);
 
+                //为将bookToCollect插入数据库封装数据
+                if (simpleBaseBook instanceof Book) {
+                    bookToCollect = new Book();
+                    bookToCollect.setAuthor(result.getAuthor());
+                    bookToCollect.setBookId(result.getBookId());
+                    bookToCollect.setIsbn(result.getIsbn());
+                    bookToCollect.setPubdate(result.getPubdate());
+                    bookToCollect.setPublisher(result.getPublisher());
+                    bookToCollect.setTitle(result.getTitle());
+                    bookToCollect.setSearchNum(result.getSearchNum());
+                    bookToCollect.setBorrowCondition(Book.BORROWED_ALREADY);
+                }
+
                 if (bitmap != null) {
                     bookPictureImageView.setImageBitmap(bitmap);
                     inflateBottom(result);
@@ -267,7 +287,7 @@ public class BookDetailActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.putExtra("picture", BitmapUtil.getBytes(bitmap));
                     intent.putExtra("position", position);
-                    BookDetailActivity.this.setResult(1, intent);
+                    BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
 
                 } else {
                     bookPictureImageView.setImageResource(R.drawable.book3); //当网络上没有图片时，自动加载这个图片
@@ -409,29 +429,19 @@ public class BookDetailActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_book_detail, menu);
         menuCollection = menu.findItem(R.id.action_collection);
 
-//        if (baseBookType == BOOK) {
-//            menuCollection.setVisible(false);
-//        } else if (baseBookType == RESULT_BOOK) {
-//            if(isCollected){
-//                menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
-//            }else {
-//                menuCollection.setTitle("收藏").setIcon(R.drawable.ic_action_collect);
-//            }
-//        }
-
-        if (baseBook instanceof ResultBook) {
-            boolean isCollected = ((ResultBook) baseBook).isCollected();
-            if(isCollected){
-                menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
+        if (simpleBaseBook instanceof Book) {
+            CheckBookCollectionTask checkBookCollectionTask = new CheckBookCollectionTask();
+            checkBookCollectionTask.execute((Book) simpleBaseBook);
+        } else {
+            boolean isCollected = simpleBaseBook.isCollected();
+            if (isCollected){
+                menuCollection.setIcon(R.drawable.ic_action_collect_cancle);
             }else {
-                menuCollection.setTitle("收藏").setIcon(R.drawable.ic_action_collect);
+                menuCollection.setIcon(R.drawable.ic_action_collect);
             }
-        } else if (baseBook instanceof Book) {
-            menuCollection.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -450,4 +460,26 @@ public class BookDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // 加载actionbar上的收藏图标的异步类
+    private class CheckBookCollectionTask extends AsyncTask<Book, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Book... books) {
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+            return mDbHelper.isCollected(books[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if(aBoolean) {
+                isBookCollected = true;
+                menuCollection.setIcon(R.drawable.ic_action_collect_cancle);
+            } else {
+                isBookCollected = false;
+                menuCollection.setIcon(R.drawable.ic_action_collect);
+            }
+
+            super.onPostExecute(aBoolean);
+        }
+
+    }
 }

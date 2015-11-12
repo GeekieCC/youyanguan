@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
+import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 
@@ -34,7 +35,7 @@ import java.util.List;
 public class bookCollectedFragment extends Fragment{
 
 
-    private List<ResultBook> mBookList=new ArrayList<>();
+    private List<SimpleBaseBook> mBookList=new ArrayList<>();
     private GridView mListView;
     private ProgressBar mProgressBar;
 
@@ -102,7 +103,7 @@ public class bookCollectedFragment extends Fragment{
         public View getView(final int position, View convertView, final ViewGroup container) {
 
             final ViewHolder mHolder;
-            final ResultBook mBook = mBookList.get(position);
+            final SimpleBaseBook mBook = mBookList.get(position);
 
             if (convertView == null) {
 
@@ -125,9 +126,9 @@ public class bookCollectedFragment extends Fragment{
 
 
             int borrowCondition = mBook.getBorrowCondition();
-            if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
+            if (borrowCondition == ResultBook.BOTH_YES) { //两校区都可借
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
-            } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
+            } else if (borrowCondition == ResultBook.BOTH_NOT) { //两校区都不可借
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
                 mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
@@ -159,6 +160,7 @@ public class bookCollectedFragment extends Fragment{
                     if (isConnected) {
                         Intent intent = new Intent(getActivity(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
+//                        ResultBook resultBook = (ResultBook) mBook;
                         bundle.putSerializable("bookToShowDetail", mBook);
                         bundle.putInt("position", position);
                         intent.putExtras(bundle);
@@ -208,7 +210,7 @@ public class bookCollectedFragment extends Fragment{
     }
 
     //TODO 收藏图书的增删改查异步类
-    private class CrudTask extends AsyncTask<ResultBook, Void, Boolean> {
+    private class CrudTask extends AsyncTask<SimpleBaseBook, Void, Boolean> {
         private boolean operation;// 操作为添加时，为true;操作为删除时，为false
         @Override
         protected void onPreExecute() {
@@ -217,20 +219,20 @@ public class bookCollectedFragment extends Fragment{
         }
 
         @Override
-        protected Boolean doInBackground(ResultBook... resultBooks) {
+        protected Boolean doInBackground(SimpleBaseBook... simpleBaseBooks) {
             //操作成功与否
             boolean result = false;
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getActivity());
-            if (!resultBooks[0].isCollected()) {
+            if (!simpleBaseBooks[0].isCollected()) {
                 operation = true;
-                if (mDbHelper.addResultBook(resultBooks[0]) != -1) {
-                    resultBooks[0].setIsCollected(true);
+                if (mDbHelper.addBook(simpleBaseBooks[0]) != -1) {
+                    simpleBaseBooks[0].setIsCollected(true);
                     result = true;
                 }
             } else {
                 operation = false;
-                if (mDbHelper.deleteResultBook(resultBooks[0]) != 0) {
-                    resultBooks[0].setIsCollected(false);
+                if (mDbHelper.deleteBook(simpleBaseBooks[0]) != 0) {
+                    simpleBaseBooks[0].setIsCollected(false);
                     result = true;
                 }
             }
@@ -267,23 +269,21 @@ public class bookCollectedFragment extends Fragment{
     }
 
 
-    private class GetBookCollectionTask extends AsyncTask<Void, Void, List<ResultBook>> {
+    private class GetBookCollectionTask extends AsyncTask<Void, Void, List<SimpleBaseBook>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected List<ResultBook> doInBackground(Void... params) {
-            List<ResultBook> resultBookList = null;
+        protected List<SimpleBaseBook> doInBackground(Void... params) {
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getActivity());
-            resultBookList = mDbHelper.getAllBookCollections();
-            return resultBookList;
+            return mDbHelper.getAllBookCollections();
         }
 
         @Override
-        protected void onPostExecute(List<ResultBook> resultBooks) {
-            mBookList=resultBooks;
+        protected void onPostExecute(List<SimpleBaseBook> resultBooks) {
+            mBookList = resultBooks;
             refreshView();
             super.onPostExecute(resultBooks);
         }
@@ -304,7 +304,6 @@ public class bookCollectedFragment extends Fragment{
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         refreshBook();
     }
 
