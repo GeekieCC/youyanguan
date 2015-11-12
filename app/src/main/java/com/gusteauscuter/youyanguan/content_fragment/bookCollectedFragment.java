@@ -109,7 +109,8 @@ public class bookCollectedFragment extends Fragment{
                 convertView=mInflater.inflate(R.layout.card_search_book, container, false);
 
                 mHolder =new ViewHolder();
-                mHolder.mBookPicture=(ImageView) convertView.findViewById(R.id.searchBookPicture);
+                mHolder.mSearchBookStateNorth =(ImageView) convertView.findViewById(R.id.searchBookStateNorth);
+                mHolder.mSearchBookStateSouth=(ImageView) convertView.findViewById(R.id.searchBookStateSouth);
                 mHolder.mTitle=((TextView) convertView.findViewById(R.id.searchBook_Title));
                 mHolder.mPublisher=((TextView) convertView.findViewById(R.id.searchBook_Publisher));
                 mHolder.mPubdate=((TextView) convertView.findViewById(R.id.searchBook_Pubdate));
@@ -126,15 +127,20 @@ public class bookCollectedFragment extends Fragment{
 
             int borrowCondition = mBook.getBorrowCondition();
             if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_blue);
             } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_white);
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_black);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_white);
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_blue);
             } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
-                mHolder.mBookPicture.setImageResource(R.drawable.book_sample_pencil);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_black);
+                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_black);
             }
 
 
@@ -197,7 +203,8 @@ public class bookCollectedFragment extends Fragment{
         }
 
         public final class ViewHolder{
-            public ImageView mBookPicture;
+            public ImageView mSearchBookStateNorth;
+            public ImageView mSearchBookStateSouth;
             public TextView mTitle;
             public TextView mPublisher;
             public TextView mPubdate;

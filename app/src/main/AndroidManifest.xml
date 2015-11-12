@@ -39,32 +39,32 @@
         <activity
             android:name=".DepActivity.AboutActivity"
             android:label="@string/title_activity_about"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppThemeDep" >
         </activity>
         <activity
             android:name=".DepActivity.UserInforActivity"
             android:label="@string/title_activity_userinfor"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppThemeDep" >
         </activity>
         <activity
             android:name=".DepActivity.BookDetailActivity"
             android:label="@string/title_activity_book_detail"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppThemeDep" >
         </activity>
         <activity
             android:name=".DepActivity.SearchBookResultActivity"
             android:label="@string/title_activity_search_result"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppThemeDep" >
         </activity>
         <activity
             android:name=".DepActivity.AddCourseActivity"
             android:label="@string/title_activity_add_course"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppThemeDep" >
         </activity>
         <activity
             android:name=".DepActivity.CourseDetailActivity"
             android:label="@string/title_activity_course_detail"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppThemeDep" >
         </activity>
         <activity
             android:name="cn.bmob.v3.update.UpdateDialogActivity"

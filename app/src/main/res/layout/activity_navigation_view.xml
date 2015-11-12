@@ -18,12 +18,19 @@
             android:layout_height="26dp"
             android:background="@android:color/transparent"/>
 -->
-        <android.support.v7.widget.Toolbar
-            android:title="@string/app_name"
-            android:id="@+id/id_toolbar"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/ActionbarTheme" />
+            android:layout_height="wrap_content"
+            android:paddingTop="26dp"
+            android:background="@color/blue">
+            <android.support.v7.widget.Toolbar
+                android:title="@string/app_name"
+                android:id="@+id/id_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:theme="@style/ActionbarTheme" />
+        </FrameLayout>
+
 
         <FrameLayout
             android:id="@+id/container_frame"
@@ -45,7 +52,7 @@
         app:menu="@menu/menu_drawer"
         app:itemIconTint="@color/white"
         android:tag="LEFT"
-        android:background="#00000000"/>
+        android:background="@color/gray_dark"/>
     <!-- 控制背景透明，只能放在此处，放在style中无效-->
     <!--
         <android.support.design.widget.NavigationView
