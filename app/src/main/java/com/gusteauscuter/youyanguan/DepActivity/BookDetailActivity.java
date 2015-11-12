@@ -336,7 +336,7 @@ public class BookDetailActivity extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
                 TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
-                TextView detailLocation = createRowTextView(OptimLocation(locationInfo.getDetailLocation()),tableColor);
+                TextView detailLocation = createRowTextView(locationInfo.getDetailLocation(),tableColor);
                 TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
 
                 tr.addView(location);
@@ -350,23 +350,6 @@ public class BookDetailActivity extends AppCompatActivity {
                 TextView emptyInfor = createRowTextView("本书已全部暂停外借",tableColor);
                 locationTable.addView(emptyInfor);
             }
-        }
-
-        // 优化图书馆藏位置的显示
-        private String OptimLocation(String location){
-            String op1="(";
-            String op2="（";
-            String add="\n";
-            if(location.contains(op1)){
-                int index=location.indexOf(op1);
-                int end=location.length()-1;
-                return location.substring(0,index-1)+add+location.substring(index,end);
-            }else if(location.contains(op2)){
-                int index=location.indexOf(op2);
-                int end=location.length();
-                return location.substring(0,index)+add+location.substring(index,end);
-            }else
-                return location;
         }
 
 
