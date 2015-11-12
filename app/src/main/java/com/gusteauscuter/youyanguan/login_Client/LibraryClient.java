@@ -2,6 +2,7 @@ package com.gusteauscuter.youyanguan.login_Client;
 
 
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
+import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;
@@ -23,9 +24,6 @@ import java.util.List;
 
 public class LibraryClient {
 
-	public static final int CONNECT_TIME_OUT = 6000;
-	public static final int READ_TIME_OUT = 6000;
-
 	private static final String MAIN_PAGE_URL = "http://202.38.232.10/opac/servlet/opac.go?cmdACT=mylibrary.login";
 	private static final String LOAN_PAGE_URL = "http://202.38.232.10/opac/servlet/opac.go?cmdACT=loan.list";
 
@@ -44,8 +42,8 @@ public class LibraryClient {
 		PostMethod postMethod = new PostMethod(MAIN_PAGE_URL);
 		postMethod.setRequestBody(nameValuePairs);
 		httpClient = new HttpClient();
-		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECT_TIME_OUT);
-		httpClient.getHttpConnectionManager().getParams().setSoTimeout(READ_TIME_OUT);
+		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(NetworkConnectivity.CONNECT_TIME_OUT);
+		httpClient.getHttpConnectionManager().getParams().setSoTimeout(NetworkConnectivity.READ_TIME_OUT);
 		try {
 			httpClient.executeMethod(postMethod);
 		} catch (ConnectTimeoutException e) {

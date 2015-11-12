@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
-
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,8 @@ import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.userLogin;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
+import com.gusteauscuter.youyanguan.util.ACache;
+import com.gusteauscuter.youyanguan.util.BitmapUtil;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
@@ -40,6 +41,8 @@ import java.util.Random;
 
 public class bookBorrowedFragment extends Fragment {
 
+    private static final int HAS_PICTURE = 5;
+    private static final int HAS_NO_PICTURE = 10;
 
     private GridView mListView;
     private TextView mEmptyInformation;
@@ -53,6 +56,7 @@ public class bookBorrowedFragment extends Fragment {
 
     private boolean refreshColor=true;
     private int start=0;
+    private ACache mCache;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -143,9 +147,7 @@ public class bookBorrowedFragment extends Fragment {
                 mHolder.mBorrowDay=((TextView) convertView.findViewById(R.id.text_BorrowDay));
                 mHolder.mReturnDay=(TextView) convertView.findViewById(R.id.text_ReturnDay);
                 mHolder.mBorrowedTime=((TextView) convertView.findViewById(R.id.text_BorrowedTime));
-
                 convertView.setTag(mHolder);
-
             } else{
                 mHolder=(ViewHolder) convertView.getTag();
             }
@@ -176,8 +178,11 @@ public class bookBorrowedFragment extends Fragment {
                         Intent intent =new Intent(getActivity(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("bookToShowDetail", mBook);
+                        bundle.putInt("position", position);
                         intent.putExtras(bundle);
-                        startActivity(intent);
+                        //// TODO: 2015/11/11
+                        int requestCode = (mBook.getPicture() != null) ? HAS_PICTURE : HAS_NO_PICTURE;
+                        startActivityForResult(intent, requestCode);
                     }else{
                         Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                     }
@@ -215,9 +220,13 @@ public class bookBorrowedFragment extends Fragment {
             }
             int no =(start+position)%book_color.length;
             mHolder.mBookPicture.setBackgroundColor(book_color[no]);
+            //设置图片
+            if (mBook.getPicture() != null) {
+                mHolder.mBookPicture.setImageBitmap(BitmapUtil.getBitmap(mBook.getPicture()));
+            }
 
             return convertView;
-            }
+        }
 
         public final class ViewHolder{
             public Button mButtonBorrow;
@@ -248,6 +257,7 @@ public class bookBorrowedFragment extends Fragment {
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
                     bookLists = libClient.getBooks();
+                    inflatePicture(bookLists);
                 }
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
@@ -256,6 +266,18 @@ public class bookBorrowedFragment extends Fragment {
                 //serverOK = false;
             }
             return bookLists;
+        }
+
+        //为图书加载图片
+        private void inflatePicture(List<Book> bookLists) {
+            mCache = ACache.get(getActivity());
+            for (int i = 0; i < bookLists.size(); i++) {
+                Book book = bookLists.get(i);
+                byte[] bitmap2Bytes = mCache.getAsBitmap2Bytes(book.getBookId());
+                if (bitmap2Bytes != null) {
+                    book.setPicture(bitmap2Bytes);
+                }
+            }
         }
 
         @Override
@@ -331,6 +353,16 @@ public class bookBorrowedFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == HAS_NO_PICTURE && resultCode == 1) {
+            byte[] picture = data.getByteArrayExtra("picture");
+            int position = data.getIntExtra("position", 0);
+            mBookList.get(position).setPicture(picture);
+            RefreshView();
+        }
+
+    }
 
     private void RefreshView(){
         SortBookList();
@@ -338,7 +370,7 @@ public class bookBorrowedFragment extends Fragment {
         ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         String title=getResources().getString(R.string.nav_book_borrowed);
         mActionBar.setTitle(title+"("+mBookList.size()+")");
-        if(!isFirstTime&&mBookList.isEmpty()){
+        if(!isFirstTime && mBookList.isEmpty()){
             mEmptyInformation.setVisibility(View.VISIBLE);
         }else{
             mEmptyInformation.setVisibility(View.GONE);
