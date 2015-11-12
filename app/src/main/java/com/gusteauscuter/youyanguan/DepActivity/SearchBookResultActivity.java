@@ -277,14 +277,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 convertView=mInflater.inflate(R.layout.card_search_book, container, false);
 
                 mHolder =new ViewHolder();
-                mHolder.mSearchBookStateNorth =(ImageView) convertView.findViewById(R.id.searchBookStateNorth);
-                mHolder.mSearchBookStateSouth=(ImageView) convertView.findViewById(R.id.searchBookStateSouth);
+                mHolder.mSearchBookState =(ImageView) convertView.findViewById(R.id.searchBookState);
                 mHolder.mTitle=((TextView) convertView.findViewById(R.id.searchBook_Title));
                 mHolder.mPublisher=((TextView) convertView.findViewById(R.id.searchBook_Publisher));
                 mHolder.mPubdate=((TextView) convertView.findViewById(R.id.searchBook_Pubdate));
                 mHolder.mBookId=((TextView) convertView.findViewById(R.id.searchBook_BookId));
                 mHolder.mAuthor=((TextView) convertView.findViewById(R.id.searchBook_Author));
-                mHolder.mButton = (Button) convertView.findViewById(R.id.collect_book);
+                mHolder.mButton = (TextView) convertView.findViewById(R.id.collect_book);
                 convertView.setTag(mHolder);
 
             } else{
@@ -294,20 +293,15 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
             int borrowCondition = mBook.getBorrowCondition();
             if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
-                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_blue);
-                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
             } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
-                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_white);
-                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
-                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_blue);
-                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_white);
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
-                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_white);
-                mHolder.mSearchBookStateSouth.setImageResource(R.drawable.book_sample_blue);
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
             } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
-                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_black);
-                mHolder.mSearchBookStateNorth.setImageResource(R.drawable.book_sample_black);
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
             }
 
             // TO 设置Book对应属性
@@ -347,11 +341,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
             // 对搜索出来的结果显示时，区别已收藏和未收藏图书
             if (!mBook.isCollected()) {
-                mHolder.mButton.setText("点击收藏");
+                mHolder.mButton.setText("收藏");
                 mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
                 mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.teal));
             } else {
-                mHolder.mButton.setText("取消收藏");
+                mHolder.mButton.setText("取消");
                 mHolder.mButton.setTextColor(getResources().getColor(R.color.teal));
                 mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.gray_light));
             }
@@ -371,14 +365,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
         }
 
         public final class ViewHolder{
-            public ImageView mSearchBookStateNorth;
-            public ImageView mSearchBookStateSouth;
+            public ImageView mSearchBookState;
             public TextView mTitle;
             public TextView mPublisher;
             public TextView mPubdate;
             public TextView mBookId;
             public TextView mAuthor;
-            public Button mButton;
+            public TextView mButton;
         }
     }
 
