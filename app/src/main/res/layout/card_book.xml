@@ -23,8 +23,9 @@
                 <ImageView
                     android:id="@+id/BookPicture"
                     style="@style/Card.Book.Picture"
-                    android:layout_width="80dp"
-                    android:layout_height="120dp"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/book_default"/>
 
                 <TextView
                     android:id="@+id/text_Title"

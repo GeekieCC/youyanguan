@@ -297,7 +297,11 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         if(menuItem.getItemId()==R.id.nav_library) {    //图书馆
             JumpToBookFragment();
+            mMenu.findItem(R.id.action_share).setVisible(true);
+        }else{
+            mMenu.findItem(R.id.action_share).setVisible(false);
         }
+
 
         if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
             JumpToCollectBookFragment();
@@ -337,6 +341,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mMenu.findItem(R.id.action_log_out).setVisible(false);
         mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         mMenu.findItem(R.id.action_add_course).setVisible(false);
+        mMenu.findItem(R.id.action_share).setVisible(false);
 
         return true;
     }
@@ -375,6 +380,10 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             return true;
         }else if(item.getItemId()==R.id.action_add_course){
             mCourseFragment.startAddCourseActivity();
+            return true;
+
+        }else if(item.getItemId()==R.id.action_share){
+            mBookBorrowedFragment.shareBooksBorrowed();
             return true;
 
         }else

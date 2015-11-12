@@ -5,30 +5,35 @@
     android:layout_height="match_parent"
     tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment">
 
-
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/emptyInformation"
-            android:padding="@dimen/margin_large"
-            android:text="You didn't borrow any books."
+        <LinearLayout
+            android:id="@+id/share_layoutView"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
 
-        <GridView android:id="@+id/bookListView"
-            android:numColumns="3"
-            android:divider="@android:color/white"
-            android:layout_marginLeft="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/emptyInformation"
+                android:padding="@dimen/margin_large"
+                android:text="You didn't borrow any books."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        </GridView>
+            <com.gusteauscuter.youyanguan.view.XGridView
+                android:id="@+id/bookListView"
+                android:numColumns="2"
+                android:divider="@android:color/white"
+                android:layout_marginLeft="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
 
-    </LinearLayout>
+            </com.gusteauscuter.youyanguan.view.XGridView>
+
+        </LinearLayout>
+    </ScrollView>
 
     <ProgressBar
         android:layout_width="wrap_content"
