@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
+                <com.gusteauscuter.youyanguan.view.XImageView
                     android:id="@+id/BookPicture"
                     style="@style/Card.Book.Picture"
                     android:layout_width="match_parent"
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <Button
+            <TextView
                 android:id="@+id/button_Borrow"
                 android:text="@string/borrowButton"
                 style="@style/Card.Book.BorrowButton"
