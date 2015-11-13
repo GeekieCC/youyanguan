@@ -3,6 +3,7 @@ package com.gusteauscuter.youyanguan.content_fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +28,12 @@ import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
+import com.gusteauscuter.youyanguan.util.ScreenShot;
+import com.gusteauscuter.youyanguan.view.XImageView;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
+import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +50,7 @@ public class bookBorrowedFragment extends Fragment {
     private GridView mListView;
     private TextView mEmptyInformation;
     private ProgressBar mProgressBar;
+    private View shareView;
 
     private BookAdapter mAdapter;
     private List<Book> mBookList=new ArrayList<>();
@@ -66,6 +70,7 @@ public class bookBorrowedFragment extends Fragment {
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefresh);
         mListView = (GridView) view.findViewById(R.id.bookListView);
+        shareView=view.findViewById(R.id.bookListView);
 
         initData();
         RefreshView();
@@ -141,8 +146,8 @@ public class bookBorrowedFragment extends Fragment {
             if (convertView == null) {
                 convertView=mInflater.inflate(R.layout.card_book,container, false);
                 mHolder =new ViewHolder();
-                mHolder.mButtonBorrow=(Button) convertView.findViewById(R.id.button_Borrow);
-                mHolder.mBookPicture=(ImageView) convertView.findViewById(R.id.BookPicture);
+                mHolder.mButtonBorrow=(TextView) convertView.findViewById(R.id.button_Borrow);
+                mHolder.mBookPicture=(XImageView) convertView.findViewById(R.id.BookPicture);
                 mHolder.mName=((TextView) convertView.findViewById(R.id.text_Title));
                 mHolder.mBorrowDay=((TextView) convertView.findViewById(R.id.text_BorrowDay));
                 mHolder.mReturnDay=(TextView) convertView.findViewById(R.id.text_ReturnDay);
@@ -219,18 +224,24 @@ public class bookBorrowedFragment extends Fragment {
                 start=ra.nextInt(book_color.length);
             }
             int no =(start+position)%book_color.length;
-            mHolder.mBookPicture.setBackgroundColor(book_color[no]);
             //设置图片
             if (mBook.getPicture() != null) {
                 mHolder.mBookPicture.setImageBitmap(BitmapUtil.getBitmap(mBook.getPicture()));
+                mHolder.mBookPicture.setImageAlpha(255);
+                mHolder.mBookPicture.setBackgroundColor(getResources().getColor(R.color.white));
+                mHolder.mName.setVisibility(View.GONE);
+            }else {
+                mHolder.mBookPicture.setBackgroundColor(book_color[no]);
+                mHolder.mBookPicture.setImageAlpha(0);
+                mHolder.mName.setVisibility(View.VISIBLE);
             }
 
             return convertView;
         }
 
         public final class ViewHolder{
-            public Button mButtonBorrow;
-            public ImageView mBookPicture;
+            public TextView mButtonBorrow;
+            public XImageView mBookPicture;
             public TextView mName;
             public TextView mBorrowDay;
             public TextView mReturnDay;
@@ -365,16 +376,32 @@ public class bookBorrowedFragment extends Fragment {
     }
 
     private void RefreshView(){
-        SortBookList();
+//        SortBookList();
         mAdapter.notifyDataSetChanged();
         ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         String title=getResources().getString(R.string.nav_book_borrowed);
-        mActionBar.setTitle(title+"("+mBookList.size()+")");
+        mActionBar.setTitle(title + "(" + mBookList.size() + ")");
         if(!isFirstTime && mBookList.isEmpty()){
             mEmptyInformation.setVisibility(View.VISIBLE);
         }else{
             mEmptyInformation.setVisibility(View.GONE);
         }
+
+    }
+
+    public void shareBooksBorrowed(){
+
+        String stringFileName="sdcard/_share_books_borrowed.png";
+        ScreenShot.shoot(stringFileName, shareView);
+
+        Intent intent=new Intent(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_TITLE, "Share");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
+        intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(intent,getResources().getString(R.string.action_share)));
 
     }
 
