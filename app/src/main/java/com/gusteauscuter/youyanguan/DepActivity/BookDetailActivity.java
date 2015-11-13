@@ -205,7 +205,7 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(Intent.createChooser(intent, getTitle()));
+        startActivity(Intent.createChooser(intent, "Share"));
 
     }
     private class GetBooksDetailAsy extends AsyncTask<BaseBook, Void, BookDetail> {
