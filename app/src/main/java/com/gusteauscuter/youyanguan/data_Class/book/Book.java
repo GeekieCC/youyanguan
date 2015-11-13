@@ -34,7 +34,7 @@ public class Book extends SimpleBaseBook implements Serializable {
 	private String pubdate;
 	private String isbn;
 	private String searchNum;
-	private int borrowCondition = BORROWED_ALREADY;
+	private int borrowCondition;
     private boolean isCollected;
 
 	public String toString() {

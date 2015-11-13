@@ -9,7 +9,7 @@ public interface BaseBook {
     int NORTH_ONLY = 3;
     int SOUTH_ONLY = 4;
     int UNKNOWN = 5;
-    int BORROWED_ALREADY = 6;
+    //int BORROWED_ALREADY = 6;
 
     String getBookId();
     String getTitle();

@@ -189,13 +189,13 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         boolean result;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(
-                                FeedEntry.TABLE_NAME,
-                                null,
-                                FeedEntry.COLUMN_NAME_BOOKID + " = ?",
-                                new String[]{simpleBaseBook.getBookId()},
-                                null,
-                                null,
-                                null);
+                FeedEntry.TABLE_NAME,
+                null,
+                FeedEntry.COLUMN_NAME_BOOKID + " = ?",
+                new String[]{simpleBaseBook.getBookId()},
+                null,
+                null,
+                null);
         if (cursor.getCount() <= 0) {
             result = false;
         } else {
@@ -205,6 +205,17 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public int updateTupleBorrowCondition(SimpleBaseBook simpleBaseBook) {
+        int result = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, simpleBaseBook.getBorrowCondition());
+        result = db.update(FeedEntry.TABLE_NAME, values,
+                           FeedEntry.COLUMN_NAME_BOOKID + " = ?",
+                           new String[]{simpleBaseBook.getBookId()});
+        db.close();
+        return result;
+    }
 }
 
 

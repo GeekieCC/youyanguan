@@ -226,6 +226,8 @@ public class BookDetailActivity extends AppCompatActivity {
     private class GetBooksDetailAsy extends AsyncTask<SimpleBaseBook, Void, BookDetail> {
         private Bitmap bitmap;
         private boolean serverOK = true;
+        private int borrowCondition;
+        
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
@@ -240,6 +242,10 @@ public class BookDetailActivity extends AppCompatActivity {
             try {
 
                 bookDetail.getBookDetail(simpleBaseBooks[0]);
+                borrowCondition = LocationInformation.checkBorrowCondition(bookDetail.getLocationInfoWithoutStopped());
+                ///为数据库的可借状态执行更新
+                BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+                mDbHelper.updateTupleBorrowCondition(simpleBaseBooks[0]);
                 bitmap = mCache.getAsBitmap(bookDetail.getBookId());
                 if (bitmap == null) {
                     bitmap = bookDetail.getPicture();
@@ -276,7 +282,7 @@ public class BookDetailActivity extends AppCompatActivity {
                     bookToCollect.setPublisher(result.getPublisher());
                     bookToCollect.setTitle(result.getTitle());
                     bookToCollect.setSearchNum(result.getSearchNum());
-                    bookToCollect.setBorrowCondition(Book.BORROWED_ALREADY);
+                    bookToCollect.setBorrowCondition(borrowCondition);
                 }
 
                 if (bitmap != null) {

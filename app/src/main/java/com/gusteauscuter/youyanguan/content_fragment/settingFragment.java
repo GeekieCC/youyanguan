@@ -12,6 +12,7 @@ import com.gusteauscuter.youyanguan.DepActivity.AboutActivity;
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.util.ACache;
 
 import cn.bmob.v3.listener.BmobUpdateListener;
 import cn.bmob.v3.update.BmobUpdateAgent;
@@ -57,6 +58,16 @@ public class settingFragment extends Fragment {
 
                     }
                 });
+
+        view.findViewById(R.id.clearCache).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ACache aCache = ACache.get(getActivity());
+                aCache.clear();
+                Toast.makeText(getActivity(), R.string.clear_cache_completed, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         view.findViewById(R.id.feedback).setOnClickListener(
                 new View.OnClickListener() {
                     @Override

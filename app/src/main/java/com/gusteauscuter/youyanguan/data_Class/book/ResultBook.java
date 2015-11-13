@@ -16,8 +16,6 @@ public class ResultBook extends SimpleBaseBook implements Serializable {
 	
 	private static final String DETAIL_BASE_URL = "http://202.38.232.10/opac/servlet/opac.go";
 
-
-
 	private int rowNumber;
 	private String title;
 	private String author;
@@ -72,22 +70,23 @@ public class ResultBook extends SimpleBaseBook implements Serializable {
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
 		List<LocationInformation> locationLists = getLocationInfo(detailDoc);
-		for (LocationInformation locInfo : locationLists) {
-			String location = locInfo.getLocation();
-			String detailLocation = locInfo.getDetailLocation();
-			String status = locInfo.getStatus();
-			if (!location.contains("停") && !detailLocation.contains("停") && status.contains("在馆")) {
-                if ((location.contains("北") || detailLocation.contains("北"))) {
-					north = true;
-				} else if ((location.contains("南") || detailLocation.contains("南"))) {
-					south = true;
-				}
-			}
-		}
-        if (!south && !north) return BOTH_NOT;
-        if (south && north) return BOTH_YES;
-        if (south && !north) return SOUTH_ONLY;
-        return NORTH_ONLY;
+		return LocationInformation.checkBorrowCondition(locationLists);
+//		for (LocationInformation locInfo : locationLists) {
+//			String location = locInfo.getLocation();
+//			String detailLocation = locInfo.getDetailLocation();
+//			String status = locInfo.getStatus();
+//			if (!location.contains("停") && !detailLocation.contains("停") && status.contains("在馆")) {
+//                if ((location.contains("北") || detailLocation.contains("北"))) {
+//					north = true;
+//				} else if ((location.contains("南") || detailLocation.contains("南"))) {
+//					south = true;
+//				}
+//			}
+//		}
+//        if (!south && !north) return BOTH_NOT;
+//        if (south && north) return BOTH_YES;
+//        if (south && !north) return SOUTH_ONLY;
+//        return NORTH_ONLY;
 	}
 	
 //	private boolean isBorrowableHelper() throws SocketTimeoutException {

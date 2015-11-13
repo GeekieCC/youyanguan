@@ -10,7 +10,7 @@ public class SimpleBaseBook implements BaseBook, Serializable {
     private String pubdate;
     private String isbn;
     private String searchNum;
-    private int borrowCondition = BORROWED_ALREADY;
+    private int borrowCondition;
     private boolean isCollected;
     private String author;
     private String title;

@@ -78,6 +78,8 @@
     <string name="check_update">检查更新</string>
     <string name="update_state_start">获取版本信息中...</string>
     <string name="update_state_no">当前已是最新版本，无需更新</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="clear_cache_completed">缓存清理成功</string>
     <string name="feedback">反馈建议</string>
     <string name="send_email_to">mailto:gusteauscuter@163.com</string>
     <string name="about">关于软件</string>
