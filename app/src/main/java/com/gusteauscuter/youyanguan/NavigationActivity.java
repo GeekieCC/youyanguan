@@ -87,7 +87,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         super.onCreate(savedInstanceState);
         initData();
         initView();
-//        initEvents();
+        initEvents();
         Bmob.initialize(this, "213c7ff4ff5c05bee43e1b5f803ee7cd");
         //BmobUpdateAgent.initAppVersion(this);
         BmobUpdateAgent.update(this);
@@ -109,7 +109,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     public void initView() {
 
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setContentView(R.layout.activity_navigation_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
