@@ -216,5 +216,11 @@
         <item name="android:background">@color/gray</item>
     </style>
 
-
+<!--
+-->
+    <style name="textDefault">
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/gray_dark</item>
+    </style>
 </resources>

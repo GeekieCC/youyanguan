@@ -25,5 +25,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:ellipsize="marquee"
-    android:textColor="@color/black"
+    android:textColor="@color/gray_dark"
+    android:fontFamily="sans-serif-light"
+    android:textAppearance="?android:textAppearanceSmall"
     android:textAlignment="inherit"/>

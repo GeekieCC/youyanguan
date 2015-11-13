@@ -211,6 +211,9 @@ public class SearchBookResultActivity extends AppCompatActivity {
     }
 
     private void searchBook() {
+        if(findViewById(R.id.search_description).getVisibility()==View.VISIBLE){
+            findViewById(R.id.search_description).setVisibility(View.GONE);
+        }
         if(reSearch){
             ithSearch = FIRST_SEARCH;
             page = FIRST_PAGE;
