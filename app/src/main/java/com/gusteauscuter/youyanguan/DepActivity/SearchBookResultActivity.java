@@ -30,6 +30,7 @@ import com.github.lzyzsd.randomcolor.RandomColor;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
+import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.exception.WrongPageException;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
@@ -294,10 +295,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
 
 
+
             int borrowCondition = mBook.getBorrowCondition();
-            if (borrowCondition == ResultBook.BORTH_YES) { //两校区都可借
+            if (borrowCondition == ResultBook.BOTH_YES) { //两校区都可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
-            } else if (borrowCondition == ResultBook.BORTH_NOT) { //两校区都不可借
+            } else if (borrowCondition == ResultBook.BOTH_NOT) { //两校区都不可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
@@ -424,9 +426,9 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
                     //对于搜索出来的书，检查其是否已经被收藏到数据库
                     BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-                    List<ResultBook> bookCollections = mDbHelper.getAllBookCollections();
+                    List<SimpleBaseBook> bookCollections = mDbHelper.getAllBookCollections();
                     for (ResultBook resultBook : resultBookLists) {
-                        for (ResultBook bookCollected : bookCollections) {
+                        for (SimpleBaseBook bookCollected : bookCollections) {
                             if (resultBook.getBookId().equals(bookCollected.getBookId())) {
                                 resultBook.setIsCollected(true);
                             }
@@ -508,13 +510,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
             if (!resultBooks[0].isCollected()) {
                 operation = true;
-                if (mDbHelper.addResultBook(resultBooks[0]) != -1) {
+                if (mDbHelper.addBook(resultBooks[0]) != -1) {
                     resultBooks[0].setIsCollected(true);
                     result = true;
                 }
             } else {
                 operation = false;
-                if (mDbHelper.deleteResultBook(resultBooks[0]) != 0) {
+                if (mDbHelper.deleteBook(resultBooks[0]) != 0) {
                     resultBooks[0].setIsCollected(false);
                     result = true;
                 }
@@ -549,7 +551,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0 && resultCode == 0 && data != null) {
+        if (requestCode == 0 && resultCode == BookDetailActivity.COLLECT_RESULT_CODE && data != null) {
             int position = data.getIntExtra("position", 0);
             boolean operation = data.getBooleanExtra("isCollected", false);
             ResultBook resultBook = (ResultBook) mAdapter.getItem(position);

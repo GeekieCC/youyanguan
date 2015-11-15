@@ -5,7 +5,7 @@ import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 
-public class Book implements BaseBook, Serializable {
+public class Book extends SimpleBaseBook implements Serializable {
 	// 更新书籍ItemBook代码
 
     private static final String DETAIL_BASE_LINK = "http://202.38.232.10/opac";
@@ -30,12 +30,23 @@ public class Book implements BaseBook, Serializable {
 
 	private byte[] picture = null;
 
+	private String publisher;
+	private String pubdate;
+	private String isbn;
+	private String searchNum;
+	private int borrowCondition;
+    private boolean isCollected;
+
 	public String toString() {
 		//return name + "(" + author + ")" + "(" + borrowDay + ")" + "(" + returnDay + ")";
 		return rowNumber + "||" + barcode + "||" + title + "||" + author + "||"  + volume + "||"  + libraryName + "||"
 				+ libraryLocation + "||"  + borrowDay + "||"  + returnDay + "||"  + borrowedTime + "||" 
 				+ maxBorrowTime + "||"  + isExpired + "||"  + renewLink + "||" ;
 	}
+
+    public Book() {
+
+    }
 
 	public Book(Element element) {
 		Elements elements = element.getElementsByTag("td");
@@ -178,4 +189,78 @@ public class Book implements BaseBook, Serializable {
 	public void setPicture(byte[] picture) {
 		this.picture = picture;
 	}
+
+	@Override
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	@Override
+	public void setBookId(String bookId) {
+		this.bookId = bookId;
+	}
+
+	@Override
+	public int getBorrowCondition() {
+		return borrowCondition;
+	}
+
+	public void setBorrowCondition(int borrowCondition) {
+		this.borrowCondition = borrowCondition;
+	}
+
+	@Override
+	public String getIsbn() {
+		return isbn;
+	}
+
+	@Override
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	@Override
+	public String getPubdate() {
+		return pubdate;
+	}
+
+	@Override
+	public void setPubdate(String pubdate) {
+		this.pubdate = pubdate;
+	}
+
+	@Override
+	public String getPublisher() {
+		return publisher;
+	}
+
+	@Override
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	@Override
+	public String getSearchNum() {
+		return searchNum;
+	}
+
+	@Override
+	public void setSearchNum(String searchNum) {
+		this.searchNum = searchNum;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+    @Override
+    public boolean isCollected() {
+        return isCollected;
+    }
+
+    @Override
+    public void setIsCollected(boolean isCollected) {
+        this.isCollected = isCollected;
+    }
 }

@@ -5,8 +5,7 @@
 
     <item
         android:id="@+id/action_collection"
-        android:title="@string/action_collection"
-        android:icon="@drawable/ic_action_collect"
+        android:title=""
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_share"

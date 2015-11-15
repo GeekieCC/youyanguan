@@ -3,6 +3,8 @@ package com.gusteauscuter.youyanguan.data_Class.book;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.List;
+
 public class LocationInformation {
 	private String location;
 	private String detailLocation;
@@ -55,7 +57,26 @@ public class LocationInformation {
 	public String getStatus() {
 		return status;
 	}
-	
-	
+
+	public static int checkBorrowCondition(List<LocationInformation> locationLists) {
+		boolean south = false;
+		boolean north = false;
+		for (LocationInformation locInfo : locationLists) {
+			String location = locInfo.getLocation();
+			String detailLocation = locInfo.getDetailLocation();
+			String status = locInfo.getStatus();
+			if (!location.contains("停") && !detailLocation.contains("停") && status.contains("在馆")) {
+				if ((location.contains("北") || detailLocation.contains("北"))) {
+					north = true;
+				} else if ((location.contains("南") || detailLocation.contains("南"))) {
+					south = true;
+				}
+			}
+		}
+		if (!south && !north) return BaseBook.BOTH_NOT;
+		if (south && north) return BaseBook.BOTH_YES;
+		if (south && !north) return BaseBook.SOUTH_ONLY;
+		return BaseBook.NORTH_ONLY;
+	}
 	
 }

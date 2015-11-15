@@ -12,15 +12,9 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResultBook implements BaseBook, Serializable {
+public class ResultBook extends SimpleBaseBook implements Serializable {
 	
 	private static final String DETAIL_BASE_URL = "http://202.38.232.10/opac/servlet/opac.go";
-
-    public static int BORTH_NOT = 0;
-    public static int BORTH_YES = 1;
-	public static int NORTH_ONLY = 3;
-    public static int SOUTH_ONLY = 4;
-	public static int UNKNOWN = 5;
 
 	private int rowNumber;
 	private String title;
@@ -76,22 +70,23 @@ public class ResultBook implements BaseBook, Serializable {
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
 		List<LocationInformation> locationLists = getLocationInfo(detailDoc);
-		for (LocationInformation locInfo : locationLists) {
-			String location = locInfo.getLocation();
-			String detailLocation = locInfo.getDetailLocation();
-			String status = locInfo.getStatus();
-			if (!location.contains("停") && !detailLocation.contains("停") && status.contains("在馆")) {
-                if ((location.contains("北") || detailLocation.contains("北"))) {
-					north = true;
-				} else if ((location.contains("南") || detailLocation.contains("南"))) {
-					south = true;
-				}
-			}
-		}
-        if (!south && !north) return BORTH_NOT;
-        if (south && north) return BORTH_YES;
-        if (south && !north) return SOUTH_ONLY;
-        return NORTH_ONLY;
+		return LocationInformation.checkBorrowCondition(locationLists);
+//		for (LocationInformation locInfo : locationLists) {
+//			String location = locInfo.getLocation();
+//			String detailLocation = locInfo.getDetailLocation();
+//			String status = locInfo.getStatus();
+//			if (!location.contains("停") && !detailLocation.contains("停") && status.contains("在馆")) {
+//                if ((location.contains("北") || detailLocation.contains("北"))) {
+//					north = true;
+//				} else if ((location.contains("南") || detailLocation.contains("南"))) {
+//					south = true;
+//				}
+//			}
+//		}
+//        if (!south && !north) return BOTH_NOT;
+//        if (south && north) return BOTH_YES;
+//        if (south && !north) return SOUTH_ONLY;
+//        return NORTH_ONLY;
 	}
 	
 //	private boolean isBorrowableHelper() throws SocketTimeoutException {
@@ -219,7 +214,7 @@ public class ResultBook implements BaseBook, Serializable {
 		this.borrowCondition = borrowCondition;
 	}
 
-	public void setIsCollected(boolean isCollected) {
+    public void setIsCollected(boolean isCollected) {
 		this.isCollected = isCollected;
 	}
 }

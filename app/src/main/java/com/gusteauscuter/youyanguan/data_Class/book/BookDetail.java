@@ -43,15 +43,17 @@ public class BookDetail {
 	}
 
 	public void getBookDetail(BaseBook baseBook) throws SocketTimeoutException{
-		if (baseBook instanceof Book) {
-            getBookDetailHelper((Book) baseBook);
-        } else if (baseBook instanceof ResultBook) {
-            getResultBookDetail((ResultBook) baseBook);
-        }
+		if (baseBook instanceof ResultBook) {
+			getResultBookDetail((ResultBook) baseBook);
+        } else if (baseBook instanceof Book) {
+			getBookDetailHelper((Book) baseBook);
+		} else if (baseBook instanceof SimpleBaseBook) {
+			getSimpleBaseBookDetail((SimpleBaseBook) baseBook);
+		}
 	}
 
 	//新方法1
-	public void getBookDetailHelper(Book book) throws SocketTimeoutException {
+	private void getBookDetailHelper(Book book) throws SocketTimeoutException {
 		title=book.getTitle();
 		author = book.getAuthor();
         bookId = book.getBookId();
@@ -74,13 +76,12 @@ public class BookDetail {
 	}
 
 	//新方法2
-	public void getResultBookDetail(ResultBook resultBook) throws SocketTimeoutException {
+	private void getResultBookDetail(ResultBook resultBook) throws SocketTimeoutException {
 		title=resultBook.getTitle();
 		author = resultBook.getAuthor();
 		publisher=resultBook.getPublisher();
         pubdate=resultBook.getPubdate();
         bookId = resultBook.getBookId();
-		String bookId = resultBook.getBookId();
 		String detailLink = buildDetailLink(bookId);
 		String detailHtml = getHtml(detailLink);
 		Document detailDoc = Jsoup.parse(detailHtml);
@@ -97,6 +98,17 @@ public class BookDetail {
 				isDoubanExisting = false;
 			}
 		}
+	}
+
+	private void getSimpleBaseBookDetail(SimpleBaseBook simpleBaseBook) throws SocketTimeoutException{
+		ResultBook resultBook = new ResultBook();
+		resultBook.setAuthor(simpleBaseBook.getAuthor());
+		resultBook.setTitle(simpleBaseBook.getTitle());
+		resultBook.setPubdate(simpleBaseBook.getPubdate());
+		resultBook.setBookId(simpleBaseBook.getBookId());
+		resultBook.setPublisher(simpleBaseBook.getPublisher());
+        resultBook.setIsbn(simpleBaseBook.getIsbn());
+		getResultBookDetail(resultBook);
 	}
 
 
