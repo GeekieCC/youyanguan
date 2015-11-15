@@ -353,6 +353,7 @@ public class BookDetail {
 		if (isbn.isEmpty()) {
 			return "暂无";
 		} else {
+            if (isbn.length() > 13) return isbn.substring(0, 13);
 			return isbn;
 		}
 
