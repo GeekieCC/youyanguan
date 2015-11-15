@@ -243,6 +243,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
                 bookDetail.getBookDetail(simpleBaseBooks[0]);
                 borrowCondition = LocationInformation.checkBorrowCondition(bookDetail.getLocationInfoWithoutStopped());
+                simpleBaseBooks[0].setBorrowCondition(borrowCondition);
                 ///为数据库的可借状态执行更新
                 BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
                 mDbHelper.updateTupleBorrowCondition(simpleBaseBooks[0]);
