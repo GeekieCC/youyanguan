@@ -23,7 +23,9 @@
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="3dp"
-    android:textColor="@color/black"
+    android:layout_margin="5dp"
+    android:textColor="@color/gray_dark"
+    android:fontFamily="sans-serif-light"
+    android:textAppearance="?android:textAppearanceSmall"
     android:ellipsize="marquee"
     android:textAlignment="inherit"/>

@@ -5,7 +5,6 @@
 
     <android.support.v7.widget.CardView
         style="@style/Card.SearchBook"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -14,7 +13,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="5dp">
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="0dp"
+            android:paddingBottom="5dp">
 
             <TextView
                 android:id="@+id/searchBook_Title"
@@ -30,18 +32,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/searchBookPicture"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:gravity="center"
-                    android:src="@drawable/search_book_sample" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center|left">
+                    <ImageView
+                        android:id="@+id/searchBookState"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:gravity="center"
+                        android:layout_margin="5dp"
+                        android:src="@drawable/search_book_sample" />
+
+                </LinearLayout>
+
 
                 <LinearLayout
                     style="@style/Card.Default"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingLeft="20dp">
@@ -62,27 +74,36 @@
                         style="@style/Card.SearchBook.Description"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center_vertical" />
+                        android:gravity="center_vertical"
+                        android:text="book"/>
                     <TextView
                         android:id="@+id/searchBook_Author"
                         style="@style/Card.SearchBook.Description"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center_vertical" />
+                        android:gravity="center_vertical"
+                        android:text="book"/>
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/collect_book"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:paddingRight="25dp"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:gravity="center"
+                    android:text="收藏"
+                    android:textColor="@color/white"
+                    android:background="@color/blue"/>
             </LinearLayout>
 
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/collect_book"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|right"
-            android:gravity="center"
-            android:text="点击收藏"/>
+
 
     </android.support.v7.widget.CardView>
 

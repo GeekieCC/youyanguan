@@ -117,9 +117,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         findViewById(R.id.header).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
-                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "功能正在完善中...", Toast.LENGTH_SHORT).show();
+//                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
+//                startActivity(intent);
 
             }
         });
@@ -186,7 +186,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         if (mUserLogin.IsLogined()){
             if (mBookBorrowedFragment ==null)
                 mBookBorrowedFragment =new bookBorrowedFragment();
-            mActionBar.setTitle(R.string.nav_book_borrowed);
+//            mActionBar.setTitle(R.string.nav_book_borrowed);
             FragmentManager mFragmentManager = getFragmentManager();
             FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
             mTransaction.replace(R.id.container_frame, mBookBorrowedFragment);
@@ -207,7 +207,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         if (mBookCollectedFragment ==null)
             mBookCollectedFragment =new bookCollectedFragment();
-        mActionBar.setTitle(R.string.nav_collect_book);
+//        mActionBar.setTitle(R.string.nav_collect_book);
         FragmentManager mFragmentManager = getFragmentManager();
         FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
         mTransaction.replace(R.id.container_frame, mBookCollectedFragment);
@@ -297,7 +297,11 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         if(menuItem.getItemId()==R.id.nav_library) {    //图书馆
             JumpToBookFragment();
+            mMenu.findItem(R.id.action_share).setVisible(true);
+        }else{
+            mMenu.findItem(R.id.action_share).setVisible(false);
         }
+
 
         if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
             JumpToCollectBookFragment();
@@ -337,6 +341,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mMenu.findItem(R.id.action_log_out).setVisible(false);
         mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         mMenu.findItem(R.id.action_add_course).setVisible(false);
+        mMenu.findItem(R.id.action_share).setVisible(false);
 
         return true;
     }
@@ -375,6 +380,10 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             return true;
         }else if(item.getItemId()==R.id.action_add_course){
             mCourseFragment.startAddCourseActivity();
+            return true;
+
+        }else if(item.getItemId()==R.id.action_share){
+            mBookBorrowedFragment.shareBooksBorrowed();
             return true;
 
         }else

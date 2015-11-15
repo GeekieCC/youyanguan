@@ -38,12 +38,15 @@
         android:gravity="center_vertical">
 
         <TextView
+            style="@style/textDefault"
             android:layout_marginLeft="@dimen/margin_medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="数量：" />
 
-        <TextView android:id="@+id/totalNumber"
+        <TextView
+            style="@style/textDefault"
+            android:id="@+id/totalNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0" />
@@ -56,26 +59,108 @@
             android:orientation="horizontal">
 
             <CheckBox
+                style="@style/textDefault"
                 android:layout_alignParentRight="true"
                 android:id="@+id/borrowConditionCheckBox"
-                android:layout_width="70dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="查看"/>
+                android:text="高级"
+                android:checked="true"/>
 
             <Spinner
+                style="@style/textDefault"
                 android:layout_toLeftOf="@id/borrowConditionCheckBox"
                 android:id="@+id/spinner"
-                android:layout_width="70dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
 
     </LinearLayout>
 
-    <com.gusteauscuter.youyanguan.view.ScrollListView
+    <LinearLayout  android:id="@+id/search_description"
         android:layout_below="@id/totalNumberLayout"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="搜索结果说明：勾选高级，可查看可借状态"/>
+
+        <LinearLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_s_n"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="南北校均可借  "/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_not_s_n"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="南北校均不可借  "/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_south"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="南校在馆可借  "/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_north"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="北校在馆可借  "/>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_not_known"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="快速搜索，在馆状态不可知"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.gusteauscuter.youyanguan.view.ScrollListView
+        android:layout_below="@id/search_description"
         android:id="@+id/bookListView"
         style="@style/Widget.SampleDashboard.Grid"
         android:layout_width="match_parent"

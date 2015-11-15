@@ -219,7 +219,7 @@ public class BookDetailActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(Intent.createChooser(intent, getTitle()));
+        startActivity(Intent.createChooser(intent, "Share"));
 
     }
     //// TODO: 2015/11/13 将第一个参数改为BaseBok

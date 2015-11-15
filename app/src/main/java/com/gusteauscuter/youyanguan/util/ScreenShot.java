@@ -19,7 +19,9 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 
 
@@ -27,23 +29,43 @@ public class ScreenShot {
 
     /**
      * 截取scrollview的屏幕
-     * @param scrollView
+     * @param listView
      * @return
      */
-    public static Bitmap getBitmapByView(ScrollView scrollView) {
+    public static Bitmap getBitmapByView(ListView listView) {
         int h = 0;
         Bitmap bitmap = null;
         // 获取scrollview实际高度
-        for (int i = 0; i < scrollView.getChildCount(); i++) {
-            h += scrollView.getChildAt(i).getHeight();
-            scrollView.getChildAt(i).setBackgroundColor(
-                    Color.parseColor("#ffffff"));
+        for (int i = 0; i < listView.getChildCount(); i++) {
+            h += listView.getChildAt(i).getHeight();
+//            listView.getChildAt(i).setBackgroundColor(
+//                    Color.parseColor("#ffffff"));
         }
         // 创建对应大小的bitmap
-        bitmap = Bitmap.createBitmap(scrollView.getWidth(), h,
+        bitmap = Bitmap.createBitmap(listView.getWidth(), h,
                 Bitmap.Config.RGB_565);
         final Canvas canvas = new Canvas(bitmap);
-        scrollView.getChildAt(0).draw(canvas);
+        listView.draw(canvas);
+        return bitmap;
+    }
+
+    public static Bitmap getBitmapByView(GridView gridView) {
+        int h = 0;
+        Bitmap bitmap = null;
+        int num=gridView.getNumColumns();
+        // 获取scrollview实际高度
+        for (int i = 0; i < gridView.getChildCount(); i++) {
+            if(i%num==0) {
+                h += gridView.getChildAt(i).getHeight();
+            }
+            gridView.getChildAt(i).setBackgroundColor(
+                    Color.parseColor("#ffffff"));
+        }
+        bitmap = Bitmap.createBitmap(gridView.getWidth(), h,
+                Bitmap.Config.RGB_565);
+        final Canvas canvas = new Canvas(bitmap);
+        gridView.setBackgroundColor(Color.parseColor("#ffffff"));
+        gridView.draw(canvas);
         return bitmap;
     }
 
@@ -84,9 +106,37 @@ public class ScreenShot {
         return bitmap;
     }
 
+
+    // 获取指定Activity的截屏，保存到png文件
+    public static Bitmap takeScreenShot(Activity activity) {
+        // View是你需要截图的View
+        View view = activity.getWindow().getDecorView();
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
+        Bitmap b1 = view.getDrawingCache();
+        // 获取状态栏高度
+        Rect frame = new Rect();
+        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+
+        int statusBarHeight = frame.top+175;
+        Log.i("TAG", "" + statusBarHeight);
+        // 获取屏幕长和高
+        int width = activity.getWindowManager().getDefaultDisplay().getWidth();
+        int height = activity.getWindowManager().getDefaultDisplay()
+                .getHeight();
+        // 去掉标题栏
+        // Bitmap b = Bitmap.createBitmap(b1, 0, 25, 320, 455);
+        Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
+                - statusBarHeight);
+        view.destroyDrawingCache();
+        return b;
+    }
+
+    // 保存到sdcard
+
     /**
      * 保存到sdcard
-     * @param b
+     * @param b the bitmap to save by system time
      * @return
      */
     public static String savePic(Bitmap b) {
@@ -117,40 +167,12 @@ public class ScreenShot {
         }
         return fname;
     }
-    // 获取指定Activity的截屏，保存到png文件
-    public static Bitmap takeScreenShot(Activity activity) {
-        // View是你需要截图的View
-        View view = activity.getWindow().getDecorView();
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache();
-        Bitmap b1 = view.getDrawingCache();
-        // 获取状态栏高度
-        Rect frame = new Rect();
-        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
 
-        int statusBarHeight = frame.top+175;
-        Log.i("TAG", "" + statusBarHeight);
-        // 获取屏幕长和高
-        int width = activity.getWindowManager().getDefaultDisplay().getWidth();
-        int height = activity.getWindowManager().getDefaultDisplay()
-                .getHeight();
-        // 去掉标题栏
-        // Bitmap b = Bitmap.createBitmap(b1, 0, 25, 320, 455);
-        Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height
-                - statusBarHeight);
-        view.destroyDrawingCache();
-        return b;
-    }
-
-    public static Bitmap takeScreenShot(View view) {
-        // View是你需要截图的View
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache();
-        Bitmap b = view.getDrawingCache();
-        view.destroyDrawingCache();
-        return b;
-    }
-    // 保存到sdcard
+    /**
+     * 保存到sdcard
+     * @param b the bitmap to save by system time
+     * @param strFileName file name to save the picture
+     */
     public static void savePic(Bitmap b, String strFileName) {
         FileOutputStream fos = null;
         try {
@@ -167,6 +189,7 @@ public class ScreenShot {
         }
     }
 
+
     public static void saveAsImg(Bitmap bitmap ,String strFileName) {
 
         try {
@@ -179,13 +202,20 @@ public class ScreenShot {
         }
     }
     // 程序入口
-    public static void shoot(String strFileName,ScrollView scrollView) {
-        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(scrollView), strFileName);
-    }
+
 
     public static void shoot(String strFileName,View view) {
         ScreenShot.saveAsImg(ScreenShot.getBitmapByView(view), strFileName);
     }
+
+    public static void shoot(String strFileName,ScrollView scrollView) {
+        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(scrollView), strFileName);
+    }
+
+    public static void shoot(String strFileName,GridView gridView) {
+        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(gridView), strFileName);
+    }
+
     // 程序入口
     public static void shoot(String strFileName,Activity activity) {
         ScreenShot.savePic(ScreenShot.takeScreenShot(activity), strFileName);
