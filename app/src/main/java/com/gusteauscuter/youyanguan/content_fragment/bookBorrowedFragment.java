@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -279,17 +278,7 @@ public class bookBorrowedFragment extends Fragment {
         }
 
 
-        //为图书加载图片
-        private void inflatePicture(List<Book> bookLists) {
-            mCache = ACache.get(getActivity());
-            for (int i = 0; i < bookLists.size(); i++) {
-                Book book = bookLists.get(i);
-                byte[] bitmap2Bytes = mCache.getAsBitmap2Bytes(book.getBookId());
-                if (bitmap2Bytes != null) {
-                    book.setPicture(bitmap2Bytes);
-                }
-            }
-        }
+
 
         @Override
         protected void onPostExecute(List<Book> result) {
@@ -314,6 +303,18 @@ public class bookBorrowedFragment extends Fragment {
         }
     }
 
+    //为图书加载图片
+    private void inflatePicture(List<Book> bookLists) {
+        mCache = ACache.get(getActivity());
+        for (int i = 0; i < bookLists.size(); i++) {
+            Book book = bookLists.get(i);
+            byte[] bitmap2Bytes = mCache.getAsBitmap2Bytes(book.getBookId());
+            if (bitmap2Bytes != null) {
+                book.setPicture(bitmap2Bytes);
+            }
+        }
+    }
+
     private class RenewBookAsy extends AsyncTask<String, Void, List<Book>> {
         private boolean serverOK = true;
         private Book bookToRenew;
@@ -335,6 +336,8 @@ public class bookBorrowedFragment extends Fragment {
                 if (libClient.login(account[0], account[1])) {
                     if (libClient.renew(bookToRenew)) {
                         bookLists = libClient.getBooks();
+                        inflatePicture(bookLists);
+
                     }
                 }
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
