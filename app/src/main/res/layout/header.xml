@@ -4,11 +4,7 @@
     style="@style/headerTheme"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@mipmap/bk_xingkong"
-        android:alpha="0.5"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,13 +12,13 @@
         android:gravity="center_horizontal"
         android:clickable="true">
 
-        <ImageView
+        <com.gusteauscuter.youyanguan.view.RoundImageView
             android:id="@+id/header"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/ic_gusteauscuter"/>
+            android:src="@drawable/header_default"/>
 
         <TextView
             android:id="@+id/id_link"
