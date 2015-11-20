@@ -7,7 +7,7 @@
     <color name="gray">#8b8b8b</color>
     <color name="gray_light">#dfe5e5</color>
 
-    <color name="blue">#009688</color>
+    <color name="primaryColor">#295086</color>
     <color name="blue1">#027FD4</color>
     <color name="blue_primary">#3f51b5</color>
     <color name="blue_gray">#607d8b</color>

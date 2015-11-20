@@ -25,7 +25,7 @@
         <!-- Customize your theme here. -->
         <!--导航栏底色-->
         <!--状态栏底色-->
-        <item name="android:colorPrimaryDark">@color/blue</item>
+        <item name="android:colorPrimaryDark">@color/primaryColor</item>
         <!--导航栏上的标题颜色-->
         <item name="android:textColorPrimary">@android:color/white</item>
         <!--Activity窗口的颜色-->
@@ -35,7 +35,7 @@
     </style>
 
     <style name="AppThemeDep"  parent="AppTheme">
-        <item name="android:colorPrimaryDark">@color/blue</item>
+        <item name="android:colorPrimaryDark">@color/primaryColor</item>
 
     </style>
 
@@ -43,7 +43,7 @@
 
     <!--style name="ActionbarTheme" parent="Theme.AppCompat.Light.DarkActionBar"!-->
     <style name="ActionbarTheme" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="android:background">@color/blue</item>
+        <item name="android:background">@color/primaryColor</item>
     </style>
 
 
@@ -63,7 +63,7 @@
     <style name="UserPicture" >
         <item name="android:layout_height">240dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@color/blue</item>
+        <item name="android:background">@color/primaryColor</item>
 
     </style>
 
@@ -87,7 +87,7 @@
     <style name="BookDetail.Title" parent="Widget">
         <item name="android:textAppearance">?android:textAppearanceSmall</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textColor">@color/blue</item>
+        <item name="android:textColor">@color/primaryColor</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:layout_marginTop">8dp</item>

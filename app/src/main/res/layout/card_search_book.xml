@@ -97,7 +97,7 @@
                     android:gravity="center"
                     android:text="收藏"
                     android:textColor="@color/white"
-                    android:background="@color/blue"/>
+                    android:background="@color/primaryColor"/>
             </LinearLayout>
 
 

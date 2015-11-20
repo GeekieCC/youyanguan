@@ -18,7 +18,9 @@
             android:layout_height="72dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/header_default"/>
+            android:scaleType="centerInside"
+            android:tint="@color/red"
+            android:background="@drawable/header_default"/>
 
         <TextView
             android:id="@+id/id_link"
