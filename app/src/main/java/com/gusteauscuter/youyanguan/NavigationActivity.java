@@ -4,8 +4,12 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.view.GravityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +26,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.MotionEvent;
 
@@ -36,6 +42,8 @@ import com.gusteauscuter.youyanguan.content_fragment.settingFragment;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.HomeItem;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
+import com.gusteauscuter.youyanguan.util.ScreenShot;
+import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
 import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
@@ -71,6 +79,10 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     private List<Course> mCourseList =new ArrayList<>();
     private List<HomeItem> mHomeItemList =new ArrayList<>();
 
+    private RoundImageView mHeaderImage;
+    private TextView mTextBackground;
+    private ImageView mDrawerBackground;
+
     public Menu mMenu;
 
     private boolean IsFirstTime =true;
@@ -78,6 +90,12 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     GestureDetector mGestureDetector;
     private static final int FLING_MIN_DISTANCE = 50;
     private static final int FLING_MIN_VELOCITY = 10;
+
+    private static int RESULT_LOAD_IMAGE_header = 1;
+    private static int RESULT_LOAD_IMAGE_background = 2;
+    private static String stringDirectoryName="sdcard/1Gusteauscuter/";
+    private static String stringBackgroundName=stringDirectoryName+"mDrawerBackground.png";
+    private static String stringHeaderName=stringDirectoryName+"mHeaderImage.png";
 
     String arg;
 
@@ -114,15 +132,51 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         setContentView(R.layout.activity_navigation_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
         mNavigationViewLeft = (NavigationView) findViewById(R.id.id_nv_menu);
-        findViewById(R.id.header).setOnClickListener(new View.OnClickListener() {
+
+        mTextBackground=(TextView)findViewById(R.id.id_link);
+        mHeaderImage=(RoundImageView)findViewById(R.id.header);
+        mDrawerBackground=(ImageView)findViewById(R.id.drawer_background);
+
+        Bitmap bitmapHeader=BitmapFactory.decodeFile(stringHeaderName);
+        if(bitmapHeader!=null){
+            mHeaderImage.setImageBitmap(bitmapHeader);
+        }
+        Bitmap bitmapBackground=BitmapFactory.decodeFile(stringBackgroundName);
+        if(bitmapBackground!=null){
+            mDrawerBackground.setImageBitmap(bitmapBackground);
+        }
+
+
+        mHeaderImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "功能正在完善中...", Toast.LENGTH_SHORT).show();
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE_header);
 //                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
 //                startActivity(intent);
 
             }
         });
+
+        mTextBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "功能正在完善中...", Toast.LENGTH_SHORT).show();
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE_background);
+            }
+        });
+
+
 //        mNavigationViewRight = (NavigationView) findViewById(R.id.id_nv_menu_right);
         mContentFramelayout = (FrameLayout) findViewById(R.id.container_frame);
 
@@ -142,6 +196,48 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         touchArea.setLongClickable(true);
 
         JumpToSearchBookFragment();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_LOAD_IMAGE_header && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
+            mHeaderImage.setImageBitmap(bitmap);
+
+            ScreenShot.saveAsImg(bitmap,stringHeaderName);
+        }
+
+        if (requestCode == RESULT_LOAD_IMAGE_background && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
+            mDrawerBackground.setImageBitmap(bitmap);
+
+            ScreenShot.saveAsImg(bitmap, stringBackgroundName);
+        }
 
     }
 
@@ -555,7 +651,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                View mContent = mDrawerLayout.getChildAt(0);
+                View mContent = mDrawerLayout.getChildAt(1);
                 View mMenu = drawerView;
                 float scale = 1 - slideOffset;
                 float rightScale = 0.8f + scale * 0.2f;

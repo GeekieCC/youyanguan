@@ -4,8 +4,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@mipmap/b4">
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/drawer_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@mipmap/b4"/>
 
     <LinearLayout
         android:layout_width="match_parent"

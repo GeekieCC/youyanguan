@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -193,7 +194,11 @@ public class ScreenShot {
     public static void saveAsImg(Bitmap bitmap ,String strFileName) {
 
         try {
-            FileOutputStream fos = new FileOutputStream(strFileName);
+            File file =new File(strFileName);
+            if(!file.getParentFile().exists()){
+                file.getParentFile().mkdirs();
+            }
+            FileOutputStream fos = new FileOutputStream(strFileName,false);
             boolean bollean = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
 

@@ -41,6 +41,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int COLLECT_RESULT_CODE = 2;
+    private static String stringDirectoryName="sdcard/1Gusteauscuter/";
 
     private ProgressBar  mProgressBar;
     private SimpleBaseBook simpleBaseBook;
@@ -209,7 +210,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
     private void shareBook(){
 
-        String stringFileName="sdcard/_share_Book.png";
+        String stringFileName=stringDirectoryName+"mShareBook.png";
         ScreenShot.shoot(stringFileName,shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
