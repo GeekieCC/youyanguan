@@ -5,7 +5,8 @@
     tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@mipmap/background_search">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +18,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/ic_book_store"
-            android:tint="@color/primaryColor"/>
+            android:tint="@color/white"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,7 +27,7 @@
             android:textSize="20sp"
             android:padding="5dp"
             android:gravity="center"
-            android:textColor="@color/primaryColor"/>
+            android:textColor="@color/white"/>
     </LinearLayout>
 
     <LinearLayout
@@ -40,6 +41,13 @@
         android:padding="0dp"
         android:background="@color/gray_light" >
 
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="10dp"
+            android:tint="@color/gray"
+            android:src="@drawable/ic_search_book"
+            android:gravity="center_vertical"/>
         <TextView
             android:id="@+id/searchBook"
             android:layout_weight="1"
@@ -53,10 +61,10 @@
             android:layout_margin="5dp" />
         <ImageView
             android:id="@+id/searchBookScan"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_margin="10dp"
-            android:tint="@color/white"
+            android:tint="@color/gray"
             android:src="@drawable/ic_enter"
             android:gravity="center_vertical"/>
 

@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -69,7 +71,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private int currentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
 
 
-    private SearchView mSearchView;
+    private EditText mSearchView;
     private Spinner searchBookTypeSpinner;
     private CheckBox borrowConditionCheckBox;
 
@@ -84,9 +86,9 @@ public class SearchBookResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_book_result);
-        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
-        final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+//        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
+//        final ActionBar ab = getSupportActionBar();
+//        ab.setDisplayHomeAsUpEnabled(true);
 
         mProgressBar=(ProgressBar) findViewById(R.id.progressBarRefreshBookSearched);
         mProgressBar.setVisibility(View.INVISIBLE);
@@ -142,22 +144,31 @@ public class SearchBookResultActivity extends AppCompatActivity {
         borrowConditionCheckBox = (CheckBox) findViewById(R.id.borrowConditionCheckBox);
         initSearchCondition();
         mSearchBookList=new ArrayList<>();
-        mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
-//        dealwithSearchView();
-//        mSearchView.setSubmitButtonEnabled(true);
-        mSearchView.setIconified(false);
-        mSearchView.requestFocus();
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView = (EditText) findViewById(R.id.searchBookEditText);
+//        mSearchView.requestFocus();
+        mSearchView.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                reSearch = true;
-                searchBook();
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
+                    reSearch = true;
+                    searchBook();
+                    return true;
+                }
                 return false;
             }
+        });
 
+        findViewById(R.id.go_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.searchBookButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reSearch = true;
+                searchBook();
             }
         });
 
@@ -173,24 +184,6 @@ public class SearchBookResultActivity extends AppCompatActivity {
             }
         });
         randomColor = new RandomColor();
-    }
-
-    private void dealwithSearchView(){
-        try {
-//            Class argClass=mSearchView.getClass();
-            mSearchView.setSubmitButtonEnabled(true);
-            //指定某个私有属性
-            Field mVoiceButtonField = mSearchView.getClass().getDeclaredField("mVoiceButton");
-            mVoiceButtonField.setAccessible(true);
-            Class argClass=mVoiceButtonField.getClass();
-            ImageView mVoiceButton = (ImageView)mVoiceButtonField.get(mSearchView);
-//            Method[] methods=mVoiceButton.getClass().getDeclaredMethods();
-            mVoiceButton.setEnabled(true);
-            mVoiceButton.setImageDrawable(this.getResources().getDrawable(
-                    R.drawable.ic_search_book));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void initSearchCondition(){
@@ -212,9 +205,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     }
 
     private void searchBook() {
-        if(findViewById(R.id.search_description).getVisibility()==View.VISIBLE){
-            findViewById(R.id.search_description).setVisibility(View.GONE);
-        }
+
         if(reSearch){
             ithSearch = FIRST_SEARCH;
             page = FIRST_PAGE;
@@ -223,14 +214,14 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mSearchBookList.clear();
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
-            bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
+            bookToSearch = mSearchView.getText().toString().replaceAll("\\s", "");
             SoftInputUtil.hideSoftInput(this, mSearchView); //收起软键盘
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     searchBookHelper();
                 }
-            }, 500); //收起软键盘需要一定时间
+            }, 200); //收起软键盘需要一定时间
         } else {
             searchBookHelper();
         }

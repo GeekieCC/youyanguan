@@ -45,7 +45,7 @@
                         android:adjustViewBounds="true"
                         android:gravity="center"
                         android:layout_margin="5dp"
-                        android:src="@drawable/search_book_sample" />
+                        android:src="@drawable/ic_not_s_n" />
 
                 </LinearLayout>
 

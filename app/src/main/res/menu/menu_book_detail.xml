@@ -7,12 +7,11 @@
         android:id="@+id/action_share"
         android:title="@string/action_share"
         android:icon="@drawable/ic_action_share"
-        android:actionViewClass="com.gusteauscuter.youyanguan.view.RoundImageView"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_collection"
-        android:title="收藏"
+        android:title=""
         app:showAsAction="ifRoom" />
 
 </menu>

@@ -298,7 +298,7 @@ public class BookDetailActivity extends AppCompatActivity {
                     BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
 
                 } else {
-                    bookPictureImageView.setImageResource(R.drawable.book3); //当网络上没有图片时，自动加载这个图片
+                    bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
                     bottomLinearLayout.removeAllViews();
                 }
             } else {

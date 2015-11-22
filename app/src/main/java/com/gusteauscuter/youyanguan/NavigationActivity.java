@@ -150,7 +150,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mHeaderImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "功能正在完善中...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "设置头像...", Toast.LENGTH_SHORT).show();
 
                 Intent i = new Intent(
                         Intent.ACTION_PICK,
@@ -166,7 +166,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTextBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "功能正在完善中...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "设置背景...", Toast.LENGTH_SHORT).show();
 
                 Intent i = new Intent(
                         Intent.ACTION_PICK,
@@ -674,6 +674,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
                     mContent.invalidate();
                     ViewHelper.setScaleX(mContent, rightScale);
                     ViewHelper.setScaleY(mContent, rightScale);
+                    ViewHelper.setAlpha(mDrawerLayout, 1.f);
                 } else {
                     ViewHelper.setTranslationX(mContent,
                             -mMenu.getMeasuredWidth() * slideOffset);
