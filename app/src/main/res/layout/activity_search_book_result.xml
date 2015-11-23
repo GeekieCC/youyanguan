@@ -5,8 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/background_search"
     tools:context="com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity">
+
+    <ImageView
+        android:id="@+id/search_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@mipmap/background_search"
+        android:scaleType="fitXY"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,15 +27,15 @@
             android:gravity="center_vertical"
             android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
-            android:background="@color/gray_light" >
+            android:background="@drawable/bg_search_blank" >
 
             <ImageView
                 android:id="@+id/go_back_button"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="10dp"
-                android:tint="@color/gray"
-                android:src="@drawable/ic_search_book"
+                android:tint="@color/gray_dark"
+                android:src="@drawable/ic_arrow_back_white_36dp"
                 android:gravity="center_vertical"/>
             <EditText
                 android:id="@+id/searchBookEditText"
@@ -41,7 +47,7 @@
                 android:textSize="18sp"
                 android:padding="5dp"
                 android:gravity="center_vertical"
-                android:textColor="@color/gray"
+                android:textColor="@color/gray_dark"
                 android:layout_margin="5dp"
                 android:imeOptions="actionSearch"
                 android:focusable="true"
@@ -52,7 +58,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="10dp"
-                android:tint="@color/gray"
+                android:tint="@color/gray_dark"
                 android:src="@drawable/ic_enter"
                 android:gravity="center_vertical"/>
 

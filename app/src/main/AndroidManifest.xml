@@ -54,7 +54,8 @@
         <activity
             android:name=".DepActivity.SearchBookResultActivity"
             android:label="@string/title_activity_search_result"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".DepActivity.AddCourseActivity"

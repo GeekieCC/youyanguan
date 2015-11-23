@@ -2,6 +2,8 @@ package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,6 +51,10 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private static final int NUM_OF_BOOKS_PER_SEARCH = 5; // 带可借信息查询时，一次加载的图书数目
     private static final int FIRST_PAGE = 1;
     private static final int FIRST_SEARCH = 1;
+
+    private ImageView mSearchBackground;
+    private static String stringDirectoryName="sdcard/1Gusteauscuter/";
+    private static String stringSearchBackgroundName=stringDirectoryName+"mSearchBackground.png";
 
     private List<ResultBook> mSearchBookList;
 
@@ -149,7 +155,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
         mSearchView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     reSearch = true;
                     searchBook();
                     return true;
@@ -171,6 +177,12 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 searchBook();
             }
         });
+
+        mSearchBackground=(ImageView) findViewById(R.id.search_background);
+        Bitmap bitmapHeader= BitmapFactory.decodeFile(stringSearchBackgroundName);
+        if(bitmapHeader!=null){
+            mSearchBackground.setImageBitmap(bitmapHeader);
+        }
 
         mAdapter = new SearchBookAdapter() ;
         mListView.setAdapter(mAdapter);
