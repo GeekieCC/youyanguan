@@ -7,8 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -18,12 +20,21 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.Toast;
+
+import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
+import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
+import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.exception.WrongPageException;
 
 
 public class ScreenShot {
@@ -171,43 +182,19 @@ public class ScreenShot {
 
     /**
      * 保存到sdcard
-     * @param b the bitmap to save by system time
+     * @param bitmap the bitmap to save by system time
      * @param strFileName file name to save the picture
      */
-    public static void savePic(Bitmap b, String strFileName) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(strFileName);
-            if (null != fos) {
-                b.compress(Bitmap.CompressFormat.PNG, 90, fos);
-                fos.flush();
-                fos.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public static void saveAsImg(Bitmap bitmap ,String strFileName) {
 
-        try {
-            File file =new File(strFileName);
-            if(!file.getParentFile().exists()){
-                file.getParentFile().mkdirs();
-            }
-            FileOutputStream fos = new FileOutputStream(strFileName,false);
-            boolean bollean = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SaveAsImage saveAsImgAsy=new SaveAsImage();
+        saveAsImgAsy.execute(bitmap,strFileName);
     }
-    // 程序入口
 
+
+
+    // 程序入口
 
     public static void shoot(String strFileName,View view) {
         ScreenShot.saveAsImg(ScreenShot.getBitmapByView(view), strFileName);
@@ -223,6 +210,6 @@ public class ScreenShot {
 
     // 程序入口
     public static void shoot(String strFileName,Activity activity) {
-        ScreenShot.savePic(ScreenShot.takeScreenShot(activity), strFileName);
+        ScreenShot.saveAsImg(ScreenShot.takeScreenShot(activity), strFileName);
     }
 }
