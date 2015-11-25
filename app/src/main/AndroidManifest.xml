@@ -37,6 +37,11 @@
             android:theme="@style/AppTheme" >
         </activity>
         <activity
+            android:name=".DepActivity.SettingActivity"
+            android:label="@string/nav_setting"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
             android:name=".DepActivity.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/AppTheme" >
@@ -55,7 +60,7 @@
             android:name=".DepActivity.SearchBookResultActivity"
             android:label="@string/title_activity_search_result"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="stateVisible|adjustPan">
         </activity>
         <activity
             android:name=".DepActivity.AddCourseActivity"

@@ -6,8 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/gray_light"
-    tools:context="com.gusteauscuter.youyanguan.content_fragment.SettingFragment">
+    tools:context="com.gusteauscuter.youyanguan.DepActivity.SettingActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/id_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ActionbarTheme" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/check_update"

@@ -48,8 +48,8 @@
             android:layout_height="?attr/actionBarSize"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:padding="0dp"
             android:background="@drawable/bg_search_blank" >
 
@@ -57,7 +57,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="10dp"
-                android:tint="@color/gray_dark"
+                android:tint="@color/search_hint"
                 android:src="@drawable/ic_search_book"
                 android:gravity="center_vertical"/>
             <TextView
@@ -69,14 +69,14 @@
                 android:textSize="18sp"
                 android:padding="5dp"
                 android:gravity="center_vertical"
-                android:textColor="@color/gray_dark"
+                android:textColor="@color/search_hint"
                 android:layout_margin="5dp" />
             <ImageView
                 android:id="@+id/searchBookScan"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="10dp"
-                android:tint="@color/gray_dark"
+                android:tint="@color/search_hint"
                 android:src="@drawable/ic_enter"
                 android:gravity="center_vertical"/>
 

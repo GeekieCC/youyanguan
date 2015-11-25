@@ -16,16 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 
-public class bookSearchFragment extends Fragment{
+import java.io.File;
+
+public class bookSearchFragment extends Fragment implements IDirectory_File{
     private static int RESULT_LOAD_IMAGE_search_background = 3;
     private static int RESULT_OK = -1;
 
     private ImageView mSearchBackground;
-    private static String stringDirectoryName="sdcard/1Gusteauscuter/";
-    private static String stringSearchBackgroundName=stringDirectoryName+"mSearchBackground.png";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,11 +43,14 @@ public class bookSearchFragment extends Fragment{
         });
 
         mSearchBackground=(ImageView) view.findViewById(R.id.search_background);
-
-        Bitmap bitmapHeader=BitmapFactory.decodeFile(stringSearchBackgroundName);
-        if(bitmapHeader!=null){
+        File file = new File(stringSearchBackgroundName);
+        if (file.exists()) {
+            Bitmap bitmapHeader=BitmapFactory.decodeFile(stringSearchBackgroundName);
             mSearchBackground.setImageBitmap(bitmapHeader);
         }
+//        if(bitmapHeader!=null){
+//            mSearchBackground.setImageBitmap(bitmapHeader);
+//        }
 
         view.findViewById(R.id.secret_book).setOnClickListener(new View.OnClickListener() {
             @Override

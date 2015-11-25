@@ -1,16 +1,14 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,17 +18,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.lzyzsd.randomcolor.RandomColor;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
@@ -41,20 +37,18 @@ import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
-import java.lang.reflect.Field;
+import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchBookResultActivity extends AppCompatActivity {
+public class SearchBookResultActivity extends AppCompatActivity implements IDirectory_File {
 
     private static final int NUM_OF_BOOKS_PER_SEARCH = 5; // 带可借信息查询时，一次加载的图书数目
     private static final int FIRST_PAGE = 1;
     private static final int FIRST_SEARCH = 1;
 
     private ImageView mSearchBackground;
-    private static String stringDirectoryName="sdcard/1Gusteauscuter/";
-    private static String stringSearchBackgroundName=stringDirectoryName+"mSearchBackground.png";
 
     private List<ResultBook> mSearchBookList;
 
@@ -86,15 +80,10 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private boolean checkBorrowCondition = false; //是否检查可借状况
     private boolean reSearch=true;
 
-    private RandomColor randomColor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_book_result);
-//        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
-//        final ActionBar ab = getSupportActionBar();
-//        ab.setDisplayHomeAsUpEnabled(true);
 
         mProgressBar=(ProgressBar) findViewById(R.id.progressBarRefreshBookSearched);
         mProgressBar.setVisibility(View.INVISIBLE);
@@ -151,7 +140,8 @@ public class SearchBookResultActivity extends AppCompatActivity {
         initSearchCondition();
         mSearchBookList=new ArrayList<>();
         mSearchView = (EditText) findViewById(R.id.searchBookEditText);
-//        mSearchView.requestFocus();
+        mSearchView.requestFocus();
+
         mSearchView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -163,13 +153,14 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        findViewById(R.id.go_back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        final Activity activity = this;
+//        findViewById(R.id.go_back_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SoftInputUtil.toggleSoftInput(activity);
+//                finish();
+//            }
+//        });
         findViewById(R.id.searchBookButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,8 +170,9 @@ public class SearchBookResultActivity extends AppCompatActivity {
         });
 
         mSearchBackground=(ImageView) findViewById(R.id.search_background);
-        Bitmap bitmapHeader= BitmapFactory.decodeFile(stringSearchBackgroundName);
-        if(bitmapHeader!=null){
+        File file = new File(stringSearchBackgroundName);
+        if (file.exists()) {
+            Bitmap bitmapHeader= BitmapFactory.decodeFile(stringSearchBackgroundName);
             mSearchBackground.setImageBitmap(bitmapHeader);
         }
 
@@ -195,8 +187,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 searchBook();
             }
         });
-        randomColor = new RandomColor();
+
+//        SoftInputUtil.toggleSoftInput(this);
+
     }
+
 
     private void initSearchCondition(){
         SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
@@ -329,13 +324,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mHolder.mAuthor.setText(author);
             mHolder.mPublisher.setText(publisher);
             mHolder.mPubdate.setText(pubdate);
-            convertView.setBackgroundColor(mBook.getColor());
+            mHolder.mTitle.setTextColor(mBook.getColor());
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int color = randomColor.randomColor(Color.parseColor("#FFC0CB"), RandomColor.SaturationType.RANDOM, RandomColor.Luminosity.LIGHT);
-                    mBook.setColor(color);
+//                    mBook.setColor(getResources().getColor(R.color.red));
+                    mBook.setViewed();
                     boolean isConnected = NetworkConnectivity.isConnected(getApplicationContext());
                     if (isConnected) {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
