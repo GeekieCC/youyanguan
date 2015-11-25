@@ -23,7 +23,7 @@
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_margin="8dp"
     android:ellipsize="marquee"
     android:textColor="@color/gray_dark"
     android:fontFamily="sans-serif-light"
