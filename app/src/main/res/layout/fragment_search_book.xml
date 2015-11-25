@@ -26,6 +26,7 @@
             android:gravity="center"
             android:orientation="horizontal">
             <ImageView
+                android:id="@+id/secret_book"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_book_store"

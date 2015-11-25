@@ -39,8 +39,8 @@
                     android:layout_gravity="center|left">
                     <ImageView
                         android:id="@+id/searchBookState"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
                         android:gravity="center"

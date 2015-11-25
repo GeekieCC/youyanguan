@@ -186,7 +186,7 @@
     <style name="Card.SearchBook.Title" parent="Widget">
         <item name="android:layout_marginBottom">@dimen/margin_tiny</item>
         <item name="android:textAppearance">?android:textAppearanceLarge</item>
-        <item name="android:textColor">@color/teal</item>
+        <item name="android:textColor">@color/primaryColor</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">20sp</item>
         <item name="android:padding">2dp</item>

@@ -302,14 +302,19 @@ public class SearchBookResultActivity extends AppCompatActivity {
             int borrowCondition = mBook.getBorrowCondition();
             if (borrowCondition == ResultBook.BOTH_YES) { //两校区都可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.BOTH_NOT) { //两校区都不可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
             }
 
             // TO 设置Book对应属性
@@ -351,10 +356,10 @@ public class SearchBookResultActivity extends AppCompatActivity {
             if (!mBook.isCollected()) {
                 mHolder.mButton.setText("收藏");
                 mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
-                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.primaryColor));
             } else {
                 mHolder.mButton.setText("取消");
-                mHolder.mButton.setTextColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setTextColor(getResources().getColor(R.color.primaryColor));
                 mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.gray_light));
             }
             // 收藏和取消收藏的动作监听

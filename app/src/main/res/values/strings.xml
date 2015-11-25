@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">油盐罐</string>
+    <string name="app_name">万  卷</string>
 
     <!--    MenuMain    -->
     <string name="action_open_drawer">打开侧栏</string>
@@ -12,7 +12,7 @@
     <string name="action_share">分享</string>
 
     <!--    MenuDrawer    -->
-    <string name="id_link">陈秧</string>
+    <string name="id_link">小厨</string>
 
     <string name="nav_home">日程管理</string>
     <string name="nav_course">课表管理</string>

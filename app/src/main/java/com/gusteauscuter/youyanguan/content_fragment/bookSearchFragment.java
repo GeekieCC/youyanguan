@@ -48,7 +48,7 @@ public class bookSearchFragment extends Fragment{
             mSearchBackground.setImageBitmap(bitmapHeader);
         }
 
-        mSearchBackground.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.secret_book).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "设置搜索背景...", Toast.LENGTH_SHORT).show();
