@@ -2,8 +2,8 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <stroke android:width="0dp" android:color="@color/search_blank_stroke" /><!--边框颜色-->
-            <solid android:color="@color/search_background" /><!--填充色-->
+            <stroke android:width="2dp" android:color="@color/white" /><!--边框颜色-->
+            <solid android:color="@color/primaryColor" /><!--填充色-->
             <corners android:radius="0dp" />
         </shape>
     </item>

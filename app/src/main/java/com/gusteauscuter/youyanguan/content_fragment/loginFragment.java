@@ -32,7 +32,6 @@ public class loginFragment extends Fragment {
     private EditText userNameEditText;
     private EditText passEditText;
     private Button loginButton;
-    private Button cancelButton;
     private ProgressBar mProgressBar;
     private int IsFiveTimes=1;
     private boolean disableDoubleClick = true; // 防治连击登陆按钮造成的闪退
@@ -68,20 +67,6 @@ public class loginFragment extends Fragment {
                     }
                 }, 500); //收起软键盘需要一定时间
 
-            }
-        });
-
-        cancelButton = (Button) view.findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                SoftInputUtil.hideSoftInput(getActivity(), cancelButton);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((NavigationActivity) getActivity()).openDrawer();
-                    }
-                }, 500); //收起软键盘需要一定时间
             }
         });
 

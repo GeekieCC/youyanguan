@@ -24,7 +24,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="10dp"
-                android:tint="@color/search_hint"
+                android:tint="@color/search_hint2"
                 android:src="@drawable/ic_search_book"
                 android:gravity="center_vertical"/>
             <EditText
@@ -37,8 +37,8 @@
                 android:textSize="18sp"
                 android:padding="5dp"
                 android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textColorHint="@color/search_hint"
+                android:textColor="@color/search_text_color"
+                android:textColorHint="@color/search_hint2"
                 android:textColorHighlight="@color/black"
                 android:layout_margin="5dp"
                 android:imeOptions="actionSearch"
@@ -51,7 +51,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="10dp"
-                android:tint="@color/search_hint"
+                android:tint="@color/search_hint2"
                 android:src="@drawable/ic_enter"
                 android:gravity="center_vertical"/>
 
@@ -77,7 +77,7 @@
                     android:layout_below="@id/id_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:background="@color/gray"
+                    android:background="@color/search_background"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 

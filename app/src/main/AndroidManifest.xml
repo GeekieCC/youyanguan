@@ -39,17 +39,17 @@
         <activity
             android:name=".DepActivity.SettingActivity"
             android:label="@string/nav_setting"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/SettingTheme" >
         </activity>
         <activity
             android:name=".DepActivity.AboutActivity"
             android:label="@string/title_activity_about"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/SettingTheme" >
         </activity>
         <activity
             android:name=".DepActivity.UserInforActivity"
             android:label="@string/title_activity_userinfor"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/SettingTheme" >
         </activity>
         <activity
             android:name=".DepActivity.BookDetailActivity"
@@ -59,7 +59,7 @@
         <activity
             android:name=".DepActivity.SearchBookResultActivity"
             android:label="@string/title_activity_search_result"
-            android:theme="@style/AppTheme"
+            android:theme="@style/SearchResultTheme"
             android:windowSoftInputMode="stateVisible|adjustPan">
         </activity>
         <activity

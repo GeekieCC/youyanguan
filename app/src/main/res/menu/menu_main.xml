@@ -18,6 +18,7 @@
 
         <item android:id="@+id/action_refresh_book"
             android:title="@string/action_refresh_book"
+            android:icon="@drawable/action_refresh"
             app:showAsAction="never"/>
 
         <item android:id="@+id/action_share"

@@ -8,8 +8,14 @@
     <color name="gray_trans">#cc8b8b8b</color>
     <color name="gray_light">#dfe5e5</color>
 
-    <color name="search_hint">@color/gray_light</color>
-    <color name="search_background">@color/primaryColor</color>
+    <color name="search_hint">#cbcbcb</color>
+    <color name="search_background">#88fdfdfe</color>
+    <color name="search_blank_stroke">@color/white</color>
+
+    <color name="search_hint2">#989898</color>
+    <color name="search_background2">#fdfdfd</color>
+    <color name="search_blank_stroke2">#cbcbcb</color>
+    <color name="search_text_color">@color/primaryColor</color>
 
     <color name="primaryColor">#295086</color>
     <color name="blue1">#027FD4</color>

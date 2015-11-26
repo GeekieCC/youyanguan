@@ -4,14 +4,9 @@
 
 
     <style name="Theme.Base" parent="Theme.AppCompat.Light.NoActionBar" >
-        <item name="android:windowAnimationStyle">@style/fade</item>
         <item name="android:windowFullscreen">false</item>
-    </style>
 
-    <style name="SplashTheme" parent="Theme.Base" >
-        <item name="android:colorPrimaryDark">@android:color/transparent</item>
     </style>
-
 
     <style name="fade" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
@@ -21,22 +16,43 @@
     </style>
 
 
+    <style name="SplashTheme" parent="Theme.Base" >
+        <item name="android:windowAnimationStyle">@style/fade</item>
+        <item name="android:colorPrimaryDark">@color/white</item>
+
+    </style>
+
     <style name="AppTheme" parent="Theme.Base">
         <!-- Customize your theme here. -->
         <!--导航栏底色-->
+        <item name="android:colorAccent">@color/red</item>
         <!--状态栏底色-->
         <item name="android:colorPrimaryDark">@color/primaryColor</item>
         <!--导航栏上的标题颜色-->
         <item name="android:textColorPrimary">@android:color/white</item>
         <!--Activity窗口的颜色-->
         <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/darker_gray</item>
         <!--EditText 输入框中字体的颜色-->
         <item name="android:editTextColor">@color/white</item>
+        <item name="android:windowAnimationStyle">@style/fade</item>
+
     </style>
 
-    <style name="AppThemeDep"  parent="AppTheme">
-        <item name="android:colorPrimaryDark">@color/primaryColor</item>
+    <style name="slide" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/in_from_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/out_to_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/in_from_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/out_to_right</item>
+    </style>
 
+    <style name="SettingTheme"  parent="AppTheme">
+        <item name="android:windowAnimationStyle">@style/slide</item>
+
+    </style>
+
+    <style name="SearchResultTheme"  parent="AppTheme">
+        <item name="android:colorPrimaryDark">#000001</item>
     </style>
 
 
@@ -122,15 +138,22 @@
     <!--style name="AppTheme" parent="Theme.Sample" /-->
     <!-- Widget styling -->
 
-    <style name="Widget" />
+    <style name="Widget">
+
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>/>
+    </style>
 
     <style name="Theme.Button.Login" parent="Widget">
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_margin">5dp</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:padding">2dp</item>
-        <item name="android:textColor">@color/black_54</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">20sp</item>
+        <item name="android:background">@drawable/bg_login_button</item>
+    </style>
+
+    <style name="Theme.blank.Login" parent="Widget">
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:background">@drawable/bg_login_blank</item>
     </style>
 
     <style name="Widget.SampleContentContainer">
