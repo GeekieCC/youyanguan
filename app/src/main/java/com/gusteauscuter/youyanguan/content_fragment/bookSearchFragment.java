@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.util.FileOperation;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 
 import java.io.File;
@@ -95,7 +96,7 @@ public class bookSearchFragment extends Fragment implements IDirectory_File{
             Bitmap bitmap= BitmapFactory.decodeFile(picturePath);
             mSearchBackground.setImageBitmap(bitmap);
 
-            ScreenShot.saveAsImg(bitmap, stringSearchBackgroundName);
+            FileOperation.CopySdcardFile(picturePath, stringSearchBackgroundName);
         }
 
     }

@@ -23,6 +23,7 @@ import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.userLogin;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.util.ACache;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class bookBorrowedFragment extends Fragment {
+public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
     private static final int HAS_PICTURE = 5;
     private static final int HAS_NO_PICTURE = 10;
@@ -393,15 +394,15 @@ public class bookBorrowedFragment extends Fragment {
 
     public void shareBooksBorrowed(){
 
-        String stringFileName="sdcard/_share_books_borrowed.png";
-        ScreenShot.shoot(stringFileName, shareView);
+//        String stringFileName="sdcard/_share_books_borrowed.png";
+        ScreenShot.shoot(stringSharedBooksBorrowedName, shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_TITLE, "Share");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBooksBorrowedName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent,getResources().getString(R.string.action_share)));
 

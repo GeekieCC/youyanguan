@@ -29,6 +29,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
@@ -37,11 +38,10 @@ import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BookDetailActivity extends AppCompatActivity {
+public class BookDetailActivity extends AppCompatActivity implements IDirectory_File {
 
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int COLLECT_RESULT_CODE = 2;
-    private static String stringDirectoryName="sdcard/1Gusteauscuter/";
 
     private ProgressBar  mProgressBar;
     private SimpleBaseBook simpleBaseBook;
@@ -211,15 +211,14 @@ public class BookDetailActivity extends AppCompatActivity {
 
     private void shareBook(){
 
-        String stringFileName=stringDirectoryName+"mShareBook.png";
-        ScreenShot.shoot(stringFileName,shareView);
+        ScreenShot.shoot(stringSharedBookDetailName,shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_TITLE, "Share");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBookDetailName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, "Share"));
 

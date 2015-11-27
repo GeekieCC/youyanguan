@@ -42,6 +42,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.HomeItem;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
+import com.gusteauscuter.youyanguan.util.FileOperation;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
@@ -225,7 +226,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mHeaderImage.setImageBitmap(bitmap);
 
-            ScreenShot.saveAsImg(bitmap,stringHeaderName);
+            FileOperation.CopySdcardFile(picturePath, stringSearchBackgroundName);
         }
 
         if (requestCode == RESULT_LOAD_IMAGE_background && resultCode == RESULT_OK && null != data) {
@@ -243,7 +244,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mDrawerBackground.setImageBitmap(bitmap);
 
-            ScreenShot.saveAsImg(bitmap, stringBackgroundName);
+            FileOperation.CopySdcardFile(picturePath, stringSearchBackgroundName);
         }
 
     }

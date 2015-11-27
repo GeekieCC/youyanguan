@@ -25,7 +25,7 @@ public class SaveAsImage extends AsyncTask<Object, Void, Void> {
                 file.getParentFile().mkdirs();
             }
             FileOutputStream fos = new FileOutputStream(strFileName,false);
-            boolean bollean = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            boolean bollean = bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fos);
             fos.close();
 
         } catch (FileNotFoundException e) {

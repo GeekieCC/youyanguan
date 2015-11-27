@@ -7,7 +7,11 @@ public interface IDirectory_File {
 
     String stringDirectoryName="sdcard/1Gusteauscuter/";
 
-    String stringSearchBackgroundName=stringDirectoryName+"mSearchBackground.png";
-    String stringBackgroundName=stringDirectoryName+"mDrawerBackground.png";
-    String stringHeaderName=stringDirectoryName+"mHeaderImage.png";
+    String stringSearchBackgroundName=stringDirectoryName+"mSearchBackground.jpg";
+    String stringBackgroundName=stringDirectoryName+"mDrawerBackground.jpg";
+    String stringHeaderName=stringDirectoryName+"mHeaderImage.jpg";
+
+    String stringSharedBooksBorrowedName=stringDirectoryName+"mSharedBooksBorrowed.jpg";
+    String stringSharedBookDetailName=stringDirectoryName+"mSharedBookDetail.jpg";
+
 }
