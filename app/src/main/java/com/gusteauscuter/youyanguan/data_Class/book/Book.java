@@ -77,7 +77,7 @@ public class Book extends SimpleBaseBook implements Serializable {
 		int index2 = borrowedTimeAndMaxBorrowTime.indexOf('/');
 		borrowedTime = Integer.parseInt(borrowedTimeAndMaxBorrowTime.substring(0, index2));
 		maxBorrowTime = Integer.parseInt(borrowedTimeAndMaxBorrowTime.substring(index2 + 1));
-		isExpired = elements.get(9).text().equals("是") ? true : false;
+		isExpired = elements.get(9).text().equals("是");
 		//renewLink = "http://202.38.232.10/opac" + elements.get(10).select("a").first().attr("href").substring(2);
 		this.parseRenewLink(elements.get(10));
 	}
