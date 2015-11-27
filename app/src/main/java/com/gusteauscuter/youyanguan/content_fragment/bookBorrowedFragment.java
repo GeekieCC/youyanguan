@@ -357,7 +357,7 @@ public class bookBorrowedFragment extends Fragment {
                 if (result != null) {
                     mBookList=result;
                     RefreshView();
-                    Toast.makeText(getActivity(), "续借成功，自动续期30天" , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "续借成功" , Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
                 }
