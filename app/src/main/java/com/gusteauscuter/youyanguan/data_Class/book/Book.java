@@ -61,10 +61,14 @@ public class Book extends SimpleBaseBook implements Serializable {
 		bookId = s1.substring(0, s1.indexOf('&'));
 
 		int index1 = titleAndAuthor.indexOf('/');
-		title = titleAndAuthor.substring(0, index1);
-		author = titleAndAuthor.substring(index1 + 1);
+		if (index1 != -1) {
+			title = titleAndAuthor.substring(0, index1);
+			author = titleAndAuthor.substring(index1 + 1);
+		} else {
+			title = titleAndAuthor;
+            author = "";
+		}
 		volume = elements.get(3).text();
-
 		libraryName = elements.get(4).text();
 		libraryLocation = elements.get(5).text();
 		borrowDay = elements.get(6).text();
@@ -76,8 +80,6 @@ public class Book extends SimpleBaseBook implements Serializable {
 		isExpired = elements.get(9).text().equals("是") ? true : false;
 		//renewLink = "http://202.38.232.10/opac" + elements.get(10).select("a").first().attr("href").substring(2);
 		this.parseRenewLink(elements.get(10));
-
-
 	}
 
 	private void parseRenewLink(Element renewLinkElement) {
