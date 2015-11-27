@@ -16,18 +16,17 @@
             android:id="@+id/emptyInformation"
             android:visibility="gone"
             android:padding="@dimen/margin_large"
-            android:text="You didn't collect any books."
+            android:gravity="center"
+            android:text="@string/not_collect_books"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <GridView android:id="@+id/bookListView"
-            android:numColumns="1"
-            android:divider="@android:color/white"
-            android:layout_marginLeft="5dp"
+        <ListView android:id="@+id/bookListView"
+            style="@style/Widget.SampleDashboard.Grid"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content">
 
-        </GridView>
+        </ListView>
 
     </LinearLayout>
 

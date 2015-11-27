@@ -1,6 +1,8 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -8,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
@@ -25,13 +28,16 @@ public class SettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-
     }
 
     private void initView() {
 
         setContentView(R.layout.activity_setting);
-        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.id_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
 
         findViewById(R.id.check_update).setOnClickListener(
                 new View.OnClickListener() {
@@ -49,7 +55,8 @@ public class SettingActivity extends AppCompatActivity {
                                 if (updateStatus == UpdateStatus.Yes) {
                                     //版本有更新
                                 } else if (updateStatus == UpdateStatus.No) {
-                                    Toast.makeText(getApplication(), R.string.update_state_no, Toast.LENGTH_SHORT).show();
+                                    String toastString= getResources().getString(R.string.update_state_no)+getVersionInformation();
+                                    Toast.makeText(getApplication(),toastString , Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -85,12 +92,37 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
+    public String getVersionInformation(){
+        PackageManager pm = getPackageManager();
+        PackageInfo pi ;
+        String versionString="null";
+        try {
+            pi = pm.getPackageInfo(this.getPackageName(), 0);
+            versionString="\nVersionCode : "+Integer.toString(pi.versionCode)
+                    +"\nVesrionName : "+pi.versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionString;
+    }
+
     public void SendEmailIntent(String fromWhere){
         Intent data=new Intent(Intent.ACTION_SENDTO);
         data.setData(Uri.parse("mailto:gusteauscuter@163.com"));
         data.putExtra(Intent.EXTRA_SUBJECT, "【反馈建议/" + fromWhere + "】");
         data.putExtra(Intent.EXTRA_TEXT, "详细情况：\n");
         startActivity(data);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

@@ -95,6 +95,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
     private static int RESULT_LOAD_IMAGE_header = 1;
     private static int RESULT_LOAD_IMAGE_background = 2;
 
+    private int timesOfClickSecretPosition=0;
     String arg;
 
 
@@ -166,13 +167,19 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         mTextBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "设置背景...", Toast.LENGTH_SHORT).show();
 
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                if(timesOfClickSecretPosition ==2){
+                    timesOfClickSecretPosition =0;
+                    Toast.makeText(getApplicationContext(), "设置背景...", Toast.LENGTH_SHORT).show();
 
-                startActivityForResult(i, RESULT_LOAD_IMAGE_background);
+                    Intent i = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                    startActivityForResult(i, RESULT_LOAD_IMAGE_background);
+                }else{
+                    timesOfClickSecretPosition++;
+                }
             }
         });
 

@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/margin_medium"
+        android:padding="@dimen/margin_large"
         android:src="@mipmap/splash"
         android:scaleType="centerInside"/>
 
@@ -19,7 +19,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="26dp"
         android:layout_marginLeft="52dp"
-        android:text="version 1.0"
-        android:textSize="20sp"
+        android:text="version 0.0"
+        android:textSize="16sp"
         android:textColor="@android:color/darker_gray" />
 </RelativeLayout>

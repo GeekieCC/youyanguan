@@ -101,7 +101,7 @@ public class SearchBookResultActivity extends AppCompatActivity implements IDire
 
                 String type = searchBookTypeSpinner.getItemAtPosition(i).toString();
                 switch (type) {
-                    case "标题":
+                    case "题名":
                         searchBookType = "TITLE";
                         break;
                     case "作者":
@@ -222,6 +222,11 @@ public class SearchBookResultActivity extends AppCompatActivity implements IDire
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
             bookToSearch = mSearchView.getText().toString().replaceAll("\\s", "");
+
+            if(bookToSearch==""){
+                Toast.makeText(getApplicationContext(),"请输入搜索内容！",Toast.LENGTH_SHORT).show();
+                return;
+            }
             SoftInputUtil.hideSoftInput(this, mSearchView); //收起软键盘
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -562,14 +567,6 @@ public class SearchBookResultActivity extends AppCompatActivity implements IDire
         }
         mAdapter.notifyDataSetChanged();
         mListView.requestFocus();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_search_book, menu);
-
-        return true;
     }
 
 }

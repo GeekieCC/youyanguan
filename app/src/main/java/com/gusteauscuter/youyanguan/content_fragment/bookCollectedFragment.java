@@ -11,8 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -36,7 +35,7 @@ public class bookCollectedFragment extends Fragment{
 
 
     private List<SimpleBaseBook> mBookList=new ArrayList<>();
-    private GridView mListView;
+    private ListView mListView;
     private ProgressBar mProgressBar;
 
     private CollectSearchBookAdapter mAdapter;
@@ -48,11 +47,11 @@ public class bookCollectedFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_book_collection, container, false);
+        View view = inflater.inflate(R.layout.fragment_book_collected, container, false);
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
-        mListView = (GridView) view.findViewById(R.id.bookListView);
+        mListView = (ListView) view.findViewById(R.id.bookListView);
 
         initData();
 

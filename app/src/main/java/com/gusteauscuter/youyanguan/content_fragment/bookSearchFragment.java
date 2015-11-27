@@ -25,6 +25,7 @@ import java.io.File;
 public class bookSearchFragment extends Fragment implements IDirectory_File{
     private static int RESULT_LOAD_IMAGE_search_background = 3;
     private static int RESULT_OK = -1;
+    private int timesOfClickSecretPosition=0;
 
     private ImageView mSearchBackground;
 
@@ -55,13 +56,19 @@ public class bookSearchFragment extends Fragment implements IDirectory_File{
         view.findViewById(R.id.secret_book).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "设置搜索背景...", Toast.LENGTH_SHORT).show();
+                if(timesOfClickSecretPosition==2) {
+                    timesOfClickSecretPosition = 0;
+                    Toast.makeText(getActivity(), "设置搜索背景...", Toast.LENGTH_SHORT).show();
 
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    Intent i = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                startActivityForResult(i, RESULT_LOAD_IMAGE_search_background);
+                    startActivityForResult(i, RESULT_LOAD_IMAGE_search_background);
+                }else{
+                    timesOfClickSecretPosition++;
+                }
+
             }
         });
 

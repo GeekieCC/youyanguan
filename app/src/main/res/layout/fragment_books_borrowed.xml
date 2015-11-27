@@ -9,7 +9,8 @@
         android:visibility="gone"
         android:id="@+id/emptyInformation"
         android:padding="@dimen/margin_large"
-        android:text="You didn't borrow any books."
+        android:gravity="center"
+        android:text="@string/not_borrow_books"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -21,6 +22,7 @@
             android:id="@+id/bookListView"
             android:numColumns="3"
             android:divider="@android:color/white"
+            android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >

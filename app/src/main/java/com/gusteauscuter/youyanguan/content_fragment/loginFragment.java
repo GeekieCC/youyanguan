@@ -33,7 +33,7 @@ public class loginFragment extends Fragment {
     private EditText passEditText;
     private Button loginButton;
     private ProgressBar mProgressBar;
-    private int IsFiveTimes=1;
+    private int timesClickLoginButton =1;
     private boolean disableDoubleClick = true; // 防治连击登陆按钮造成的闪退
 
     @Override
@@ -75,26 +75,27 @@ public class loginFragment extends Fragment {
 
     private void doLogin() {
         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
-        if (isConnected) {
-            String username = userNameEditText.getText().toString();
-            String pass = passEditText.getText().toString();
-            if (IsFiveTimes == 5) {
-                username = "201421003124";
-                pass = "ziqian930209";
-            }
-
-            if (username.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
-                IsFiveTimes++;
-            } else {
-                AsyLoginLibrary myAsy = new AsyLoginLibrary();
-                myAsy.execute(username, pass);
-            }
-
-        } else {
+        if (!isConnected) {
             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                     .show();
+            return;
         }
+        String username = userNameEditText.getText().toString();
+        String pass = passEditText.getText().toString();
+        if (timesClickLoginButton == 5) {
+            username = "201421003124";
+            pass = "ziqian930209";
+        }
+
+        if (username.isEmpty() || pass.isEmpty()) {
+            Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
+            timesClickLoginButton++;
+            return;
+        }
+
+        AsyLoginLibrary myAsy = new AsyLoginLibrary();
+        myAsy.execute(username, pass);
+
     }
 
     private class AsyLoginLibrary extends AsyncTask<String, Void, userLogin> {
