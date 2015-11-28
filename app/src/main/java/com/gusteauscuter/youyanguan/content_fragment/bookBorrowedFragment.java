@@ -267,7 +267,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
                     bookLists = libClient.getBooks();
-                    inflatePicture(bookLists);
+//                    inflatePicture(bookLists);
                 }
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
@@ -337,7 +337,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
                 if (libClient.login(account[0], account[1])) {
                     if (libClient.renew(bookToRenew)) {
                         bookLists = libClient.getBooks();
-                        inflatePicture(bookLists);
+//                        inflatePicture(bookLists);
 
                     }
                 }
@@ -370,16 +370,20 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == HAS_NO_PICTURE && resultCode == BookDetailActivity.PICTURE_RESULT_CODE) {
-            byte[] picture = data.getByteArrayExtra("picture");
-            int position = data.getIntExtra("position", 0);
-            mBookList.get(position).setPicture(picture);
-            RefreshView();
-        }
+//        if (requestCode == HAS_NO_PICTURE && resultCode == BookDetailActivity.PICTURE_RESULT_CODE) {
+//            byte[] picture = data.getByteArrayExtra("picture");
+//            int position = data.getIntExtra("position", 0);
+//            mBookList.get(position).setPicture(picture);
+//            RefreshView();
+//        }
+
+        RefreshView();
+
     }
 
     private void RefreshView(){
 //        SortBookList();
+        inflatePicture(mBookList);
         mAdapter.notifyDataSetChanged();
         ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         String title=getResources().getString(R.string.nav_book_borrowed);

@@ -31,7 +31,6 @@ import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.ACache;
-import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 
 import java.io.File;
@@ -292,10 +291,10 @@ public class BookDetailActivity extends AppCompatActivity implements IDirectory_
                     inflateBottom(result);
 
                     //返回给上一个activity
-                    Intent intent = new Intent();
-                    intent.putExtra("picture", BitmapUtil.getBytes(bitmap));
-                    intent.putExtra("position", position);
-                    BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
+//                    Intent intent = new Intent();
+//                    intent.putExtra("picture", BitmapUtil.getBytes(bitmap));
+//                    intent.putExtra("position", position);
+//                    BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
 
                 } else {
                     bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
