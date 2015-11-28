@@ -169,7 +169,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             @Override
             public void onClick(View view) {
 
-                if(timesOfClickSecretPosition ==2){
+                if(timesOfClickSecretPosition ==10){
                     timesOfClickSecretPosition =0;
                     Toast.makeText(getApplicationContext(), "设置背景...", Toast.LENGTH_SHORT).show();
 
@@ -226,7 +226,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mHeaderImage.setImageBitmap(bitmap);
 
-            FileOperation.CopySdcardFile(picturePath, stringSearchBackgroundName);
+            FileOperation.CopySdcardFile(picturePath, stringHeaderName);
         }
 
         if (requestCode == RESULT_LOAD_IMAGE_background && resultCode == RESULT_OK && null != data) {
@@ -244,7 +244,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mDrawerBackground.setImageBitmap(bitmap);
 
-            FileOperation.CopySdcardFile(picturePath, stringSearchBackgroundName);
+            FileOperation.CopySdcardFile(picturePath, stringBackgroundName);
         }
 
     }

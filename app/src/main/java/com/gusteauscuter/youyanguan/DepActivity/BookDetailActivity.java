@@ -231,8 +231,8 @@ public class BookDetailActivity extends AppCompatActivity implements IDirectory_
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(), R.string.ing_getBookInformation, Toast.LENGTH_SHORT)
-                    .show();
+//            Toast.makeText(getApplicationContext(), R.string.ing_getBookInformation, Toast.LENGTH_SHORT)
+//                    .show();
             super.onPreExecute();
         }
 
