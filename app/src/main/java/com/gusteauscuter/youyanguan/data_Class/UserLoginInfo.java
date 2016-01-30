@@ -5,22 +5,22 @@ import java.io.Serializable;
 /**用户登陆信息和状态类
  * Created by Ziqian on 2015/9/3.
  */
-public class userLogin implements Serializable {
+public class UserLoginInfo implements Serializable {
 
 
     String username;
     String password;
     private boolean isLogined;
 
-    public userLogin(){
+    public UserLoginInfo(){
         this("","");
     }
 
-    public userLogin(String username,String password){
+    public UserLoginInfo(String username, String password){
         this(username, password, false);
     };
 
-    public userLogin(String username,String password, boolean isLogined){
+    public UserLoginInfo(String username, String password, boolean isLogined){
         this.username=username;
         this.password=password;
         this.isLogined=isLogined;

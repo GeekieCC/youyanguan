@@ -82,7 +82,7 @@ public class homeFragment extends Fragment {
 
     /* @ WangCe
 * TODO  deal with dataChange with the "NavigationActivity"
-* such as UserLogin, BookList if they are already existed
+* such as UserLoginInfo, BookList if they are already existed
 * so don't have to get data again
 * */
     private void initDataFromActivity(){

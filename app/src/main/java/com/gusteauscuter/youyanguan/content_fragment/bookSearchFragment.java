@@ -57,7 +57,8 @@ public class bookSearchFragment extends Fragment implements IDirectory_File{
         view.findViewById(R.id.secret_book).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(timesOfClickSecretPosition==10) {
+                timesOfClickSecretPosition++;
+                if(timesOfClickSecretPosition==3) {
                     timesOfClickSecretPosition = 0;
                     Toast.makeText(getActivity(), "设置搜索背景...", Toast.LENGTH_SHORT).show();
 
@@ -66,10 +67,7 @@ public class bookSearchFragment extends Fragment implements IDirectory_File{
                             android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
                     startActivityForResult(i, RESULT_LOAD_IMAGE_search_background);
-                }else{
-                    timesOfClickSecretPosition++;
                 }
-
             }
         });
 

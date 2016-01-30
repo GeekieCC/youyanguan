@@ -15,10 +15,13 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
+import com.gusteauscuter.youyanguan.data_Class.DeviceInfo;
+import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
+import com.gusteauscuter.youyanguan.util.Device;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
@@ -45,8 +48,8 @@ public class loginFragment extends Fragment {
         userNameEditText = (EditText) view.findViewById(R.id.id_username);
         passEditText = (EditText) view.findViewById(R.id.id_passward_library);
 
-        userNameEditText.setText(((NavigationActivity) getActivity()).getmUserLogin().getUsername());
-        passEditText.setText(((NavigationActivity) getActivity()).getmUserLogin().getPassword());
+        userNameEditText.setText(((NavigationActivity) getActivity()).getmUserLoginInfo().getUsername());
+        passEditText.setText(((NavigationActivity) getActivity()).getmUserLoginInfo().getPassword());
         userNameEditText.hasFocus();
 
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
@@ -98,7 +101,7 @@ public class loginFragment extends Fragment {
 
     }
 
-    private class AsyLoginLibrary extends AsyncTask<String, Void, userLogin> {
+    private class AsyLoginLibrary extends AsyncTask<String, Void, UserLoginInfo> {
         private boolean serverOK = true; //处理服务器异常
         private boolean isLogined = false;
         @Override
@@ -109,28 +112,31 @@ public class loginFragment extends Fragment {
         }
 
         @Override
-        protected userLogin doInBackground(String... account) {
-            userLogin LoginResult = null;
+        protected UserLoginInfo doInBackground(String... account) {
+            UserLoginInfo LoginResult = null;
             try {
                 LibraryClient libClient = new LibraryClient();
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
-                    LoginResult = new userLogin(account[0], account[1], true);
-                }
+                    LoginResult = new UserLoginInfo(account[0], account[1], true);
+                }else
+                    LoginResult = new UserLoginInfo(account[0], account[1], false);
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            CollectInfo.postRequest(LoginResult);
             return LoginResult;
         }
 
         @Override
-        protected void onPostExecute(userLogin result) {
+        protected void onPostExecute(UserLoginInfo result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
-                    ((NavigationActivity)getActivity()).setmUserLogin(result);
+                    ((NavigationActivity)getActivity()).setmUserLoginInfo(result);
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
                     SaveData(result.getUsername(),result.getPassword());
                 } else {
@@ -150,7 +156,7 @@ public class loginFragment extends Fragment {
             shareData.putString("USERNAME",username);
             shareData.putString("PASSWORD", pass);
             shareData.putBoolean("ISLOGINED", true);
-            shareData.commit();
+            shareData.apply();
         }
     }
 

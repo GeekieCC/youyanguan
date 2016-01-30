@@ -6,10 +6,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.gusteauscuter.youyanguan.data_Class.DeviceInfo;
+import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
+import com.gusteauscuter.youyanguan.util.Device;
+import com.gusteauscuter.youyanguan.util.PhoneInfo;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -32,7 +37,15 @@ public class SplashActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
+        /*
+         * add getDeviceInformation here 
+         */
+        getDeviceInformation();
+        /*
+         * END 
+         */
+        
         handler.postDelayed(runnable = new Runnable() {
 
             @Override
@@ -41,7 +54,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 3000);
+        }, 2000);
 
     }
 
@@ -62,4 +75,19 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    private void getDeviceInformation(){
+        String deviceID=Device.GetDeviceID(this);
+
+        DeviceInfo deviceInfo=new DeviceInfo();
+        deviceInfo.setWifiID(Device.getWifiID(this));
+        deviceInfo.setPhoneID(Device.getSimID(this));
+        CollectInfo.postRequest(deviceInfo);
+        //Toast.makeText(getApplicationContext(), deviceID, Toast.LENGTH_SHORT).show();
+
+        PhoneInfo simInfo = new PhoneInfo(this);
+        System.out.println("getProvidersName:" + simInfo.getProvidersName());
+        System.out.println("getNativePhoneNumber:" + simInfo.getNativePhoneNumber());
+        System.out.println("------------------------");
+        System.out.println("getPhoneInfo:" + simInfo.getPhoneInfo());
+    }
 }

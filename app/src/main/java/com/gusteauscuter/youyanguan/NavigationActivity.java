@@ -38,17 +38,16 @@ import com.gusteauscuter.youyanguan.content_fragment.courseFragment;
 import com.gusteauscuter.youyanguan.content_fragment.homeFragment;
 import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
+import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.HomeItem;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.FileOperation;
-import com.gusteauscuter.youyanguan.util.ScreenShot;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
 import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationViewLeft;
     private ActionBar mActionBar=null;
-    private userLogin mUserLogin;
+    private UserLoginInfo mUserLoginInfo;
     private FrameLayout mContentFramelayout;
 
     private bookBorrowedFragment mBookBorrowedFragment;
@@ -121,7 +120,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         String username = shareData.getString("USERNAME", "");
         String password = shareData.getString("PASSWORD", "");
         boolean isLogined = shareData.getBoolean("ISLOGINED", false);
-        mUserLogin = new userLogin(username, password, isLogined);
+        mUserLoginInfo = new UserLoginInfo(username, password, isLogined);
     }
 
 
@@ -286,7 +285,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
 
     public void JumpToBookFragment(){
 
-        if (mUserLogin.IsLogined()){
+        if (mUserLoginInfo.IsLogined()){
             if (mBookBorrowedFragment ==null)
                 mBookBorrowedFragment =new bookBorrowedFragment();
             FragmentManager mFragmentManager = getFragmentManager();
@@ -438,7 +437,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
 
         if (item.getItemId()==R.id.action_log_out) {
 
-//            mUserLogin=new userLogin();
+//            mUserLoginInfo=new UserLoginInfo();
             SharedPreferences.Editor shareData =getSharedPreferences("data",0).edit();
             shareData.putBoolean("ISLOGINED",false);
             shareData.commit();
@@ -517,16 +516,16 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
 
     }
 
-    public userLogin getmLogin(){
-        return mUserLogin;
+    public UserLoginInfo getmLogin(){
+        return mUserLoginInfo;
     }
 
-    public void setmUserLogin(userLogin mUserLogin){
-        this.mUserLogin=mUserLogin;
+    public void setmUserLoginInfo(UserLoginInfo mUserLoginInfo){
+        this.mUserLoginInfo = mUserLoginInfo;
     }
 
-    public userLogin getmUserLogin(){
-        return this.mUserLogin;
+    public UserLoginInfo getmUserLoginInfo(){
+        return this.mUserLoginInfo;
     }
 
 

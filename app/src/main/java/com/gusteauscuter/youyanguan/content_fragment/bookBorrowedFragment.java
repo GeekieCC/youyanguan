@@ -21,8 +21,8 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
@@ -55,7 +55,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
     private BookAdapter mAdapter;
     private List<Book> mBookList=new ArrayList<>();
 
-    private userLogin mUserLogin=new userLogin();
+    private UserLoginInfo mUserLoginInfo =new UserLoginInfo();
     private boolean isFirstTime=true;
 
     private boolean refreshColor=true;
@@ -79,7 +79,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
     private void initData(){
 
-        mUserLogin=((NavigationActivity)getActivity()).getmLogin();
+        mUserLoginInfo =((NavigationActivity)getActivity()).getmLogin();
 
         if(mBookList==null) {
             mBookList = new ArrayList<>();
@@ -107,7 +107,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
         if(isConnected){
             GetBooksAsy getBooksAsy=new GetBooksAsy();
-            getBooksAsy.execute(mUserLogin.getUsername(),mUserLogin.getPassword());
+            getBooksAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
         }else{
             Toast.makeText(getActivity(), R.string.internet_not_connected
                     , Toast.LENGTH_SHORT).show();
@@ -164,7 +164,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
                         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
                         if(isConnected){
                             RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
-                            renewBookAsy.execute(mUserLogin.getUsername(), mUserLogin.getPassword());
+                            renewBookAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
                         } else{
                             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                         }
