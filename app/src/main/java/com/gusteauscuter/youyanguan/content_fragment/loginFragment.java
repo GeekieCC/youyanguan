@@ -15,13 +15,11 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.DeviceInfo;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
-import com.gusteauscuter.youyanguan.util.Device;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 

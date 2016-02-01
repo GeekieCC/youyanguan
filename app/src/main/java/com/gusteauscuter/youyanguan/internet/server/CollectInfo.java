@@ -1,7 +1,6 @@
 package com.gusteauscuter.youyanguan.internet.server;
-
-import com.gusteauscuter.youyanguan.data_Class.DeviceInfo;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
+import com.gusteauscuter.youyanguan.util.DeviceInfo;
 
 import org.apache.commons.httpclient.NameValuePair;
 
@@ -23,8 +22,11 @@ public class CollectInfo {
     public static void postRequest( DeviceInfo deviceInfo){
 
         NameValuePair[] nameValuePairs = {
-                new NameValuePair("wifiID", deviceInfo.getWifiID()),
-                new NameValuePair("phoneID", deviceInfo.getPhoneID()) };
+                new NameValuePair("WifiID", deviceInfo.getWifiID()),
+                new NameValuePair("PhoneNum", deviceInfo.getLine1Number()),
+                new NameValuePair("NetworkOperator", deviceInfo.getNetworkOperator()),
+                new NameValuePair("IMEI_DeviceId", deviceInfo.getIMEI_DeviceId()),
+                new NameValuePair("SimOperator", deviceInfo.getSimOperator())};
 
         new PostThread(URL_POST_DEVICE_INFO,nameValuePairs).start();
     }
