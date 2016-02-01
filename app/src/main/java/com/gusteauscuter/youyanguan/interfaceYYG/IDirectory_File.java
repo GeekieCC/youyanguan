@@ -5,7 +5,7 @@ package com.gusteauscuter.youyanguan.interfaceYYG;
  */
 public interface IDirectory_File {
 
-    String stringDirectoryName="sdcard/1Gusteauscuter/";
+    String stringDirectoryName="sdcard/libSCUT/";
 
     String stringSearchBackgroundName=stringDirectoryName+"mSearchBackground.jpg";
     String stringBackgroundName=stringDirectoryName+"mDrawerBackground.jpg";

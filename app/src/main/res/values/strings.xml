@@ -78,7 +78,7 @@
     <!--    Setting information   -->
 
     <string name="check_update">检查更新</string>
-    <string name="update_state_start">获取版本信息中...</string>
+    <string name="update_state_start">获取版本信息中&#8230;</string>
     <string name="update_state_no">当前已是最新版本，无需更新</string>
     <string name="clear_cache">清除缓存</string>
     <string name="clear_cache_completed">缓存清理成功</string>
@@ -94,7 +94,7 @@
     </string>
 
     <string name="help0">
-        0.自定义:一款有"BIG"的软件怎么可能没有自定义,这不完美？！如需还原默认背景，手动清除./1Gusteauscuter/目录对应图片
+        0.自定义:一款有[BIG]的软件怎么可能没有自定义,这不完美？！如需还原默认背景，手动清除./libSCUT/目录对应图片
     </string>
 
     <string name="help1">
@@ -108,11 +108,11 @@
     </string>
 
     <string name="help3">
-        3.收藏:在书籍详情页或搜索结果页点击收藏，即可将发现的图书记录下来，方便下次借阅...
+        3.收藏:在书籍详情页或搜索结果页点击收藏，即可将发现的图书记录下来，方便下次借阅&#8230;
     </string>
 
     <string name="help4">
-        4.分享:在书籍详情或我的借阅界面,选择菜单栏中的分享选项,即可将图片快速分享至QQ,朋友圈...
+        4.分享:在书籍详情或我的借阅界面,选择菜单栏中的分享选项,即可将图片快速分享至QQ,朋友圈&#8230;
     </string>
 
     <string name="check_toKnow">
