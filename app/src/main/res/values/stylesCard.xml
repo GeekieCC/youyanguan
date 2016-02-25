@@ -9,7 +9,7 @@
         <item name="android:layout_marginTop">3dp</item>
         <item name="android:layout_marginBottom">3dp</item>
         <item name="cardCornerRadius">2dp</item>
-        <item name="cardElevation">3dp</item>
+        <item name="cardElevation">1dp</item>
         <item name="contentPadding">0dp</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
     </style>
@@ -163,12 +163,12 @@
     <!--    style for Card.SearchBook     **************************************************************************************    -->
     <style name="Widget.SampleDashboard.Grid" parent="Widget">
         <item name="android:stretchMode">columnWidth</item>
-        <item name="android:columnWidth">150dp</item>
-        <item name="android:numColumns">auto_fit</item>
+        <item name="android:numColumns">1</item>
         <item name="android:drawSelectorOnTop">true</item>
-        <item name="android:horizontalSpacing">0dp</item>
-        <item name="android:verticalSpacing">-20dp</item>
-        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:horizontalSpacing">1dp</item>
+        <item name="android:verticalSpacing">1dp</item>
+        <item name="android:divider">@color/primaryColor</item>
+        <item name="android:dividerHeight">1dp</item>
     </style>
 
     <style name="Card.Default" parent="Widget">
@@ -176,8 +176,8 @@
 
     <style name="Card.SearchBook" parent="Widget">
         <item name="android:gravity">center</item>
-        <item name="android:layout_margin">2dp</item>
-        <item name="cardCornerRadius">3dp</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="cardCornerRadius">1dp</item>
         <item name="cardElevation">1dp</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
 
@@ -186,11 +186,11 @@
     <style name="Card.SearchBook.Title" parent="Widget">
         <item name="android:layout_marginBottom">@dimen/margin_tiny</item>
         <item name="android:textAppearance">?android:textAppearanceLarge</item>
-        <item name="android:textColor">@color/teal</item>
+        <item name="android:textColor">@color/primaryColor</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">20sp</item>
         <item name="android:padding">2dp</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">2</item>
         <item name="android:ellipsize">end</item>
 
 

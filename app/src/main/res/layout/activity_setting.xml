@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_nav_setting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/gray_light"
+    tools:context="com.gusteauscuter.youyanguan.DepActivity.SettingActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/id_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ActionbarTheme" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/check_update"
+        style="@style/Card.Setting"
+        android:layout_marginTop="40dp">
+
+        <TextView
+            style="@style/setting_title"
+            android:text="@string/check_update" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_navigate_next"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="right|center"/>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/clearCache"
+        style="@style/Card.Setting">
+        <TextView
+            style="@style/setting_title"
+            android:text="@string/clear_cache" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_navigate_next"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="right|center"/>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/feedback"
+        style="@style/Card.Setting">
+        <TextView
+            style="@style/setting_title"
+            android:text="@string/feedback" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_navigate_next"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="right|center"/>
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/about"
+        style="@style/Card.Setting">
+
+        <TextView
+            style="@style/setting_title"
+            android:text="@string/about" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_navigate_next"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="right|center"/>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

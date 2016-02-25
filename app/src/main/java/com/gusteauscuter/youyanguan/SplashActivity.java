@@ -6,10 +6,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
+import com.gusteauscuter.youyanguan.util.DeviceInfo;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -32,7 +34,15 @@ public class SplashActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
+        /*
+         * add getDeviceInformation here 
+         */
+        getDeviceInformation();
+        /*
+         * END 
+         */
+        
         handler.postDelayed(runnable = new Runnable() {
 
             @Override
@@ -41,7 +51,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 3000);
+        }, 2000);
 
     }
 
@@ -62,4 +72,11 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    private void getDeviceInformation(){
+
+        DeviceInfo deviceInfo=new DeviceInfo(this);
+        CollectInfo.postRequest(deviceInfo);
+        //Toast.makeText(getApplicationContext(), deviceID, Toast.LENGTH_SHORT).show();
+
+    }
 }

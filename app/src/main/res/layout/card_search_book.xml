@@ -39,13 +39,13 @@
                     android:layout_gravity="center|left">
                     <ImageView
                         android:id="@+id/searchBookState"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
                         android:gravity="center"
                         android:layout_margin="5dp"
-                        android:src="@drawable/search_book_sample" />
+                        android:src="@drawable/ic_not_s_n" />
 
                 </LinearLayout>
 
@@ -97,7 +97,7 @@
                     android:gravity="center"
                     android:text="收藏"
                     android:textColor="@color/white"
-                    android:background="@color/blue"/>
+                    android:background="@color/primaryColor"/>
             </LinearLayout>
 
 

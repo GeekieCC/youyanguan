@@ -4,8 +4,12 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.view.GravityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,25 +26,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.MotionEvent;
 
 
-import com.gusteauscuter.youyanguan.DepActivity.UserInforActivity;
+import com.gusteauscuter.youyanguan.DepActivity.SettingActivity;
 import com.gusteauscuter.youyanguan.content_fragment.bookCollectedFragment;
 import com.gusteauscuter.youyanguan.content_fragment.courseFragment;
 import com.gusteauscuter.youyanguan.content_fragment.homeFragment;
 import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
-import com.gusteauscuter.youyanguan.content_fragment.settingFragment;
+import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.data_Class.HomeItem;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
+import com.gusteauscuter.youyanguan.util.FileOperation;
+import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
 import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,26 +59,30 @@ import cn.bmob.v3.Bmob;
 import cn.bmob.v3.update.BmobUpdateAgent;
 
 
-public class NavigationActivity extends AppCompatActivity  implements View.OnClickListener, View.OnTouchListener,
+public class NavigationActivity extends AppCompatActivity  implements IDirectory_File,
+        View.OnClickListener, View.OnTouchListener,
         GestureDetector.OnGestureListener {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationViewLeft;
     private ActionBar mActionBar=null;
-    private userLogin mUserLogin;
+    private UserLoginInfo mUserLoginInfo;
     private FrameLayout mContentFramelayout;
 
     private bookBorrowedFragment mBookBorrowedFragment;
     private bookCollectedFragment mBookCollectedFragment;
     private courseFragment mCourseFragment;
     private homeFragment mHomeFragment;
-    private settingFragment mSettingFragment;
     private loginFragment mLoginFragment;
     private bookSearchFragment mBookSearchFragment;
 
     private List<Book> mBookList =new ArrayList<>();
     private List<Course> mCourseList =new ArrayList<>();
     private List<HomeItem> mHomeItemList =new ArrayList<>();
+
+    private RoundImageView mHeaderImage;
+    private TextView mTextBackground;
+    private ImageView mDrawerBackground;
 
     public Menu mMenu;
 
@@ -79,6 +92,10 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
     private static final int FLING_MIN_DISTANCE = 50;
     private static final int FLING_MIN_VELOCITY = 10;
 
+    private static int RESULT_LOAD_IMAGE_header = 1;
+    private static int RESULT_LOAD_IMAGE_background = 2;
+
+    private int timesOfClickSecretPosition=0;
     String arg;
 
 
@@ -103,7 +120,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         String username = shareData.getString("USERNAME", "");
         String password = shareData.getString("PASSWORD", "");
         boolean isLogined = shareData.getBoolean("ISLOGINED", false);
-        mUserLogin = new userLogin(username, password, isLogined);
+        mUserLoginInfo = new UserLoginInfo(username, password, isLogined);
     }
 
 
@@ -114,15 +131,59 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         setContentView(R.layout.activity_navigation_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
         mNavigationViewLeft = (NavigationView) findViewById(R.id.id_nv_menu);
-        findViewById(R.id.header).setOnClickListener(new View.OnClickListener() {
+
+        mTextBackground=(TextView)findViewById(R.id.id_link);
+        mHeaderImage=(RoundImageView)findViewById(R.id.header);
+        mDrawerBackground=(ImageView)findViewById(R.id.drawer_background);
+
+        File headFile = new File(stringHeaderName);
+        if (headFile.exists()) {
+            Bitmap bitmapHeader=BitmapFactory.decodeFile(stringHeaderName);
+            mHeaderImage.setImageBitmap(bitmapHeader);
+        }
+
+        File backgroundFile = new File(stringBackgroundName);
+        if (backgroundFile.exists()) {
+            Bitmap bitmapBackground=BitmapFactory.decodeFile(stringBackgroundName);
+            mDrawerBackground.setImageBitmap(bitmapBackground);
+        }
+
+        mHeaderImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "功能正在完善中...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "设置头像...", Toast.LENGTH_SHORT).show();
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE_header);
 //                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
 //                startActivity(intent);
 
             }
         });
+
+        mTextBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(timesOfClickSecretPosition ==10){
+                    timesOfClickSecretPosition =0;
+                    Toast.makeText(getApplicationContext(), "设置背景...", Toast.LENGTH_SHORT).show();
+
+                    Intent i = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                    startActivityForResult(i, RESULT_LOAD_IMAGE_background);
+                }else{
+                    timesOfClickSecretPosition++;
+                }
+            }
+        });
+
+
 //        mNavigationViewRight = (NavigationView) findViewById(R.id.id_nv_menu_right);
         mContentFramelayout = (FrameLayout) findViewById(R.id.container_frame);
 
@@ -145,6 +206,48 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_LOAD_IMAGE_header && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
+            mHeaderImage.setImageBitmap(bitmap);
+
+            FileOperation.CopySdcardFile(picturePath, stringHeaderName);
+        }
+
+        if (requestCode == RESULT_LOAD_IMAGE_background && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
+            mDrawerBackground.setImageBitmap(bitmap);
+
+            FileOperation.CopySdcardFile(picturePath, stringBackgroundName);
+        }
+
+    }
+
     private void JumpToHomeFragment() {
         if (mHomeFragment==null)
             mHomeFragment=new homeFragment();
@@ -155,10 +258,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTransaction.commit();
 
         if (mMenu != null) {
-//            mMenu.findItem(R.id.action_feedback).setVisible(true);
-//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+            mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
     }
@@ -183,20 +285,18 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     public void JumpToBookFragment(){
 
-        if (mUserLogin.IsLogined()){
+        if (mUserLoginInfo.IsLogined()){
             if (mBookBorrowedFragment ==null)
                 mBookBorrowedFragment =new bookBorrowedFragment();
-//            mActionBar.setTitle(R.string.nav_book_borrowed);
             FragmentManager mFragmentManager = getFragmentManager();
             FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
             mTransaction.replace(R.id.container_frame, mBookBorrowedFragment);
             mTransaction.commit();
 
             if (mMenu!=null) {
-//                mMenu.findItem(R.id.action_feedback).setVisible(true);
-//                mMenu.findItem(R.id.action_open_drawer).setVisible(true);
                 mMenu.findItem(R.id.action_log_out).setVisible(true);
                 mMenu.findItem(R.id.action_refresh_book).setVisible(true);
+                mMenu.findItem(R.id.action_share).setVisible(true);
             }
         } else{
             JumpToLoginFragment();
@@ -207,7 +307,6 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         if (mBookCollectedFragment ==null)
             mBookCollectedFragment =new bookCollectedFragment();
-//        mActionBar.setTitle(R.string.nav_collect_book);
         FragmentManager mFragmentManager = getFragmentManager();
         FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
         mTransaction.replace(R.id.container_frame, mBookCollectedFragment);
@@ -215,6 +314,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         if (mMenu!=null) {
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+            mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
     }
@@ -228,10 +328,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTransaction.commit();
 
         if (mMenu!=null) {
-//            mMenu.findItem(R.id.action_feedback).setVisible(true);
-//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+            mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
     }
@@ -246,29 +345,17 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         mTransaction.commit();
 
         if (mMenu!=null) {
-//            mMenu.findItem(R.id.action_feedback).setVisible(true);
-//            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
             mMenu.findItem(R.id.action_log_out).setVisible(false);
             mMenu.findItem(R.id.action_refresh_book).setVisible(false);
+            mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
     }
 
     private void JumpToSettingFragment(){
-        if(mSettingFragment==null)
-            mSettingFragment=new settingFragment();
-        mActionBar.setTitle(R.string.nav_setting);
-        FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-        mTransaction.replace(R.id.container_frame, mSettingFragment);
-        mTransaction.commit();
 
-        if (mMenu!=null) {
-//            mMenu.findItem(R.id.action_feedback).setVisible(false);
-//            mMenu.findItem(R.id.action_open_drawer).setVisible(false);
-            mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
-        }
+        Intent intent =new Intent(this, SettingActivity.class);
+        startActivity(intent);
 
     }
 
@@ -279,7 +366,9 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
                     @Override
                     public boolean onNavigationItemSelected(final MenuItem menuItem) {
 //                        menuItem.setChecked(false);
-                        mDrawerLayout.closeDrawers();
+                        if(menuItem.getItemId()!=R.id.nav_setting){
+                            mDrawerLayout.closeDrawers();
+                        }
                         JumpFromNavigation(menuItem);
                         return true;
                     }
@@ -297,11 +386,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
         if(menuItem.getItemId()==R.id.nav_library) {    //图书馆
             JumpToBookFragment();
-            mMenu.findItem(R.id.action_share).setVisible(true);
-        }else{
-            mMenu.findItem(R.id.action_share).setVisible(false);
         }
-
 
         if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
             JumpToCollectBookFragment();
@@ -317,13 +402,6 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         if(menuItem.getItemId()==R.id.nav_setting) {    //设置
             JumpToSettingFragment();
         }
-
-//        if(menuItem.getItemId()==R.id.nav_course) {       //日程
-//            mMenu.findItem(R.id.action_add_course).setVisible(true);
-//
-//        }else{
-//            mMenu.findItem(R.id.action_add_course).setVisible(false);
-//        }
 
     }
 
@@ -352,17 +430,14 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         //菜单栏动作
-        if (item.getItemId()==R.id.action_feedback) {
-            SendEmailIntent(arg);
-            return true;
-
-        }else if(item.getItemId() == android.R.id.home||item.getItemId() == R.id.action_open_drawer) {
+        if(item.getItemId() == android.R.id.home||item.getItemId() == R.id.action_open_drawer) {
             mDrawerLayout.openDrawer(GravityCompat.START);
             return true;
+        }
 
-        }else if (item.getItemId()==R.id.action_log_out) {
+        if (item.getItemId()==R.id.action_log_out) {
 
-//            mUserLogin=new userLogin();
+//            mUserLoginInfo=new UserLoginInfo();
             SharedPreferences.Editor shareData =getSharedPreferences("data",0).edit();
             shareData.putBoolean("ISLOGINED",false);
             shareData.commit();
@@ -375,28 +450,26 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
             Toast.makeText(getApplicationContext(), getString(R.string.re_login), Toast.LENGTH_SHORT).show();
             return true;
 
-        }else if (item.getItemId()==R.id.action_refresh_book) {
+        }
+
+        if (item.getItemId()==R.id.action_refresh_book) {
             mBookBorrowedFragment.RefreshData();
             return true;
-        }else if(item.getItemId()==R.id.action_add_course){
+        }
+
+        if(item.getItemId()==R.id.action_add_course){
             mCourseFragment.startAddCourseActivity();
             return true;
 
-        }else if(item.getItemId()==R.id.action_share){
+        }
+
+        if(item.getItemId()==R.id.action_share){
             mBookBorrowedFragment.shareBooksBorrowed();
             return true;
 
-        }else
-            return super.onOptionsItemSelected(item);
-    }
+        }
 
-
-    public void SendEmailIntent(String fromWhere){
-        Intent data=new Intent(Intent.ACTION_SENDTO);
-        data.setData(Uri.parse("mailto:gusteauscuter@163.com"));
-        data.putExtra(Intent.EXTRA_SUBJECT, "【反馈建议/" + fromWhere + "】");
-        data.putExtra(Intent.EXTRA_TEXT, "详细情况：\n");
-        startActivity(data);
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -443,16 +516,16 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
     }
 
-    public userLogin getmLogin(){
-        return mUserLogin;
+    public UserLoginInfo getmLogin(){
+        return mUserLoginInfo;
     }
 
-    public void setmUserLogin(userLogin mUserLogin){
-        this.mUserLogin=mUserLogin;
+    public void setmUserLoginInfo(UserLoginInfo mUserLoginInfo){
+        this.mUserLoginInfo = mUserLoginInfo;
     }
 
-    public userLogin getmUserLogin(){
-        return this.mUserLogin;
+    public UserLoginInfo getmUserLoginInfo(){
+        return this.mUserLoginInfo;
     }
 
 
@@ -555,7 +628,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                View mContent = mDrawerLayout.getChildAt(0);
+                View mContent = mDrawerLayout.getChildAt(1);
                 View mMenu = drawerView;
                 float scale = 1 - slideOffset;
                 float rightScale = 0.8f + scale * 0.2f;
@@ -578,6 +651,7 @@ public class NavigationActivity extends AppCompatActivity  implements View.OnCli
                     mContent.invalidate();
                     ViewHelper.setScaleX(mContent, rightScale);
                     ViewHelper.setScaleY(mContent, rightScale);
+                    ViewHelper.setAlpha(mDrawerLayout, 1.f);
                 } else {
                     ViewHelper.setTranslationX(mContent,
                             -mMenu.getMeasuredWidth() * slideOffset);

@@ -29,15 +29,15 @@ import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.ACache;
-import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BookDetailActivity extends AppCompatActivity {
+public class BookDetailActivity extends AppCompatActivity implements IDirectory_File {
 
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int COLLECT_RESULT_CODE = 2;
@@ -84,9 +84,10 @@ public class BookDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_book_detail);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
-        final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.id_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
 
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
@@ -209,15 +210,14 @@ public class BookDetailActivity extends AppCompatActivity {
 
     private void shareBook(){
 
-        String stringFileName="sdcard/_share_Book.png";
-        ScreenShot.shoot(stringFileName,shareView);
+        ScreenShot.shoot(stringSharedBookDetailName,shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_TITLE, "Share");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBookDetailName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, "Share"));
 
@@ -231,8 +231,8 @@ public class BookDetailActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(), R.string.ing_getBookInformation, Toast.LENGTH_SHORT)
-                    .show();
+//            Toast.makeText(getApplicationContext(), R.string.ing_getBookInformation, Toast.LENGTH_SHORT)
+//                    .show();
             super.onPreExecute();
         }
 
@@ -291,13 +291,13 @@ public class BookDetailActivity extends AppCompatActivity {
                     inflateBottom(result);
 
                     //返回给上一个activity
-                    Intent intent = new Intent();
-                    intent.putExtra("picture", BitmapUtil.getBytes(bitmap));
-                    intent.putExtra("position", position);
-                    BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
+//                    Intent intent = new Intent();
+//                    intent.putExtra("picture", BitmapUtil.getBytes(bitmap));
+//                    intent.putExtra("position", position);
+//                    BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
 
                 } else {
-                    bookPictureImageView.setImageResource(R.drawable.book3); //当网络上没有图片时，自动加载这个图片
+                    bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
                     bottomLinearLayout.removeAllViews();
                 }
             } else {

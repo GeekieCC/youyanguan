@@ -11,29 +11,29 @@ public class Book extends SimpleBaseBook implements Serializable {
     private static final String DETAIL_BASE_LINK = "http://202.38.232.10/opac";
 
 	private int rowNumber;
-	private String barcode;
+	private String barcode = "";
 	private String description="this is a book";
-	private String title;
-	private String author;
-	private String volume;
-	private String libraryName;
-	private String libraryLocation;
-	private String borrowDay;
-	private String returnDay;
+	private String title = "";
+	private String author = "";
+	private String volume = "";
+	private String libraryName = "";
+	private String libraryLocation = "";
+	private String borrowDay = "";
+	private String returnDay = "";
 	private int borrowedTime;
 	private int maxBorrowTime;
 	private boolean isExpired;
-	private String renewLink;
+	private String renewLink = "";
 
-	private String detailLink;
-    private String bookId;
+	private String detailLink = "";
+    private String bookId = "";
 
 	private byte[] picture = null;
 
-	private String publisher;
-	private String pubdate;
-	private String isbn;
-	private String searchNum;
+	private String publisher = "";
+	private String pubdate = "";
+	private String isbn = "";
+	private String searchNum = "";
 	private int borrowCondition;
     private boolean isCollected;
 
@@ -61,10 +61,14 @@ public class Book extends SimpleBaseBook implements Serializable {
 		bookId = s1.substring(0, s1.indexOf('&'));
 
 		int index1 = titleAndAuthor.indexOf('/');
-		title = titleAndAuthor.substring(0, index1);
-		author = titleAndAuthor.substring(index1 + 1);
+		if (index1 != -1) {
+			title = titleAndAuthor.substring(0, index1);
+			author = titleAndAuthor.substring(index1 + 1);
+		} else {
+			title = titleAndAuthor;
+            author = "";
+		}
 		volume = elements.get(3).text();
-
 		libraryName = elements.get(4).text();
 		libraryLocation = elements.get(5).text();
 		borrowDay = elements.get(6).text();
@@ -73,11 +77,9 @@ public class Book extends SimpleBaseBook implements Serializable {
 		int index2 = borrowedTimeAndMaxBorrowTime.indexOf('/');
 		borrowedTime = Integer.parseInt(borrowedTimeAndMaxBorrowTime.substring(0, index2));
 		maxBorrowTime = Integer.parseInt(borrowedTimeAndMaxBorrowTime.substring(index2 + 1));
-		isExpired = elements.get(9).text().equals("是") ? true : false;
+		isExpired = elements.get(9).text().equals("是");
 		//renewLink = "http://202.38.232.10/opac" + elements.get(10).select("a").first().attr("href").substring(2);
 		this.parseRenewLink(elements.get(10));
-
-
 	}
 
 	private void parseRenewLink(Element renewLinkElement) {

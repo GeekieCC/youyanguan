@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment">
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/emptyInformation"
+        android:padding="@dimen/margin_large"
+        android:gravity="center"
+        android:text="@string/not_borrow_books"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.gusteauscuter.youyanguan.view.XGridView
+            android:id="@+id/bookListView"
+            android:numColumns="3"
+            android:divider="@android:color/white"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </com.gusteauscuter.youyanguan.view.XGridView>
+
+    </ScrollView>
+
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBarRefresh"
+        android:visibility="gone"
+        android:layout_gravity="center" />
+
+</FrameLayout>

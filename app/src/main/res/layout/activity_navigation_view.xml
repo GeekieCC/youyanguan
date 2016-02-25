@@ -4,20 +4,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@mipmap/bk1">
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/drawer_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@mipmap/background"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_margin="0dp">
-<!--
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="26dp"
-            android:background="@android:color/transparent"/>
--->
 
         <android.support.v7.widget.Toolbar
             android:title="@string/app_name"
@@ -48,19 +48,6 @@
         android:tag="LEFT"
         android:background="@color/transparent"/>
     <!-- 控制背景透明，只能放在此处，放在style中无效-->
-    <!--
-        <android.support.design.widget.NavigationView
 
-            android:id="@+id/id_nv_menu_right"
-            android:layout_width="@dimen/drawer_horizontal_width"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            app:headerLayout="@layout/header"
-            app:menu="@menu/menu_drawer"
-            android:tag="Right"
-
-            android:theme="@style/drawerTheme"
-            android:background="#00000000" />
-        -->
 
 </android.support.v4.widget.DrawerLayout>

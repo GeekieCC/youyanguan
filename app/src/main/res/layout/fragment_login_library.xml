@@ -12,18 +12,19 @@
     android:layout_marginTop="50dp"
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@color/blue_trans">
+    android:foreground="?android:attr/selectableItemBackground">
 
     <LinearLayout
+        style="@style/Theme.blank.Login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal">
-        <TextView
-            android:text="学号："
-            android:textSize="20sp"
-            android:textColor="@color/black_54"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:tint="@color/primaryColor"
+            android:src="@drawable/ic_perm_identity_black_54dp"
             android:gravity="center" />
         <EditText
             android:id="@+id/id_username"
@@ -31,55 +32,48 @@
             android:layout_height="match_parent"
             android:ems="12"
             android:inputType="number"
+            android:hint="学号"
+            android:paddingLeft="10dp"
             android:textColor="@color/black_54"
             android:layout_gravity="center_horizontal"
             android:shadowRadius="2.0" />
     </LinearLayout>
 
     <LinearLayout
+        style="@style/Theme.blank.Login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:text="密码："
-            android:textSize="20sp"
-            android:textColor="@color/black_54"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:tint="@color/primaryColor"
+            android:src="@drawable/ic_lock_outline_black_54dp"
             android:gravity="center" />
+
         <EditText
             android:id="@+id/id_passward_library"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:inputType="textPassword"
             android:ems="12"
+            android:hint="密码"
+            android:paddingLeft="10dp"
             android:textColor="@color/black_54"
             android:layout_gravity="center_horizontal"
             android:shadowRadius="2.0" />
     </LinearLayout>
 
-    <LinearLayout
+
+    <Button
+        style="@style/Theme.Button.Login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:orientation="horizontal">
-        <Button
-            style="@style/Theme.Button.Login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/button_cancel"
-            android:text="取  消"/>
-        <Button
-            style="@style/Theme.Button.Login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/button_login_library"
-            android:text="登  陆"/>
+        android:id="@+id/button_login_library"
+        android:text="登  陆"/>
 
-    </LinearLayout>
 
     <ProgressBar
     android:id="@+id/progressBar"

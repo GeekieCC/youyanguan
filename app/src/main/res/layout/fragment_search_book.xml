@@ -1,55 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <TextView
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/search_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:text="/||/||  华工馆藏"
-        android:visibility="visible"
-        android:textSize="20sp"
-        android:padding="5dp"
-        android:gravity="center"
-        android:textColor="@color/teal"/>
+        android:layout_height="match_parent"
+        android:src="@mipmap/background_search"
+        android:scaleType="centerCrop"/>
 
     <LinearLayout
-        android:id="@+id/focusParentLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:padding="0dp"
-        android:background="@color/blue_trans_2" >
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/transparent">
 
-        <TextView
-            android:id="@+id/searchBook"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:text=" 请输入要查找的图书"
-            android:textSize="18sp"
-            android:padding="5dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/secret_book"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_book_store"
+                android:tint="@color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="华工馆藏"
+                android:visibility="visible"
+                android:textSize="20sp"
+                android:padding="5dp"
+                android:gravity="center"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/focusParentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:textColor="@color/gray"
-            android:layout_margin="5dp" />
-        <TextView
-            android:id="@+id/searchBookScan"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="10dp"
-            android:textColor="@color/black"
-            android:background="@drawable/ic_search_book"
-            android:gravity="center_vertical"/>
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="0dp"
+            android:background="@drawable/bg_search_blank" >
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="10dp"
+                android:tint="@color/search_hint"
+                android:src="@drawable/ic_search_book"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/searchBook"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:text=" 请输入要查找的图书"
+                android:textSize="18sp"
+                android:padding="5dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/search_hint"
+                android:layout_margin="5dp" />
+            <ImageView
+                android:id="@+id/searchBookScan"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="10dp"
+                android:tint="@color/search_hint"
+                android:src="@drawable/ic_enter"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+
+</FrameLayout>
 
 

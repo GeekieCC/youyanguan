@@ -1,14 +1,15 @@
 package com.gusteauscuter.youyanguan.DepActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,16 +18,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.lzyzsd.randomcolor.RandomColor;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
@@ -37,16 +37,18 @@ import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
-import java.lang.reflect.Field;
+import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchBookResultActivity extends AppCompatActivity {
+public class SearchBookResultActivity extends AppCompatActivity implements IDirectory_File {
 
     private static final int NUM_OF_BOOKS_PER_SEARCH = 5; // 带可借信息查询时，一次加载的图书数目
     private static final int FIRST_PAGE = 1;
     private static final int FIRST_SEARCH = 1;
+
+    private ImageView mSearchBackground;
 
     private List<ResultBook> mSearchBookList;
 
@@ -69,7 +71,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private int currentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
 
 
-    private SearchView mSearchView;
+    private EditText mSearchView;
     private Spinner searchBookTypeSpinner;
     private CheckBox borrowConditionCheckBox;
 
@@ -78,15 +80,10 @@ public class SearchBookResultActivity extends AppCompatActivity {
     private boolean checkBorrowCondition = false; //是否检查可借状况
     private boolean reSearch=true;
 
-    private RandomColor randomColor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_book_result);
-        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
-        final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
 
         mProgressBar=(ProgressBar) findViewById(R.id.progressBarRefreshBookSearched);
         mProgressBar.setVisibility(View.INVISIBLE);
@@ -104,7 +101,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
 
                 String type = searchBookTypeSpinner.getItemAtPosition(i).toString();
                 switch (type) {
-                    case "标题":
+                    case "题名":
                         searchBookType = "TITLE";
                         break;
                     case "作者":
@@ -142,24 +139,42 @@ public class SearchBookResultActivity extends AppCompatActivity {
         borrowConditionCheckBox = (CheckBox) findViewById(R.id.borrowConditionCheckBox);
         initSearchCondition();
         mSearchBookList=new ArrayList<>();
-        mSearchView = (SearchView) findViewById(R.id.searchBookEditText);
-//        dealwithSearchView();
-//        mSearchView.setSubmitButtonEnabled(true);
-        mSearchView.setIconified(false);
+        mSearchView = (EditText) findViewById(R.id.searchBookEditText);
         mSearchView.requestFocus();
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                reSearch = true;
-                searchBook();
-                return false;
-            }
 
+        mSearchView.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    reSearch = true;
+                    searchBook();
+                    return true;
+                }
                 return false;
             }
         });
+        final Activity activity = this;
+//        findViewById(R.id.go_back_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SoftInputUtil.toggleSoftInput(activity);
+//                finish();
+//            }
+//        });
+        findViewById(R.id.searchBookButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reSearch = true;
+                searchBook();
+            }
+        });
+
+        mSearchBackground=(ImageView) findViewById(R.id.search_background);
+        File file = new File(stringSearchBackgroundName);
+        if (file.exists()) {
+            Bitmap bitmapHeader= BitmapFactory.decodeFile(stringSearchBackgroundName);
+            mSearchBackground.setImageBitmap(bitmapHeader);
+        }
 
         mAdapter = new SearchBookAdapter() ;
         mListView.setAdapter(mAdapter);
@@ -172,26 +187,11 @@ public class SearchBookResultActivity extends AppCompatActivity {
                 searchBook();
             }
         });
-        randomColor = new RandomColor();
+
+//        SoftInputUtil.toggleSoftInput(this);
+
     }
 
-    private void dealwithSearchView(){
-        try {
-//            Class argClass=mSearchView.getClass();
-            mSearchView.setSubmitButtonEnabled(true);
-            //指定某个私有属性
-            Field mVoiceButtonField = mSearchView.getClass().getDeclaredField("mVoiceButton");
-            mVoiceButtonField.setAccessible(true);
-            Class argClass=mVoiceButtonField.getClass();
-            ImageView mVoiceButton = (ImageView)mVoiceButtonField.get(mSearchView);
-//            Method[] methods=mVoiceButton.getClass().getDeclaredMethods();
-            mVoiceButton.setEnabled(true);
-            mVoiceButton.setImageDrawable(this.getResources().getDrawable(
-                    R.drawable.ic_search_book));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void initSearchCondition(){
         SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
@@ -212,9 +212,7 @@ public class SearchBookResultActivity extends AppCompatActivity {
     }
 
     private void searchBook() {
-        if(findViewById(R.id.search_description).getVisibility()==View.VISIBLE){
-            findViewById(R.id.search_description).setVisibility(View.GONE);
-        }
+
         if(reSearch){
             ithSearch = FIRST_SEARCH;
             page = FIRST_PAGE;
@@ -223,14 +221,19 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mSearchBookList.clear();
             mAdapter.notifyDataSetChanged();
             saveSearchCondition();
-            bookToSearch = mSearchView.getQuery().toString().replaceAll("\\s", "");
+            bookToSearch = mSearchView.getText().toString().replaceAll("\\s", "");
+
+            if(bookToSearch==""){
+                Toast.makeText(getApplicationContext(),"请输入搜索内容！",Toast.LENGTH_SHORT).show();
+                return;
+            }
             SoftInputUtil.hideSoftInput(this, mSearchView); //收起软键盘
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     searchBookHelper();
                 }
-            }, 500); //收起软键盘需要一定时间
+            }, 200); //收起软键盘需要一定时间
         } else {
             searchBookHelper();
         }
@@ -299,14 +302,19 @@ public class SearchBookResultActivity extends AppCompatActivity {
             int borrowCondition = mBook.getBorrowCondition();
             if (borrowCondition == ResultBook.BOTH_YES) { //两校区都可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.BOTH_NOT) { //两校区都不可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
             }
 
             // TO 设置Book对应属性
@@ -321,13 +329,13 @@ public class SearchBookResultActivity extends AppCompatActivity {
             mHolder.mAuthor.setText(author);
             mHolder.mPublisher.setText(publisher);
             mHolder.mPubdate.setText(pubdate);
-            convertView.setBackgroundColor(mBook.getColor());
+            mHolder.mTitle.setTextColor(mBook.getColor());
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int color = randomColor.randomColor(Color.parseColor("#FFC0CB"), RandomColor.SaturationType.RANDOM, RandomColor.Luminosity.LIGHT);
-                    mBook.setColor(color);
+//                    mBook.setColor(getResources().getColor(R.color.red));
+                    mBook.setViewed();
                     boolean isConnected = NetworkConnectivity.isConnected(getApplicationContext());
                     if (isConnected) {
                         Intent intent = new Intent(getApplication(), BookDetailActivity.class);
@@ -348,10 +356,10 @@ public class SearchBookResultActivity extends AppCompatActivity {
             if (!mBook.isCollected()) {
                 mHolder.mButton.setText("收藏");
                 mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
-                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.primaryColor));
             } else {
                 mHolder.mButton.setText("取消");
-                mHolder.mButton.setTextColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setTextColor(getResources().getColor(R.color.primaryColor));
                 mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.gray_light));
             }
             // 收藏和取消收藏的动作监听
@@ -559,14 +567,6 @@ public class SearchBookResultActivity extends AppCompatActivity {
         }
         mAdapter.notifyDataSetChanged();
         mListView.requestFocus();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_search_book, menu);
-
-        return true;
     }
 
 }

@@ -21,8 +21,9 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.data_Class.userLogin;
+import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.util.ACache;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class bookBorrowedFragment extends Fragment {
+public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
     private static final int HAS_PICTURE = 5;
     private static final int HAS_NO_PICTURE = 10;
@@ -54,7 +55,7 @@ public class bookBorrowedFragment extends Fragment {
     private BookAdapter mAdapter;
     private List<Book> mBookList=new ArrayList<>();
 
-    private userLogin mUserLogin=new userLogin();
+    private UserLoginInfo mUserLoginInfo =new UserLoginInfo();
     private boolean isFirstTime=true;
 
     private boolean refreshColor=true;
@@ -65,7 +66,7 @@ public class bookBorrowedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_book_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_books_borrowed, container, false);
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefresh);
         mListView = (GridView) view.findViewById(R.id.bookListView);
@@ -78,7 +79,7 @@ public class bookBorrowedFragment extends Fragment {
 
     private void initData(){
 
-        mUserLogin=((NavigationActivity)getActivity()).getmLogin();
+        mUserLoginInfo =((NavigationActivity)getActivity()).getmLogin();
 
         if(mBookList==null) {
             mBookList = new ArrayList<>();
@@ -106,7 +107,7 @@ public class bookBorrowedFragment extends Fragment {
 
         if(isConnected){
             GetBooksAsy getBooksAsy=new GetBooksAsy();
-            getBooksAsy.execute(mUserLogin.getUsername(),mUserLogin.getPassword());
+            getBooksAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
         }else{
             Toast.makeText(getActivity(), R.string.internet_not_connected
                     , Toast.LENGTH_SHORT).show();
@@ -163,7 +164,7 @@ public class bookBorrowedFragment extends Fragment {
                         boolean isConnected = NetworkConnectivity.isConnected(getActivity());
                         if(isConnected){
                             RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
-                            renewBookAsy.execute(mUserLogin.getUsername(), mUserLogin.getPassword());
+                            renewBookAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
                         } else{
                             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                         }
@@ -266,7 +267,7 @@ public class bookBorrowedFragment extends Fragment {
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
                     bookLists = libClient.getBooks();
-                    inflatePicture(bookLists);
+//                    inflatePicture(bookLists);
                 }
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
@@ -336,7 +337,7 @@ public class bookBorrowedFragment extends Fragment {
                 if (libClient.login(account[0], account[1])) {
                     if (libClient.renew(bookToRenew)) {
                         bookLists = libClient.getBooks();
-                        inflatePicture(bookLists);
+//                        inflatePicture(bookLists);
 
                     }
                 }
@@ -357,7 +358,7 @@ public class bookBorrowedFragment extends Fragment {
                 if (result != null) {
                     mBookList=result;
                     RefreshView();
-                    Toast.makeText(getActivity(), "续借成功，自动续期30天" , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "续借成功" , Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
                 }
@@ -369,16 +370,20 @@ public class bookBorrowedFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == HAS_NO_PICTURE && resultCode == BookDetailActivity.PICTURE_RESULT_CODE) {
-            byte[] picture = data.getByteArrayExtra("picture");
-            int position = data.getIntExtra("position", 0);
-            mBookList.get(position).setPicture(picture);
-            RefreshView();
-        }
+//        if (requestCode == HAS_NO_PICTURE && resultCode == BookDetailActivity.PICTURE_RESULT_CODE) {
+//            byte[] picture = data.getByteArrayExtra("picture");
+//            int position = data.getIntExtra("position", 0);
+//            mBookList.get(position).setPicture(picture);
+//            RefreshView();
+//        }
+
+        RefreshView();
+
     }
 
     private void RefreshView(){
 //        SortBookList();
+        inflatePicture(mBookList);
         mAdapter.notifyDataSetChanged();
         ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         String title=getResources().getString(R.string.nav_book_borrowed);
@@ -393,15 +398,15 @@ public class bookBorrowedFragment extends Fragment {
 
     public void shareBooksBorrowed(){
 
-        String stringFileName="sdcard/_share_books_borrowed.png";
-        ScreenShot.shoot(stringFileName, shareView);
+//        String stringFileName="sdcard/_share_books_borrowed.png";
+        ScreenShot.shoot(stringSharedBooksBorrowedName, shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_TITLE, "Share");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringFileName)));
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBooksBorrowedName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent,getResources().getString(R.string.action_share)));
 

@@ -35,7 +35,7 @@
                     android:layout_weight="1"
                     android:layout_margin="2dp"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/book0"/>
+                    android:src="@drawable/book_white"/>
 
                 <LinearLayout
                     android:layout_width="0dp"

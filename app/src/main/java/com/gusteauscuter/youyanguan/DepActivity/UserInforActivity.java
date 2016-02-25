@@ -46,15 +46,11 @@ public class UserInforActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_user_infor);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.id_toolbar));
-        final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-
-
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.id_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -11,8 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -36,7 +35,7 @@ public class bookCollectedFragment extends Fragment{
 
 
     private List<SimpleBaseBook> mBookList=new ArrayList<>();
-    private GridView mListView;
+    private ListView mListView;
     private ProgressBar mProgressBar;
 
     private CollectSearchBookAdapter mAdapter;
@@ -48,11 +47,11 @@ public class bookCollectedFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_book_collection, container, false);
+        View view = inflater.inflate(R.layout.fragment_book_collected, container, false);
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
-        mListView = (GridView) view.findViewById(R.id.bookListView);
+        mListView = (ListView) view.findViewById(R.id.bookListView);
 
         initData();
 
@@ -129,14 +128,19 @@ public class bookCollectedFragment extends Fragment{
 
             if (borrowCondition == ResultBook.BOTH_YES) { //两校区都可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.BOTH_NOT) { //两校区都不可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
             } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
             } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
                 mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
+                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
             }
 
 
@@ -178,10 +182,10 @@ public class bookCollectedFragment extends Fragment{
             if (!mBook.isCollected()) {
                 mHolder.mButton.setText("收藏");
                 mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
-                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.primaryColor));
             } else {
                 mHolder.mButton.setText("取消");
-                mHolder.mButton.setTextColor(getResources().getColor(R.color.teal));
+                mHolder.mButton.setTextColor(getResources().getColor(R.color.primaryColor));
                 mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.gray_light));
             }
             // 收藏和取消收藏的动作监听

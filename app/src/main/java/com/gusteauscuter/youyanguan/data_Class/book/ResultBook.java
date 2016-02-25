@@ -1,6 +1,9 @@
 package com.gusteauscuter.youyanguan.data_Class.book;
 
+import android.content.res.Resources;
 import android.graphics.Color;
+
+import com.gusteauscuter.youyanguan.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,11 +31,18 @@ public class ResultBook extends SimpleBaseBook implements Serializable {
 	private int borrowCondition = UNKNOWN;
 	private boolean isCollected = false;
 
-    private int color = Color.parseColor("#FFFFFF");
+	private static int COLOR_DEFAULT=Color.parseColor("#295086");
+	private static int COLOR_VIEWED=Color.parseColor("#938490");
+
+	private int color = COLOR_DEFAULT;
 
     public int getColor() {
         return color;
     }
+
+	public void setViewed () {
+		color = COLOR_VIEWED;
+	}
 
     public void setColor(int color) {
         this.color = color;
