@@ -1,9 +1,6 @@
 package com.gusteauscuter.youyanguan.data_Class.book;
 
-import android.content.res.Resources;
 import android.graphics.Color;
-
-import com.gusteauscuter.youyanguan.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

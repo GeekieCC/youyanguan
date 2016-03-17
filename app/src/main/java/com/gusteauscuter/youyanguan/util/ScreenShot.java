@@ -1,40 +1,26 @@
 package com.gusteauscuter.youyanguan.util;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.util.Log;
+import android.view.View;
+import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.ScrollView;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.Toast;
-
-import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
-import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
-import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
-import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.exception.WrongPageException;
 
 
 public class ScreenShot {

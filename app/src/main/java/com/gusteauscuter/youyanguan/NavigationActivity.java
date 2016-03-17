@@ -8,41 +8,38 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.DrawerLayout.DrawerListener;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.MotionEvent;
-
 
 import com.gusteauscuter.youyanguan.DepActivity.SettingActivity;
+import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
 import com.gusteauscuter.youyanguan.content_fragment.bookCollectedFragment;
-import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
+import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.FileOperation;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
-
-import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
 
 import java.io.File;
 
@@ -308,7 +305,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
                     @Override
                     public boolean onNavigationItemSelected(final MenuItem menuItem) {
 //                        menuItem.setChecked(false);
-                        if(menuItem.getItemId()!=R.id.nav_setting){
+                        if (menuItem.getItemId() != R.id.nav_setting) {
                             mDrawerLayout.closeDrawers();
                         }
                         JumpFromNavigation(menuItem);
