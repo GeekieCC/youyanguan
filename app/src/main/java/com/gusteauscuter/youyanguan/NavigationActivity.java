@@ -34,14 +34,9 @@ import android.view.MotionEvent;
 
 import com.gusteauscuter.youyanguan.DepActivity.SettingActivity;
 import com.gusteauscuter.youyanguan.content_fragment.bookCollectedFragment;
-import com.gusteauscuter.youyanguan.content_fragment.courseFragment;
-import com.gusteauscuter.youyanguan.content_fragment.homeFragment;
 import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
-import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.data_Class.HomeItem;
-import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.FileOperation;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
@@ -50,10 +45,6 @@ import com.nineoldandroids.view.ViewHelper;
 import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.update.BmobUpdateAgent;
@@ -71,14 +62,8 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
 
     private bookBorrowedFragment mBookBorrowedFragment;
     private bookCollectedFragment mBookCollectedFragment;
-    private courseFragment mCourseFragment;
-    private homeFragment mHomeFragment;
     private loginFragment mLoginFragment;
     private bookSearchFragment mBookSearchFragment;
-
-    private List<Book> mBookList =new ArrayList<>();
-    private List<Course> mCourseList =new ArrayList<>();
-    private List<HomeItem> mHomeItemList =new ArrayList<>();
 
     private RoundImageView mHeaderImage;
     private TextView mTextBackground;
@@ -106,7 +91,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         initView();
         initEvents();
         Bmob.initialize(this, "213c7ff4ff5c05bee43e1b5f803ee7cd");
-        //BmobUpdateAgent.initAppVersion(this);
         BmobUpdateAgent.update(this);
     }
 
@@ -125,8 +109,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
 
 
     public void initView() {
-
-//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setContentView(R.layout.activity_navigation_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.layout_drawer);
@@ -158,9 +140,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
                 startActivityForResult(i, RESULT_LOAD_IMAGE_header);
-//                Intent intent=new Intent(getApplicationContext(), UserInforActivity.class);
-//                startActivity(intent);
-
             }
         });
 
@@ -183,8 +162,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             }
         });
 
-
-//        mNavigationViewRight = (NavigationView) findViewById(R.id.id_nv_menu_right);
         mContentFramelayout = (FrameLayout) findViewById(R.id.container_frame);
 
         mContentFramelayout.setOnClickListener(this);
@@ -247,41 +224,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         }
 
     }
-
-    private void JumpToHomeFragment() {
-        if (mHomeFragment==null)
-            mHomeFragment=new homeFragment();
-        mActionBar.setTitle(R.string.nav_home);
-        FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-        mTransaction.replace(R.id.container_frame, mHomeFragment);
-        mTransaction.commit();
-
-        if (mMenu != null) {
-            mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
-            mMenu.findItem(R.id.action_share).setVisible(false);
-        }
-
-    }
-
-//    private void JumpToCourseFragment(){
-//        if(mCourseFragment==null)
-//            mCourseFragment=new courseFragment();
-//        mActionBar.setTitle(R.string.nav_course);
-//        FragmentManager mFragmentManager = getFragmentManager();
-//        FragmentTransaction mTransaction = mFragmentManager.beginTransaction();
-//        mTransaction.replace(R.id.container_frame, mCourseFragment);
-//        mTransaction.commit();
-//
-//        if (mMenu!=null) {
-////            mMenu.findItem(R.id.action_feedback).setVisible(true);
-////            mMenu.findItem(R.id.action_open_drawer).setVisible(true);
-//            mMenu.findItem(R.id.action_log_out).setVisible(false);
-//            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
-//        }
-//
-//    }
 
     public void JumpToBookFragment(){
 
@@ -380,9 +322,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         // 导航栏动作，跳转到子页面
 
         arg=menuItem.toString();
-//        if(menuItem.getItemId()==R.id.nav_home) {     //首页
-//            JumpToHomeFragment();
-//        }
 
         if(menuItem.getItemId()==R.id.nav_library) {    //图书馆
             JumpToBookFragment();
@@ -391,9 +330,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         if(menuItem.getItemId()==R.id.nav_collect_book) {    //图书馆
             JumpToCollectBookFragment();
         }
-//        if(menuItem.getItemId()==R.id.nav_course) {       //日程
-//            JumpToCourseFragment();
-//        }
 
         if(menuItem.getItemId()==R.id.nav_search_book) {       //Search
             JumpToSearchBookFragment();
@@ -437,7 +373,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
 
         if (item.getItemId()==R.id.action_log_out) {
 
-//            mUserLoginInfo=new UserLoginInfo();
             SharedPreferences.Editor shareData =getSharedPreferences("data",0).edit();
             shareData.putBoolean("ISLOGINED",false);
             shareData.commit();
@@ -457,11 +392,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
             return true;
         }
 
-        if(item.getItemId()==R.id.action_add_course){
-            mCourseFragment.startAddCourseActivity();
-            return true;
-
-        }
 
         if(item.getItemId()==R.id.action_share){
             mBookBorrowedFragment.shareBooksBorrowed();
@@ -528,39 +458,6 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         return this.mUserLoginInfo;
     }
 
-
-
-    public List<HomeItem> getmHomeItemList(){
-        return this.mHomeItemList;
-    }
-
-    private void RefreshHomeItemList(){
-        mHomeItemList=new ArrayList<>();
-        int i=0;
-        for (i=0;i<mBookList.size();i++){
-            HomeItem homeItem =new HomeItem(mBookList.get(i));
-            mHomeItemList.add(homeItem);
-        }
-        for (i=0;i<mCourseList.size();i++){
-            HomeItem homeItem =new HomeItem(mCourseList.get(i));
-            mHomeItemList.add(homeItem);
-        }
-        //  TODO 重新排序 mHomeItemList
-
-        Collections.sort(mHomeItemList, new Comparator<HomeItem>() {
-            @Override
-            public int compare(HomeItem lhs, HomeItem rhs) {
-                String lhs_date = lhs.getDate();
-                String rhs_date = rhs.getDate();
-                if (lhs_date.compareTo(rhs_date) > 0)
-                    return 1;
-                else if (lhs_date.compareTo(rhs_date) == 0)
-                    return 0;
-                else
-                    return -1;
-            }
-        });
-    }
 
     public void openDrawer(){
         mDrawerLayout.openDrawer(GravityCompat.START);
