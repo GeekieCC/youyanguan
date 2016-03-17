@@ -57,7 +57,7 @@ public class bookSearchFragment extends Fragment implements IDirectory_File{
             @Override
             public void onClick(View view) {
                 timesOfClickSecretPosition++;
-                if(timesOfClickSecretPosition==3) {
+                if(timesOfClickSecretPosition==11) {
                     timesOfClickSecretPosition = 0;
                     Toast.makeText(getActivity(), "设置搜索背景...", Toast.LENGTH_SHORT).show();
 

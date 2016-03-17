@@ -47,21 +47,21 @@
             </FrameLayout>
 
 
-            <TextView
-                android:visibility="visible"
-                android:background="@color/primaryColor"
-                android:textColor="@color/white"
-                android:layout_margin="@dimen/margin_large"
-                android:padding="@dimen/margin_small"
-                android:text="@string/help0"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <ImageView
-                android:visibility="visible"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/about0"
-                android:layout_margin="10dp"/>
+            <!--<TextView-->
+                <!--android:visibility="visible"-->
+                <!--android:background="@color/primaryColor"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:layout_margin="@dimen/margin_large"-->
+                <!--android:padding="@dimen/margin_small"-->
+                <!--android:text="@string/help0"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content" />-->
+            <!--<ImageView-->
+                <!--android:visibility="visible"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@mipmap/about0"-->
+                <!--android:layout_margin="10dp"/>-->
 
             <TextView
                 android:background="@color/primaryColor"

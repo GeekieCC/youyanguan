@@ -54,13 +54,14 @@ public class SettingActivity extends AppCompatActivity {
                                 if (updateStatus == UpdateStatus.Yes) {
                                     //版本有更新
                                 } else if (updateStatus == UpdateStatus.No) {
-                                    String toastString= getResources().getString(R.string.update_state_no)+getVersionInformation();
-                                    Toast.makeText(getApplication(),toastString , Toast.LENGTH_SHORT).show();
+                                    String toastString = getResources().getString(R.string.update_state_no) + getVersionInformation();
+                                    Toast.makeText(getApplication(), toastString, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
+                        BmobUpdateAgent.setUpdateOnlyWifi(true);
                         BmobUpdateAgent.forceUpdate(getApplication());
-
+                        //BmobUpdateAgent.setUpdateListener(null);
                     }
                 });
 
