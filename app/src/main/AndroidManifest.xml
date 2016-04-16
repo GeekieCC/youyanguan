@@ -63,10 +63,7 @@
             android:theme="@style/SearchResultTheme"
             android:windowSoftInputMode="stateVisible|adjustPan">
         </activity>
-        <activity
-            android:name="cn.bmob.v3.update.UpdateDialogActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-        </activity>
+
     </application>
 
 </manifest>
