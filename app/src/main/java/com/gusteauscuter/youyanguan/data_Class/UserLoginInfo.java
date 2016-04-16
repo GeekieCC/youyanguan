@@ -1,5 +1,8 @@
 package com.gusteauscuter.youyanguan.data_Class;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.Serializable;
 
 /**用户登陆信息和状态类
@@ -8,8 +11,8 @@ import java.io.Serializable;
 public class UserLoginInfo implements Serializable {
 
 
-    String username;
-    String password;
+    private String username;
+    private String password;
     private boolean isLogined;
 
     public UserLoginInfo(){
@@ -38,5 +41,12 @@ public class UserLoginInfo implements Serializable {
         return isLogined;
     }
 
+    public static void SaveData(Context context,String username, String pass){
+        SharedPreferences.Editor shareData =context.getSharedPreferences("data",0).edit();
+        shareData.putString("USERNAME",username);
+        shareData.putString("PASSWORD", pass);
+        shareData.putBoolean("ISLOGINED", true);
+        shareData.apply();
+    }
 }
 
