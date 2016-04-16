@@ -38,10 +38,10 @@ public class UpdateManager {
     private Dialog downloadDialog;
     private String mLocalVersion;
     private String mServerVersion;
-    private boolean isFirstTime=true;
+    private String mNewFeatures;
 
     //提示语
-    private static final String updateMsg = "发现新版本~";
+    private static final String updateMsg = "App更新:V";
     private static final String noUpdateInfor = "已是最新版本！";
     //返回的安装包url
     private static final String apkUrl = "http://geekie.cc/apk/wanjuanwu.apk";
@@ -104,8 +104,8 @@ public class UpdateManager {
 
     private void showNoticeDialog(){
         Builder builder = new Builder(mContext);
-        builder.setTitle("软件更新");
-        builder.setMessage(updateMsg);
+        builder.setTitle(updateMsg+mServerVersion);
+        builder.setMessage("更新内容：\n"+mNewFeatures);
         builder.setPositiveButton("下载", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -127,7 +127,7 @@ public class UpdateManager {
 
     private void showDownloadDialog(){
         Builder builder = new Builder(mContext);
-        builder.setTitle("软件版本更新");
+        builder.setTitle(updateMsg+mServerVersion);
 
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         View v = inflater.inflate(R.layout.progress_update, null);
@@ -209,6 +209,10 @@ public class UpdateManager {
                         case XmlPullParser.START_TAG:
                             if ("version".equals(parser.getName())) {
                                 mServerVersion = parser.nextText();
+                                break;
+                            }
+                            if ("description".equals(parser.getName())) {
+                                mNewFeatures = parser.nextText();
                                 break;
                             }
                     }
