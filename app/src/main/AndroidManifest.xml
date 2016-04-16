@@ -64,16 +64,6 @@
             android:windowSoftInputMode="stateVisible|adjustPan">
         </activity>
         <activity
-            android:name=".DepActivity.AddCourseActivity"
-            android:label="@string/title_activity_add_course"
-            android:theme="@style/AppTheme" >
-        </activity>
-        <activity
-            android:name=".DepActivity.CourseDetailActivity"
-            android:label="@string/title_activity_course_detail"
-            android:theme="@style/AppTheme" >
-        </activity>
-        <activity
             android:name="cn.bmob.v3.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
