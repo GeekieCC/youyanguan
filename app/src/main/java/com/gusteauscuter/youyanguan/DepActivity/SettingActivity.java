@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.util.ACache;
+import com.gusteauscuter.youyanguan.util.UpdateManager;
 
 import cn.bmob.v3.listener.BmobUpdateListener;
 import cn.bmob.v3.update.BmobUpdateAgent;
@@ -48,20 +49,7 @@ public class SettingActivity extends AppCompatActivity {
                             Toast.makeText(getApplication(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        BmobUpdateAgent.setUpdateListener(new BmobUpdateListener() {
-                            @Override
-                            public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
-
-                                if (updateStatus == UpdateStatus.Yes) {
-                                    //版本有更新
-                                } else if (updateStatus == UpdateStatus.No) {
-                                    String toastString= getResources().getString(R.string.update_state_no)+getVersionInformation();
-                                    Toast.makeText(getApplication(),toastString , Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        BmobUpdateAgent.forceUpdate(getApplication());
-
+                        new UpdateManager(SettingActivity.this).checkUpdateInfo();
                     }
                 });
 
@@ -92,19 +80,6 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
-    public String getVersionInformation(){
-        PackageManager pm = getPackageManager();
-        PackageInfo pi ;
-        String versionString="null";
-        try {
-            pi = pm.getPackageInfo(this.getPackageName(), 0);
-            versionString="\nVersionCode : "+Integer.toString(pi.versionCode)
-                    +"\nVesrionName : "+pi.versionName;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return versionString;
-    }
 
     public void SendEmailIntent(String fromWhere){
         Intent data=new Intent(Intent.ACTION_SENDTO);

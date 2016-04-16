@@ -44,6 +44,7 @@ import com.gusteauscuter.youyanguan.data_Class.HomeItem;
 import com.gusteauscuter.youyanguan.data_Class.course.Course;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.util.FileOperation;
+import com.gusteauscuter.youyanguan.util.UpdateManager;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -105,9 +106,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         initData();
         initView();
         initEvents();
-        Bmob.initialize(this, "213c7ff4ff5c05bee43e1b5f803ee7cd");
-        //BmobUpdateAgent.initAppVersion(this);
-        BmobUpdateAgent.update(this);
+        new UpdateManager(NavigationActivity.this).checkUpdateInfo();
     }
 
     /**
