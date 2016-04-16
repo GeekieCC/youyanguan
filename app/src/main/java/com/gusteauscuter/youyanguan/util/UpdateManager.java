@@ -36,9 +36,9 @@ public class UpdateManager {
 
     private Context mContext;
     private Dialog downloadDialog;
-    String mLocalVersion;
-    String mServerVersion;
-    static boolean isFirstTime=true;
+    private String mLocalVersion;
+    private String mServerVersion;
+    private boolean isFirstTime=true;
 
     //提示语
     private static final String updateMsg = "发现新版本~";
@@ -78,17 +78,21 @@ public class UpdateManager {
         this.mContext = context;
     }
 
-    //外部接口让主Activity调用
-    public void checkUpdateInfo() {
+
+
+    /**
+     * 外部接口让主Activity调用
+     * @param isForceUpdate 是否是从setting中进行更新的，如果是则强制显示信息提示，
+     *                      否则即为打开app时的更新，若无更新则此时不应该提示状态
+     */
+    public void checkUpdateInfo(boolean isForceUpdate) {
 
         try{
             mLocalVersion = getLocalVersion();
             mServerVersion = getServerVersion();
             //Toast.makeText(mContext,mLocalVersion+"|"+mServerVersion,Toast.LENGTH_SHORT).show();
             if(mLocalVersion.equals(mServerVersion)) {
-                if(isFirstTime)
-                    isFirstTime=false;
-                else
+                if(isForceUpdate)
                     Toast.makeText(mContext,noUpdateInfor,Toast.LENGTH_SHORT).show();
                 return;
             }

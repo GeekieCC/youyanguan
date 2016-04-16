@@ -87,7 +87,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         readUserLoginState();
         initView();
         initEvents();
-        new UpdateManager(NavigationActivity.this).checkUpdateInfo();
+        new UpdateManager(NavigationActivity.this).checkUpdateInfo(false);
     }
     
 

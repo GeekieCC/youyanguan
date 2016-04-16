@@ -49,7 +49,7 @@ public class SettingActivity extends AppCompatActivity {
                             Toast.makeText(getApplication(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        new UpdateManager(SettingActivity.this).checkUpdateInfo();
+                        new UpdateManager(SettingActivity.this).checkUpdateInfo(true);
                     }
                 });
 
