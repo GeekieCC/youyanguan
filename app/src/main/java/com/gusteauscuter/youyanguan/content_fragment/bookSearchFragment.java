@@ -19,7 +19,6 @@ import com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.util.FileOperation;
-import com.gusteauscuter.youyanguan.util.ScreenShot;
 
 import java.io.File;
 

@@ -92,7 +92,6 @@ public class HttpUtil {
                 while ((line = reader.readLine()) != null) {
                     resultHtml += line;
                 }
-
             }
         } catch (SocketTimeoutException e) {
             e.printStackTrace();

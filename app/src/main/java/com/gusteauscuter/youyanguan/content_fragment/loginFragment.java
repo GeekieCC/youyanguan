@@ -142,7 +142,7 @@ public class loginFragment extends Fragment {
                 if (isLogined) {
                     ((NavigationActivity)getActivity()).setmUserLoginInfo(result);
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
-                    SaveData(result.getUsername(),result.getPassword());
+                    UserLoginInfo.SaveData(getActivity(),result.getUsername(),result.getPassword());
                 } else {
                     disableDoubleClick = true;
                     Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT)
@@ -155,13 +155,7 @@ public class loginFragment extends Fragment {
 
         }
 
-        private void SaveData(String username, String pass){
-            SharedPreferences.Editor shareData =getActivity().getSharedPreferences("data",0).edit();
-            shareData.putString("USERNAME",username);
-            shareData.putString("PASSWORD", pass);
-            shareData.putBoolean("ISLOGINED", true);
-            shareData.apply();
-        }
+
     }
 
 
