@@ -28,6 +28,7 @@ import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
+import com.gusteauscuter.youyanguan.util.CalendarUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 import com.gusteauscuter.youyanguan.view.XImageView;
 
@@ -73,7 +74,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
         shareView=view.findViewById(R.id.bookListView);
 
         initData();
-        RefreshView();
+        RefreshBookData();
         return view;
     }
 
@@ -288,7 +289,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
             if (serverOK) {
                 if (isLogined) {
                     if (result != null) mBookList = result;
-                    RefreshView();
+                    RefreshBookData();
                     Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT)
                             .show();
 
@@ -357,7 +358,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
             if (serverOK) {
                 if (result != null) {
                     mBookList=result;
-                    RefreshView();
+                    RefreshBookData();
                     Toast.makeText(getActivity(), "续借成功" , Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
@@ -374,14 +375,14 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 //            byte[] picture = data.getByteArrayExtra("picture");
 //            int position = data.getIntExtra("position", 0);
 //            mBookList.get(position).setPicture(picture);
-//            RefreshView();
+//            RefreshBookData();
 //        }
 
-        RefreshView();
+        RefreshBookData();
 
     }
 
-    private void RefreshView(){
+    private void RefreshBookData(){
 //        SortBookList();
         inflatePicture(mBookList);
         mAdapter.notifyDataSetChanged();
@@ -394,11 +395,23 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
             mEmptyInformation.setVisibility(View.GONE);
         }
 
+        if(mBookList.size()>0){
+            // 添加日历提醒！
+            CalendarUtil calendarUtil =new CalendarUtil(getActivity());
+            calendarUtil.deleteCalendar();
+            for(int i=0;i<mBookList.size();i++){
+                // returnDay : 2016-04-08
+                int year = Integer.valueOf(mBookList.get(i).getReturnDay().substring(0, 4));
+                int month = Integer.valueOf(mBookList.get(i).getReturnDay().substring(5, 7));
+                int day = Integer.valueOf(mBookList.get(i).getReturnDay().substring(8,10));
+                String eventTitle = "《"+ mBookList.get(i).getTitle()+"》";
+                String description ="续借次数：" +mBookList.get(i).getBorrowedTime()+"/"+mBookList.get(i).getMaxBorrowTime();
+                calendarUtil.addEvent(year,month,day,eventTitle,description);
+            }
+        }
     }
-
     public void shareBooksBorrowed(){
 
-//        String stringFileName="sdcard/_share_books_borrowed.png";
         ScreenShot.shoot(stringSharedBooksBorrowedName, shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
