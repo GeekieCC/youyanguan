@@ -38,6 +38,7 @@ import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
 import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
+import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
 import com.gusteauscuter.youyanguan.util.FileOperation;
 import com.gusteauscuter.youyanguan.util.UpdateManager;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
@@ -87,7 +88,8 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         readUserLoginState();
         initView();
         initEvents();
-        new UpdateManager(NavigationActivity.this).checkUpdateInfo(false);
+        if(NetworkConnectivity.isConnected(getApplicationContext()))
+            new UpdateManager(NavigationActivity.this).checkUpdateInfo(true);
     }
     
 
