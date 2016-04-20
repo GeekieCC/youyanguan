@@ -13,9 +13,11 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +43,7 @@ public class UpdateManager {
     private String mNewFeatures;
 
     //提示语
-    private static final String updateMsg = "App更新:V";
+    private static final String updateMsg = "update: v";
     private static final String noUpdateInfor = "已是最新版本！";
     //返回的安装包url
     private static final String apkUrl = "http://geekie.cc/apk/wanjuanwu.apk";
@@ -79,33 +81,64 @@ public class UpdateManager {
     }
 
 
-
     /**
      * 外部接口让主Activity调用
-     * @param isForceUpdate 是否是从setting中进行更新的，如果是则强制显示信息提示，
+     * @param isHome  是否是从setting中进行更新的，如果是则强制显示信息提示，
      *                      否则即为打开app时的更新，若无更新则此时不应该提示状态
      */
-    public void checkUpdateInfo(boolean isForceUpdate) {
+    public void checkUpdateInfo(boolean isHome) {
+        CheckUpdateAsy checkUpdateAsy =new CheckUpdateAsy(isHome);
+        checkUpdateAsy.execute();
+    }
 
-        try{
-            mLocalVersion = getLocalVersion();
-            mServerVersion = getServerVersion();
-            //Toast.makeText(mContext,mLocalVersion+"|"+mServerVersion,Toast.LENGTH_SHORT).show();
-            if(mLocalVersion.equals(mServerVersion)) {
-                if(isForceUpdate)
-                    Toast.makeText(mContext,noUpdateInfor,Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+    private class CheckUpdateAsy extends AsyncTask<Void, Void, Integer>{
+
+        private String TAG = "checkUpdateAsy";
+        private int HAS_UPDATE = 0;
+        private int NO_UPDATE = 1;
+        private int NO_ALERT = 2;
+        private boolean isHome =true;
+
+        public CheckUpdateAsy(boolean isForceUpdate){
+            this.isHome =isForceUpdate;
         }
-        showNoticeDialog();
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            Log.i(TAG, "---check update---");
+
+            try{
+                getLocalVersion();
+                getServerVersion();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            if(!mLocalVersion.equals(mServerVersion))
+                return HAS_UPDATE;
+            if(isHome)
+                return NO_ALERT;
+            return NO_UPDATE;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            Log.i(TAG, "---check update postExecute---");
+            super.onPostExecute(result);
+
+            if(result==HAS_UPDATE) {
+                showNoticeDialog();
+            }
+            else if(result==NO_UPDATE)
+                Toast.makeText(mContext,noUpdateInfor,Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void showNoticeDialog(){
         Builder builder = new Builder(mContext);
         builder.setTitle(updateMsg+mServerVersion);
-        builder.setMessage("更新内容：\n"+mNewFeatures);
+        builder.setMessage(mNewFeatures);
         builder.setPositiveButton("下载", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -191,15 +224,19 @@ public class UpdateManager {
         }
     };
 
-    private Runnable getServerVersionRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(apkVersionUrl).openConnection();
-                conn.setConnectTimeout(5000);
-                conn.setRequestMethod("GET");
-                if (conn.getResponseCode()!= HttpURLConnection.HTTP_OK)
-                    return ;
+
+    private void getLocalVersion() throws Exception {
+        PackageManager packageManager = mContext.getPackageManager();
+        PackageInfo packInfo = packageManager.getPackageInfo(mContext.getPackageName(),0);
+        mLocalVersion= packInfo.versionName;
+    }
+
+    public void getServerVersion() throws Exception {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(apkVersionUrl).openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setRequestMethod("GET");
+            if (conn.getResponseCode()== HttpURLConnection.HTTP_OK){
                 InputStream inputStream = conn.getInputStream();// 从服务器获得一个输入流
                 XmlPullParser parser = Xml.newPullParser();
                 parser.setInput(inputStream, "utf-8");
@@ -218,27 +255,10 @@ public class UpdateManager {
                     }
                     type = parser.next();
                 }
-            }catch (Exception e){
-                e.printStackTrace();
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-    };
-
-    /**
-     *
-     * @return
-     * @throws Exception
-     */
-    private String getLocalVersion() throws Exception {
-        PackageManager packageManager = mContext.getPackageManager();
-        PackageInfo packInfo = packageManager.getPackageInfo(mContext.getPackageName(),0);
-        return packInfo.versionName;
-    }
-
-    public String getServerVersion() throws Exception {
-        new Thread(getServerVersionRunnable).start();
-        while (mServerVersion ==null);// 避免多线程造成的获取失败
-        return mServerVersion;
     }
 
 

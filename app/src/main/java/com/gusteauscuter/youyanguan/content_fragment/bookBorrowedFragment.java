@@ -350,7 +350,6 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
             return bookLists;
         }
 
-
         @Override
         protected void onPostExecute(List<Book> result) {
 
@@ -371,19 +370,13 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == HAS_NO_PICTURE && resultCode == BookDetailActivity.PICTURE_RESULT_CODE) {
-//            byte[] picture = data.getByteArrayExtra("picture");
-//            int position = data.getIntExtra("position", 0);
-//            mBookList.get(position).setPicture(picture);
-//            RefreshBookData();
-//        }
-
         RefreshBookData();
-
     }
 
     private void RefreshBookData(){
-//        SortBookList();
+        if(isFirstTime)
+            SortBookList();
+
         inflatePicture(mBookList);
         mAdapter.notifyDataSetChanged();
         ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
@@ -395,21 +388,36 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
             mEmptyInformation.setVisibility(View.GONE);
         }
 
-        if(mBookList.size()>0){
-            // 添加日历提醒！
-            CalendarUtil calendarUtil =new CalendarUtil(getActivity());
-            calendarUtil.deleteCalendar();
-            for(int i=0;i<mBookList.size();i++){
-                // returnDay : 2016-04-08
-                int year = Integer.valueOf(mBookList.get(i).getReturnDay().substring(0, 4));
-                int month = Integer.valueOf(mBookList.get(i).getReturnDay().substring(5, 7));
-                int day = Integer.valueOf(mBookList.get(i).getReturnDay().substring(8,10));
-                String eventTitle = "《"+ mBookList.get(i).getTitle()+"》";
-                String description ="续借次数：" +mBookList.get(i).getBorrowedTime()+"/"+mBookList.get(i).getMaxBorrowTime();
-                calendarUtil.addEvent(year,month,day,eventTitle,description);
+        AddCalendarThread addCalendarThread =new AddCalendarThread();
+        addCalendarThread.start();
+
+    }
+
+    /**
+     * 线程中添加日历时间
+     */
+    public class AddCalendarThread extends Thread {
+
+        public void run() {
+            System.out.println("AddCalendarThread.run()");
+            if(mBookList.size()>0){
+                // 添加日历提醒！
+                CalendarUtil calendarUtil =new CalendarUtil(getActivity());
+                calendarUtil.deleteCalendar();
+                for(int i=0;i<mBookList.size();i++){
+                    // returnDay : 2016-04-08
+                    int year = Integer.valueOf(mBookList.get(i).getReturnDay().substring(0, 4));
+                    int month = Integer.valueOf(mBookList.get(i).getReturnDay().substring(5, 7));
+                    int day = Integer.valueOf(mBookList.get(i).getReturnDay().substring(8,10));
+                    String eventTitle = "《"+ mBookList.get(i).getTitle()+"》";
+                    String description ="续借次数：" +mBookList.get(i).getBorrowedTime()+"/"+mBookList.get(i).getMaxBorrowTime();
+                    calendarUtil.addEvent(year,month,day,eventTitle,description);
+                }
             }
+            System.out.println("AddCalendarThread.exit()");
         }
     }
+
     public void shareBooksBorrowed(){
 
         ScreenShot.shoot(stringSharedBooksBorrowedName, shareView);
@@ -431,7 +439,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
             public int compare(Book lhs, Book rhs) {
                 String lhs_date = lhs.getReturnDay();
                 String rhs_date = rhs.getReturnDay();
-                if (lhs_date.compareTo(rhs_date) > 0)
+                if (lhs_date.compareTo(rhs_date) < 0)
                     return 1;
                 else if (lhs_date.compareTo(rhs_date) == 0)
                     return 0;
