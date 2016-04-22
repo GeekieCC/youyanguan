@@ -1,7 +1,6 @@
-package com.gusteauscuter.youyanguan.content_fragment;
+package com.gusteauscuter.youyanguan.fragment;
 
 import android.app.Fragment;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,20 +12,20 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.NavigationActivity;
+import com.gusteauscuter.youyanguan.activity.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
-import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
-import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
-import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
-import com.gusteauscuter.youyanguan.softInput.SoftInputUtil;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
+import com.gusteauscuter.youyanguan.internetService.server.CollectInfo;
+import com.gusteauscuter.youyanguan.loginClient.LibraryClient;
+import com.gusteauscuter.youyanguan.util.SoftInputUtil;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
 import java.net.SocketTimeoutException;
 
 /**
- * A simple {Login Fragment} subclass.
+ * A simple {ApiImpl Fragment} subclass.
  */
 public class loginFragment extends Fragment {
 
@@ -75,7 +74,7 @@ public class loginFragment extends Fragment {
     }
 
     private void doLogin() {
-        boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+        boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
         if (!isConnected) {
             Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
                     .show();

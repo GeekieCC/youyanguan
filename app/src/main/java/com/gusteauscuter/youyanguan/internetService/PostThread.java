@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.internet.server;
+package com.gusteauscuter.youyanguan.internetService.server;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;
@@ -28,8 +28,8 @@ public class PostThread extends Thread{
 
         PostMethod postMethod = new PostMethod(url);
         postMethod.setRequestBody(nameValuePairs);
-//        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(NetworkConnectivity.CONNECT_TIME_OUT);
-//        httpClient.getHttpConnectionManager().getParams().setSoTimeout(NetworkConnectivity.READ_TIME_OUT);
+//        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(NetworkConnectUtil.CONNECT_TIME_OUT);
+//        httpClient.getHttpConnectionManager().getParams().setSoTimeout(NetworkConnectUtil.READ_TIME_OUT);
         try {
             httpClient.executeMethod(postMethod);
         } catch (ConnectTimeoutException e) {

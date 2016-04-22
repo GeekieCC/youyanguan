@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.util;
+package com.gusteauscuter.youyanguan.internetService.server;
 
 /**
  * Created by Z on 2016/2/25 0025.
@@ -14,7 +14,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -24,6 +23,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UpdateManager {
+public class UpdateManager implements IPublicUrl{
 
     private Context mContext;
     private Dialog downloadDialog;
@@ -45,13 +45,6 @@ public class UpdateManager {
     //提示语
     private static final String updateMsg = "update: v";
     private static final String noUpdateInfor = "已是最新版本！";
-    //返回的安装包url
-    private static final String apkUrl = "http://geekie.cc/apk/wanjuanwu.apk";
-    private static final String apkVersionUrl = "http://geekie.cc/apk/Version.xml";
-    /* 下载包安装路径 */
-    private static final String sdCard= Environment.getExternalStorageDirectory().getPath();
-    private static final String savePath = sdCard+"/updatedemo/";
-    private static final String saveFileName = savePath + "UpdateDemoRelease.apk";
 
     private static final int DOWN_UPDATE = 1;
     private static final int DOWN_OVER = 2;
@@ -184,7 +177,7 @@ public class UpdateManager {
         @Override
         public void run() {
             try {
-                URL url = new URL(apkUrl);
+                URL url = new URL(apkDownloadUrl);
                 HttpURLConnection conn = (HttpURLConnection)url.openConnection();
                 conn.connect();
                 int length = conn.getContentLength();
@@ -194,7 +187,7 @@ public class UpdateManager {
                 if(!file.exists()){
                     file.mkdir();
                 }
-                String apkFile = saveFileName;
+                String apkFile = saveApkFileName;
                 File ApkFile = new File(apkFile);
                 FileOutputStream fos = new FileOutputStream(ApkFile);
 
@@ -267,7 +260,7 @@ public class UpdateManager {
     }
 
     private void installApk(){
-        File apkfile = new File(saveFileName);
+        File apkfile = new File(saveApkFileName);
         if (!apkfile.exists())
             return;
         Intent i = new Intent(Intent.ACTION_VIEW);

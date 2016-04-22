@@ -22,7 +22,7 @@
         android:icon="@mipmap/ic_gusteauscuter"
         android:label="@string/app_name" >
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -34,33 +34,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NavigationActivity"
+            android:name=".activity.NavigationActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name=".DepActivity.SettingActivity"
+            android:name=".activity.SettingActivity"
             android:label="@string/nav_setting"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".DepActivity.AboutActivity"
+            android:name=".activity.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".DepActivity.UserInforActivity"
+            android:name=".activity.UserInforActivity"
             android:label="@string/title_activity_userinfor"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".DepActivity.BookDetailActivity"
+            android:name=".activity.BookDetailActivity"
             android:label="@string/title_activity_book_detail"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name=".DepActivity.SearchBookResultActivity"
+            android:name=".activity.SearchResultActivity"
             android:label="@string/title_activity_search_result"
             android:theme="@style/SearchResultTheme"
             android:windowSoftInputMode="stateVisible|adjustPan">

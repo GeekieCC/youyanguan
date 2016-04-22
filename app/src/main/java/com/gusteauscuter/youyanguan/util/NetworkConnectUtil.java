@@ -1,10 +1,10 @@
-package com.gusteauscuter.youyanguan.internet.connectivity;
+package com.gusteauscuter.youyanguan.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-public class NetworkConnectivity {
+public class NetworkConnectUtil {
 
 	public static final int CONNECT_TIME_OUT = 6000;
 	public static final int READ_TIME_OUT = 6000;

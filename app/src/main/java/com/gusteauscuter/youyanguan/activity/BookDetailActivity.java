@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.DepActivity;
+package com.gusteauscuter.youyanguan.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,7 +29,7 @@ import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
+import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.ScreenShot;
 
@@ -37,7 +37,7 @@ import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BookDetailActivity extends AppCompatActivity implements IDirectory_File {
+public class BookDetailActivity extends AppCompatActivity implements IPublicUrl {
 
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int COLLECT_RESULT_CODE = 2;

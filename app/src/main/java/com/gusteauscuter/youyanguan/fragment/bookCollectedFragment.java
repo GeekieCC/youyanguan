@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.content_fragment;
+package com.gusteauscuter.youyanguan.fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -18,12 +18,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity;
+import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +161,7 @@ public class bookCollectedFragment extends Fragment{
                 @Override
                 public void onClick(View view) {
 
-                    boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+                    boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
                     if (isConnected) {
                         Intent intent = new Intent(getActivity(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();

@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.content_fragment;
+package com.gusteauscuter.youyanguan.fragment;
 
 
 import android.app.Fragment;
@@ -18,14 +18,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity;
-import com.gusteauscuter.youyanguan.NavigationActivity;
+import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
+import com.gusteauscuter.youyanguan.activity.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
-import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
-import com.gusteauscuter.youyanguan.login_Client.LibraryClient;
+import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
+import com.gusteauscuter.youyanguan.loginClient.LibraryClient;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class bookBorrowedFragment extends Fragment implements IDirectory_File {
+public class bookBorrowedFragment extends Fragment implements IPublicUrl {
 
     private static final int HAS_PICTURE = 5;
     private static final int HAS_NO_PICTURE = 10;
@@ -104,7 +104,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
 
     public void RefreshData(){
         refreshColor=true;
-        boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+        boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
 
         if(isConnected){
             GetBooksAsy getBooksAsy=new GetBooksAsy();
@@ -162,7 +162,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
                 @Override
                 public void onClick(View v) {
                     if (mBook.getBorrowedTime() < mBook.getMaxBorrowTime()) {
-                        boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+                        boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
                         if(isConnected){
                             RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
                             renewBookAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
@@ -179,7 +179,7 @@ public class bookBorrowedFragment extends Fragment implements IDirectory_File {
                 @Override
                 public void onClick(View v) {
 
-                    boolean isConnected = NetworkConnectivity.isConnected(getActivity());
+                    boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
                     if(isConnected){
                         Intent intent =new Intent(getActivity(), BookDetailActivity.class);
                         Bundle bundle = new Bundle();

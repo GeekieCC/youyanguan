@@ -3,7 +3,7 @@ package com.gusteauscuter.youyanguan.data_Class.book;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -34,8 +34,8 @@ public class HttpUtil {
             URL url = new URL(link);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
-            urlConnection.setConnectTimeout(NetworkConnectivity.CONNECT_TIME_OUT);
-            urlConnection.setReadTimeout(NetworkConnectivity.READ_TIME_OUT);
+            urlConnection.setConnectTimeout(NetworkConnectUtil.CONNECT_TIME_OUT);
+            urlConnection.setReadTimeout(NetworkConnectUtil.READ_TIME_OUT);
             urlConnection.connect();
             if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
@@ -79,8 +79,8 @@ public class HttpUtil {
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setChunkedStreamingMode(0);
-            conn.setConnectTimeout(NetworkConnectivity.CONNECT_TIME_OUT);
-            conn.setReadTimeout(NetworkConnectivity.READ_TIME_OUT);
+            conn.setConnectTimeout(NetworkConnectUtil.CONNECT_TIME_OUT);
+            conn.setReadTimeout(NetworkConnectUtil.READ_TIME_OUT);
             OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
 
             writer.write(query);
@@ -130,8 +130,8 @@ public class HttpUtil {
             URL url = new URL(imageLink);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
-            urlConnection.setConnectTimeout(NetworkConnectivity.CONNECT_TIME_OUT);
-            urlConnection.setReadTimeout(NetworkConnectivity.READ_TIME_OUT);
+            urlConnection.setConnectTimeout(NetworkConnectUtil.CONNECT_TIME_OUT);
+            urlConnection.setReadTimeout(NetworkConnectUtil.READ_TIME_OUT);
             urlConnection.connect();
             if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 bis = new BufferedInputStream(urlConnection.getInputStream());

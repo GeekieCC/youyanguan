@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity">
+    tools:context="com.gusteauscuter.youyanguan.activity.BookDetailActivity">
 
     <item
         android:id="@+id/action_share"
@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/action_collection"
-        android:title=""
+        android:title="@string/action_collection"
         app:showAsAction="ifRoom" />
 
 </menu>

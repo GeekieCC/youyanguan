@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.util;
+package com.gusteauscuter.youyanguan.internetService.server;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;

@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan;
+package com.gusteauscuter.youyanguan.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -32,24 +32,24 @@ import android.widget.Toast;
 import android.view.MotionEvent;
 
 
-import com.gusteauscuter.youyanguan.DepActivity.SettingActivity;
-import com.gusteauscuter.youyanguan.content_fragment.bookCollectedFragment;
-import com.gusteauscuter.youyanguan.content_fragment.loginFragment;
-import com.gusteauscuter.youyanguan.content_fragment.bookSearchFragment;
+import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.fragment.bookCollectedFragment;
+import com.gusteauscuter.youyanguan.fragment.loginFragment;
+import com.gusteauscuter.youyanguan.fragment.bookSearchFragment;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
-import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
-import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.FileOperation;
-import com.gusteauscuter.youyanguan.util.UpdateManager;
+import com.gusteauscuter.youyanguan.internetService.server.UpdateManager;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
-import com.gusteauscuter.youyanguan.content_fragment.bookBorrowedFragment;
+import com.gusteauscuter.youyanguan.fragment.bookBorrowedFragment;
 
 import java.io.File;
 
 
-public class NavigationActivity extends AppCompatActivity  implements IDirectory_File,
+public class NavigationActivity extends AppCompatActivity  implements IPublicUrl,
         View.OnClickListener, View.OnTouchListener,
         GestureDetector.OnGestureListener {
 
@@ -88,7 +88,7 @@ public class NavigationActivity extends AppCompatActivity  implements IDirectory
         readUserLoginState();
         initView();
         initEvents();
-        if(NetworkConnectivity.isConnected(getApplicationContext()))
+        if(NetworkConnectUtil.isConnected(getApplicationContext()))
             new UpdateManager(NavigationActivity.this).checkUpdateInfo(true);
     }
     

@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.content_fragment;
+package com.gusteauscuter.youyanguan.fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -15,14 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.DepActivity.SearchBookResultActivity;
-import com.gusteauscuter.youyanguan.interfaceYYG.IDirectory_File;
+import com.gusteauscuter.youyanguan.activity.SearchResultActivity;
+import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.util.FileOperation;
 
 import java.io.File;
 
-public class bookSearchFragment extends Fragment implements IDirectory_File{
+public class bookSearchFragment extends Fragment implements IPublicUrl {
     private static int RESULT_LOAD_IMAGE_search_background = 3;
     private static int RESULT_OK = -1;
     private int timesOfClickSecretPosition=0;
@@ -38,7 +38,7 @@ public class bookSearchFragment extends Fragment implements IDirectory_File{
         searchBookEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SearchBookResultActivity.class);
+                Intent intent = new Intent(getActivity(), SearchResultActivity.class);
                 startActivity(intent);
             }
         });

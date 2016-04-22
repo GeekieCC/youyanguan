@@ -1,23 +1,17 @@
-package com.gusteauscuter.youyanguan.internet.server;
+package com.gusteauscuter.youyanguan.internetService.server;
+import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
-import com.gusteauscuter.youyanguan.util.DeviceInfo;
 
 import org.apache.commons.httpclient.NameValuePair;
 
 /**
  *
  */
-public class CollectInfo {
+public class CollectInfo implements IPublicUrl{
 
-    private static final String URL_POST_DEVICE_INFO="http://geekie.cc/collectInfo/device.jsp";
-    private static final String URL_POST_USER_INFO="http://geekie.cc/collectInfo/user.jsp";
-
-//    private static final String URL_POST_DEVICE_INFO="localhost:8080/collectInfo/device.jsp";
-//    private static final String URL_POST_USER_INFO="localhost:8080/collectInfo/user.jsp";
 
     /**
      * @param deviceInfo the information collected to check the user's number
-     * @// TODO: 2016/1/30 0030  just to post the device information to the URL:URL_POST_DEVICE_INFO
      */
     public static void postRequest( DeviceInfo deviceInfo){
 
@@ -33,7 +27,6 @@ public class CollectInfo {
 
     /**
      * @param userLoginInfo the information collected to check the user's number
-     * @// TODO: 2016/1/30 0030  to post the userLoginState information to the URL:URL_POST_USER_INFO
      */
     public static void postRequest( UserLoginInfo userLoginInfo){
 

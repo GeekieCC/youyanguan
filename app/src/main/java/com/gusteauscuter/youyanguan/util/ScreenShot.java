@@ -6,15 +6,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,18 +20,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
-import android.widget.Toast;
-
-import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
-import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
-import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
-import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.exception.WrongPageException;
-
 
 public class ScreenShot {
 
@@ -188,10 +174,9 @@ public class ScreenShot {
 
     public static void saveAsImg(Bitmap bitmap ,String strFileName) {
 
-        SaveAsImage saveAsImgAsy=new SaveAsImage();
+        SaveAsImage saveAsImgAsy=new ScreenShot().new SaveAsImage();
         saveAsImgAsy.execute(bitmap,strFileName);
     }
-
 
 
     // 程序入口
@@ -211,5 +196,31 @@ public class ScreenShot {
     // 程序入口
     public static void shoot(String strFileName,Activity activity) {
         ScreenShot.saveAsImg(ScreenShot.takeScreenShot(activity), strFileName);
+    }
+
+    public class SaveAsImage extends AsyncTask<Object, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Object... args) {
+
+            try {
+                Bitmap bitmap=(Bitmap) args[0] ;
+                String strFileName=(String)args[1] ;
+                File file =new File(strFileName);
+                if(!file.getParentFile().exists()){
+                    file.getParentFile().mkdirs();
+                }
+                FileOutputStream fos = new FileOutputStream(strFileName,false);
+                boolean bollean = bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fos);
+                fos.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.softInput;
+package com.gusteauscuter.youyanguan.util;
 
 import android.app.Activity;
 import android.content.Context;

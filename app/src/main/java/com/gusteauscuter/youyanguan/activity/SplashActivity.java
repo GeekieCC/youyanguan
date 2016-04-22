@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan;
+package com.gusteauscuter.youyanguan.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -10,8 +10,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.gusteauscuter.youyanguan.internet.server.CollectInfo;
-import com.gusteauscuter.youyanguan.util.DeviceInfo;
+import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.internetService.server.CollectInfo;
+import com.gusteauscuter.youyanguan.internetService.server.DeviceInfo;
 
 
 public class SplashActivity extends AppCompatActivity {

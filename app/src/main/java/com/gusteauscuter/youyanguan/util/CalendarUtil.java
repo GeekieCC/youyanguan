@@ -44,10 +44,6 @@ public class CalendarUtil {
 
     /**
      * 添加提醒事件，按时间、内容添加
-     * @param year
-     * @param month
-     * @param date
-     * @param description
      */
     public void addEvent(int year, int month, int date, String title, String description){
 

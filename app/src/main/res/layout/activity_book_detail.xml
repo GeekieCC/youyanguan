@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.gusteauscuter.youyanguan.DepActivity.BookDetailActivity">
+    tools:context="com.gusteauscuter.youyanguan.activity.BookDetailActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/id_toolbar"

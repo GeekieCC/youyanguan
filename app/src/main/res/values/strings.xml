@@ -130,11 +130,6 @@
     <string name="title_activity_book_detail">书籍详情</string>
     <string name="title_activity_base">反馈建议</string>
     <string name="title_activity_search_result"> </string>
-    <string name="title_activity_add_course">添加课程</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_course_detail">课程详情</string>
 
 
 </resources>

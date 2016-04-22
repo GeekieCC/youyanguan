@@ -1,8 +1,6 @@
-package com.gusteauscuter.youyanguan.DepActivity;
+package com.gusteauscuter.youyanguan.activity;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -10,18 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.internet.connectivity.NetworkConnectivity;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.ACache;
-import com.gusteauscuter.youyanguan.util.UpdateManager;
-
-import cn.bmob.v3.listener.BmobUpdateListener;
-import cn.bmob.v3.update.BmobUpdateAgent;
-import cn.bmob.v3.update.UpdateResponse;
-import cn.bmob.v3.update.UpdateStatus;
+import com.gusteauscuter.youyanguan.internetService.server.UpdateManager;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -44,7 +36,7 @@ public class SettingActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean isConnected = NetworkConnectivity.isConnected(getApplication().getApplicationContext());
+                        boolean isConnected = NetworkConnectUtil.isConnected(getApplication().getApplicationContext());
                         if (!isConnected) {
                             Toast.makeText(getApplication(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                             return;

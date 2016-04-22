@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.DepActivity;
+package com.gusteauscuter.youyanguan.activity;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
