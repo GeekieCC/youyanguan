@@ -96,8 +96,7 @@
                     android:paddingBottom="10dp"
                     android:gravity="center"
                     android:text="收藏"
-                    android:textColor="@color/white"
-                    android:background="@color/primaryColor"/>
+                    android:onClick="toBookDetailActivity"/>
             </LinearLayout>
 
 

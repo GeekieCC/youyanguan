@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.internetService.server;
+package com.gusteauscuter.youyanguan.internetService;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 

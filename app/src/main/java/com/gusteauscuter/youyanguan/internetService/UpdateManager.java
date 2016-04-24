@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.internetService.server;
+package com.gusteauscuter.youyanguan.internetService;
 
 /**
  * Created by Z on 2016/2/25 0025.

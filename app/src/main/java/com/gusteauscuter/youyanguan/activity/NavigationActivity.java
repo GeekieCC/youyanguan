@@ -40,7 +40,7 @@ import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.FileOperation;
-import com.gusteauscuter.youyanguan.internetService.server.UpdateManager;
+import com.gusteauscuter.youyanguan.internetService.UpdateManager;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -356,7 +356,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         mMenu.findItem(R.id.action_open_drawer).setVisible(false);
         mMenu.findItem(R.id.action_log_out).setVisible(false);
         mMenu.findItem(R.id.action_refresh_book).setVisible(false);
-        mMenu.findItem(R.id.action_add_course).setVisible(false);
         mMenu.findItem(R.id.action_share).setVisible(false);
 
         return true;

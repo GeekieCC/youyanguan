@@ -25,7 +25,7 @@ import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.loginClient.LibraryClient;
+import com.gusteauscuter.youyanguan.internetService.LibraryLoginClient;
 import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
@@ -264,7 +264,7 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
         protected List<Book> doInBackground(String... account) {
             List<Book> bookLists = null;
             try {
-                LibraryClient libClient = new LibraryClient();
+                LibraryLoginClient libClient = new LibraryLoginClient();
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
                     bookLists = libClient.getBooks();
@@ -334,7 +334,7 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
         protected List<Book> doInBackground(String... account) {
             List<Book> bookLists = null;
             try {
-                LibraryClient libClient = new LibraryClient();
+                LibraryLoginClient libClient = new LibraryLoginClient();
                 if (libClient.login(account[0], account[1])) {
                     if (libClient.renew(bookToRenew)) {
                         bookLists = libClient.getBooks();

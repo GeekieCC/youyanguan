@@ -17,7 +17,7 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.internetService.server.CollectInfo;
-import com.gusteauscuter.youyanguan.loginClient.LibraryClient;
+import com.gusteauscuter.youyanguan.internetService.LibraryLoginClient;
 import com.gusteauscuter.youyanguan.util.SoftInputUtil;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -112,7 +112,7 @@ public class loginFragment extends Fragment {
         protected UserLoginInfo doInBackground(String... account) {
             UserLoginInfo LoginResult = null;
             try {
-                LibraryClient libClient = new LibraryClient();
+                LibraryLoginClient libClient = new LibraryLoginClient();
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
                     LoginResult = new UserLoginInfo(account[0], account[1], true);

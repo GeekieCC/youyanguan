@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.ACache;
-import com.gusteauscuter.youyanguan.internetService.server.UpdateManager;
+import com.gusteauscuter.youyanguan.internetService.UpdateManager;
 
 public class SettingActivity extends AppCompatActivity {
 

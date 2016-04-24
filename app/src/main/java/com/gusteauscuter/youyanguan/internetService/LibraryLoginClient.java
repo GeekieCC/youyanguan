@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.loginClient;
+package com.gusteauscuter.youyanguan.internetService;
 
 
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
@@ -22,7 +22,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LibraryClient {
+public class LibraryLoginClient {
 
 	private static final String MAIN_PAGE_URL = "http://202.38.232.10/opac/servlet/opac.go?cmdACT=mylibrary.login";
 	private static final String LOAN_PAGE_URL = "http://202.38.232.10/opac/servlet/opac.go?cmdACT=loan.list";

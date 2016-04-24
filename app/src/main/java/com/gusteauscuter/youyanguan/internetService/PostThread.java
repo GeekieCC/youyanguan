@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.internetService.server;
+package com.gusteauscuter.youyanguan.internetService;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;

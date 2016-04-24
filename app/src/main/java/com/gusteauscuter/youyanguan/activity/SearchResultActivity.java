@@ -1,6 +1,5 @@
 package com.gusteauscuter.youyanguan.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -10,13 +9,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gusteauscuter.youyanguan.adapter.SearchBookAdapter;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.data_Class.book.BookSearchEngine;
@@ -38,7 +35,6 @@ import com.gusteauscuter.youyanguan.view.ScrollListView;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SearchResultActivity extends AppCompatActivity implements IPublicUrl {
@@ -48,8 +44,6 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
     private static final int FIRST_SEARCH = 1;
 
     private ImageView mSearchBackground;
-
-    private List<ResultBook> mSearchBookList;
 
     //控件
     private ScrollListView mListView;
@@ -136,11 +130,11 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
         });
 
         borrowConditionCheckBox = (CheckBox) findViewById(R.id.borrowConditionCheckBox);
-        initSearchCondition();
-        mSearchBookList=new ArrayList<>();
+
         mSearchView = (EditText) findViewById(R.id.searchBookEditText);
         mSearchView.requestFocus();
 
+        initCustomSearchCondition();
         mSearchView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -152,19 +146,13 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
                 return false;
             }
         });
-        final Activity activity = this;
-//        findViewById(R.id.go_back_button).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                SoftInputUtil.toggleSoftInput(activity);
-//                finish();
-//            }
-//        });
+
         findViewById(R.id.searchBookButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 reSearch = true;
                 searchBook();
+
             }
         });
 
@@ -175,7 +163,7 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
             mSearchBackground.setImageBitmap(bitmapHeader);
         }
 
-        mAdapter = new SearchBookAdapter() ;
+        mAdapter = new SearchBookAdapter(this) ;
         mListView.setAdapter(mAdapter);
 
         mListView.setOnBottomReachedListener(new ScrollListView.OnBottomReachedListener() {
@@ -192,22 +180,16 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
     }
 
 
-    private void initSearchCondition(){
+    private void initCustomSearchCondition(){
         SharedPreferences shareData = getApplication().getSharedPreferences("data", 0);
         boolean borrowCondition = shareData.getBoolean("borrowCondition", true);
         borrowConditionCheckBox.setChecked(borrowCondition);
     }
 
-    private void saveSearchCondition() {
+    private void saveCustomSearchCondition() {
         SharedPreferences.Editor shareData =getApplication().getSharedPreferences("data", 0).edit();
         shareData.putBoolean("borrowCondition",borrowConditionCheckBox.isChecked());
         shareData.commit();
-
-        if (borrowConditionCheckBox.isChecked()){
-            checkBorrowCondition = true;
-        } else {
-            checkBorrowCondition = false;
-        }
     }
 
     private void searchBook() {
@@ -217,15 +199,17 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
             page = FIRST_PAGE;
             currentCount = 0;
             mTotalNumber.setText("0");
-            mSearchBookList.clear();
-            mAdapter.notifyDataSetChanged();
-            saveSearchCondition();
-            bookToSearch = mSearchView.getText().toString().replaceAll("\\s", "");
+            mAdapter.clearItems();
 
+            saveCustomSearchCondition();
+            checkBorrowCondition=borrowConditionCheckBox.isChecked();
+
+            bookToSearch = mSearchView.getText().toString().replaceAll("\\s", "");
             if(bookToSearch==""){
                 Toast.makeText(getApplicationContext(),"请输入搜索内容！",Toast.LENGTH_SHORT).show();
                 return;
             }
+
             SoftInputUtil.hideSoftInput(this, mSearchView); //收起软键盘
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -233,6 +217,7 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
                     searchBookHelper();
                 }
             }, 200); //收起软键盘需要一定时间
+
         } else {
             searchBookHelper();
         }
@@ -246,146 +231,9 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
             searchBookAsyTask.execute(bookToSearch, searchBookType);
         }else{
             mListView.setTriggeredOnce(false);
-            Toast.makeText(getApplication(),
-                    R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class SearchBookAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-
-        public SearchBookAdapter(){
-            this.mInflater = LayoutInflater.from(getApplication());
-        }
-
-        @Override
-        public int getCount() {
-            return mSearchBookList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mSearchBookList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return mSearchBookList.get(position).hashCode();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, final ViewGroup container) {
-
-            final ViewHolder mHolder;
-            final ResultBook mBook = mSearchBookList.get(position);
-            if (convertView == null) {
-
-                convertView=mInflater.inflate(R.layout.card_search_book, container, false);
-
-                mHolder =new ViewHolder();
-                mHolder.mSearchBookState =(ImageView) convertView.findViewById(R.id.searchBookState);
-                mHolder.mTitle=((TextView) convertView.findViewById(R.id.searchBook_Title));
-                mHolder.mPublisher=((TextView) convertView.findViewById(R.id.searchBook_Publisher));
-                mHolder.mPubdate=((TextView) convertView.findViewById(R.id.searchBook_Pubdate));
-                mHolder.mBookId=((TextView) convertView.findViewById(R.id.searchBook_BookId));
-                mHolder.mAuthor=((TextView) convertView.findViewById(R.id.searchBook_Author));
-                mHolder.mButton = (TextView) convertView.findViewById(R.id.collect_book);
-                convertView.setTag(mHolder);
-
-            } else{
-                mHolder=(ViewHolder) convertView.getTag();
-            }
-
-
-
-            int borrowCondition = mBook.getBorrowCondition();
-            if (borrowCondition == ResultBook.BOTH_YES) { //两校区都可借
-                mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
-                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
-            } else if (borrowCondition == ResultBook.BOTH_NOT) { //两校区都不可借
-                mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
-                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
-            } else if (borrowCondition == ResultBook.NORTH_ONLY) { // 只有北校区可借
-                mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
-                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
-            } else if (borrowCondition == ResultBook.SOUTH_ONLY) { // 只有南校区可借
-                mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
-                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.primaryColor));
-            } else if (borrowCondition == ResultBook.UNKNOWN) { // 不知道是否可借
-                mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
-                mHolder.mSearchBookState.setColorFilter(getResources().getColor(R.color.gray));
-            }
-
-            // TO 设置Book对应属性
-            String title="【" + (position + 1) + "】"+mBook.getTitle();
-            String publisher="出版社："+mBook.getPublisher();
-            String pubdate="出版日期："+mBook.getPubdate();
-            String bookId="索书号："+mBook.getSearchNum();
-            String author="作者："+mBook.getAuthor();
-
-            mHolder.mTitle.setText(title);
-            mHolder.mBookId.setText(bookId);
-            mHolder.mAuthor.setText(author);
-            mHolder.mPublisher.setText(publisher);
-            mHolder.mPubdate.setText(pubdate);
-            mHolder.mTitle.setTextColor(mBook.getColor());
-
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-//                    mBook.setColor(getResources().getColor(R.color.red));
-                    mBook.setViewed();
-                    boolean isConnected = NetworkConnectUtil.isConnected(getApplicationContext());
-                    if (isConnected) {
-                        Intent intent = new Intent(getApplication(), BookDetailActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("bookToShowDetail", mBook);
-                        bundle.putInt("position", position);
-                        intent.putExtras(bundle);
-                        startActivityForResult(intent, 0);
-                    } else {
-                        Toast.makeText(getApplicationContext(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
-                                .show();
-                    }
-
-                }
-            });
-
-            // 对搜索出来的结果显示时，区别已收藏和未收藏图书
-            if (!mBook.isCollected()) {
-                mHolder.mButton.setText("收藏");
-                mHolder.mButton.setTextColor(getResources().getColor(R.color.white));
-                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.primaryColor));
-            } else {
-                mHolder.mButton.setText("取消");
-                mHolder.mButton.setTextColor(getResources().getColor(R.color.primaryColor));
-                mHolder.mButton.setBackgroundColor(getResources().getColor(R.color.gray_light));
-            }
-            // 收藏和取消收藏的动作监听
-            mHolder.mButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Toast.makeText(getApplicationContext(), "收藏", Toast.LENGTH_SHORT).show();
-
-                    CrudTask crudTask = new CrudTask();
-                    crudTask.execute(mBook);
-
-                }
-            });
-
-            return convertView;
-        }
-
-        public final class ViewHolder{
-            public ImageView mSearchBookState;
-            public TextView mTitle;
-            public TextView mPublisher;
-            public TextView mPubdate;
-            public TextView mBookId;
-            public TextView mAuthor;
-            public TextView mButton;
-        }
-    }
 
     private class SearchBookAsyTask extends AsyncTask<String, Void, List<ResultBook>> {
 
@@ -465,7 +313,7 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
                         Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
                     }else {
                         if (result != null) {
-                            mSearchBookList.addAll(result);
+                            mAdapter.addItems(result);
                             mAdapter.notifyDataSetChanged();
                             mListView.setTriggeredOnce(false);
                             currentCount = mListView.getCount();
@@ -499,73 +347,6 @@ public class SearchResultActivity extends AppCompatActivity implements IPublicUr
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //TODO 收藏图书的增删改查异步类
-    private class CrudTask extends AsyncTask<ResultBook, Void, Boolean> {
-        private boolean operation;// 操作为添加时，为true;操作为删除时，为false
-        @Override
-        protected void onPreExecute() {
-            mProgressBar.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(ResultBook... resultBooks) {
-            //操作成功与否
-            boolean result = false;
-            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-            if (!resultBooks[0].isCollected()) {
-                operation = true;
-                if (mDbHelper.addBook(resultBooks[0]) != -1) {
-                    resultBooks[0].setIsCollected(true);
-                    result = true;
-                }
-            } else {
-                operation = false;
-                if (mDbHelper.deleteBook(resultBooks[0]) != 0) {
-                    resultBooks[0].setIsCollected(false);
-                    result = true;
-                }
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            mProgressBar.setVisibility(View.INVISIBLE);
-            if (operation) {
-                if (result) {
-
-                    mAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplication(), "添加失败", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                if (result) {
-                    mAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplication(), "删除失败", Toast.LENGTH_SHORT).show();
-                }
-            }
-            super.onPostExecute(result);
-        }
-
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0 && resultCode == BookDetailActivity.COLLECT_RESULT_CODE && data != null) {
-            int position = data.getIntExtra("position", 0);
-            boolean operation = data.getBooleanExtra("isCollected", false);
-            ResultBook resultBook = (ResultBook) mAdapter.getItem(position);
-            resultBook.setIsCollected(operation);
-        }
-        mAdapter.notifyDataSetChanged();
-        mListView.requestFocus();
     }
 
 }
