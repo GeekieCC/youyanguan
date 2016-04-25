@@ -23,7 +23,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
-public class ScreenShot {
+public class ScreenShotUtil {
 
     /**
      * 截取scrollview的屏幕
@@ -174,7 +174,7 @@ public class ScreenShot {
 
     public static void saveAsImg(Bitmap bitmap ,String strFileName) {
 
-        SaveAsImage saveAsImgAsy=new ScreenShot().new SaveAsImage();
+        SaveAsImage saveAsImgAsy=new ScreenShotUtil().new SaveAsImage();
         saveAsImgAsy.execute(bitmap,strFileName);
     }
 
@@ -182,20 +182,20 @@ public class ScreenShot {
     // 程序入口
 
     public static void shoot(String strFileName,View view) {
-        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(view), strFileName);
+        ScreenShotUtil.saveAsImg(ScreenShotUtil.getBitmapByView(view), strFileName);
     }
 
     public static void shoot(String strFileName,ScrollView scrollView) {
-        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(scrollView), strFileName);
+        ScreenShotUtil.saveAsImg(ScreenShotUtil.getBitmapByView(scrollView), strFileName);
     }
 
     public static void shoot(String strFileName,GridView gridView) {
-        ScreenShot.saveAsImg(ScreenShot.getBitmapByView(gridView), strFileName);
+        ScreenShotUtil.saveAsImg(ScreenShotUtil.getBitmapByView(gridView), strFileName);
     }
 
     // 程序入口
     public static void shoot(String strFileName,Activity activity) {
-        ScreenShot.saveAsImg(ScreenShot.takeScreenShot(activity), strFileName);
+        ScreenShotUtil.saveAsImg(ScreenShotUtil.takeScreenShot(activity), strFileName);
     }
 
     public class SaveAsImage extends AsyncTask<Object, Void, Void> {

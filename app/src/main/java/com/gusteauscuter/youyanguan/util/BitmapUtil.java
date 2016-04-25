@@ -1,7 +1,11 @@
 package com.gusteauscuter.youyanguan.util;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 import java.io.ByteArrayOutputStream;
 
@@ -21,6 +25,18 @@ public class BitmapUtil {
     public static Bitmap getBitmap(byte[] data){
         if (data.length == 0) return null;
         return BitmapFactory.decodeByteArray(data, 0, data.length);//从字节数组解码位图
+    }
+
+    public  static Bitmap getBitmap(Context context,Uri selectedImageUri){
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+        Cursor cursor = context.getContentResolver().query(selectedImageUri,
+                filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String picturePath = cursor.getString(columnIndex);
+        cursor.close();
+        return BitmapFactory.decodeFile(picturePath);
     }
 
 }

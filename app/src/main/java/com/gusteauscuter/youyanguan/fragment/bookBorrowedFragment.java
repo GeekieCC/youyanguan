@@ -2,66 +2,50 @@ package com.gusteauscuter.youyanguan.fragment;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
-import com.gusteauscuter.youyanguan.activity.NavigationActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
+import com.gusteauscuter.youyanguan.adapter.CollectedBookAdapter;
 import com.gusteauscuter.youyanguan.data_Class.book.Book;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.internetService.LibraryLoginClient;
-import com.gusteauscuter.youyanguan.util.ACache;
-import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
-import com.gusteauscuter.youyanguan.util.ScreenShot;
-import com.gusteauscuter.youyanguan.view.XImageView;
+import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
+import com.gusteauscuter.youyanguan.util.ShareDataUtil;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 
 public class bookBorrowedFragment extends Fragment implements IPublicUrl {
-
-    private static final int HAS_PICTURE = 5;
-    private static final int HAS_NO_PICTURE = 10;
 
     private GridView mListView;
     private TextView mEmptyInformation;
     private ProgressBar mProgressBar;
     private View shareView;
 
-    private BookAdapter mAdapter;
-    private List<Book> mBookList=new ArrayList<>();
-
-    private UserLoginInfo mUserLoginInfo =new UserLoginInfo();
+    private ActionBar mActionBar ;
+    private CollectedBookAdapter mAdapter;
+    private Context mContext ;
+    private ShareDataUtil mShareDataUtil;
     private boolean isFirstTime=true;
-
-    private boolean refreshColor=true;
-    private int start=0;
-    private ACache mCache;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,188 +56,62 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefresh);
         mListView = (GridView) view.findViewById(R.id.bookListView);
         shareView=view.findViewById(R.id.bookListView);
+        mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
 
-        initData();
-        RefreshBookData();
+        mContext = getActivity();
+        mShareDataUtil = new ShareDataUtil(mContext);
+        if(mAdapter==null)
+            mAdapter = new CollectedBookAdapter(mContext);
+        mListView.setAdapter(mAdapter);
+
+        RefreshBook();
+        RefreshViewAndCalendar();
         return view;
     }
 
-    private void initData(){
-
-        mUserLoginInfo =((NavigationActivity)getActivity()).getmLogin();
-
-        if(mBookList==null) {
-            mBookList = new ArrayList<>();
-        }
-        if(mAdapter==null) {
-            mAdapter = new BookAdapter();
-        }
-        mListView.setAdapter(mAdapter);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isFirstTime) {
-                    isFirstTime = false;
-                    RefreshData();
-                }
-            }
-        }, 320);
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        RefreshViewAndCalendar();
     }
 
-    public void RefreshData(){
-        refreshColor=true;
+    public void RefreshBook(){
+        if(!isFirstTime||!mAdapter.isEmpty())
+            return;
+        else
+            isFirstTime=false;
         boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
-
         if(isConnected){
-            GetBooksAsy getBooksAsy=new GetBooksAsy();
-            getBooksAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
-        }else{
-            Toast.makeText(getActivity(), R.string.internet_not_connected
-                    , Toast.LENGTH_SHORT).show();
+            GetBooksAsy getBooksAsy=new GetBooksAsy(mShareDataUtil.getUSERNAME(), mShareDataUtil.getPASSWORD());
+            getBooksAsy.execute();
         }
     }
 
-    private class BookAdapter extends BaseAdapter {
+    private void RefreshViewAndCalendar(){
+        String title=getResources().getString(R.string.nav_book_borrowed);
+        mActionBar.setTitle(title + "(" + mAdapter.getCount() + ")");
+        if( mAdapter.isEmpty())
+            mEmptyInformation.setVisibility(View.VISIBLE);
+        else
+            mEmptyInformation.setVisibility(View.GONE);
+        mAdapter.notifyDataSetChanged();
 
-        private LayoutInflater mInflater;
-
-        public BookAdapter(){
-            this.mInflater = LayoutInflater.from(getActivity());
-        }
-
-        @Override
-        public int getCount() {
-            return mBookList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mBookList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return mBookList.get(position).hashCode();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup container) {
-
-            final ViewHolder mHolder;
-            final Book mBook = mBookList.get(position);
-
-            if (convertView == null) {
-                convertView=mInflater.inflate(R.layout.card_book,container, false);
-                mHolder =new ViewHolder();
-                mHolder.mButtonBorrow=(TextView) convertView.findViewById(R.id.button_Borrow);
-                mHolder.mBookPicture=(XImageView) convertView.findViewById(R.id.BookPicture);
-                mHolder.mName=((TextView) convertView.findViewById(R.id.text_Title));
-                mHolder.mBorrowDay=((TextView) convertView.findViewById(R.id.text_BorrowDay));
-                mHolder.mReturnDay=(TextView) convertView.findViewById(R.id.text_ReturnDay);
-                mHolder.mBorrowedTime=((TextView) convertView.findViewById(R.id.text_BorrowedTime));
-                convertView.setTag(mHolder);
-            } else{
-                mHolder=(ViewHolder) convertView.getTag();
-            }
-
-            mHolder.mButtonBorrow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mBook.getBorrowedTime() < mBook.getMaxBorrowTime()) {
-                        boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
-                        if(isConnected){
-                            RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
-                            renewBookAsy.execute(mUserLoginInfo.getUsername(), mUserLoginInfo.getPassword());
-                        } else{
-                            Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), "已达最大续借次数，请及时归还", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            mHolder.mBookPicture.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
-                    if(isConnected){
-                        Intent intent =new Intent(getActivity(), BookDetailActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("bookToShowDetail", mBook);
-                        bundle.putInt("position", position);
-                        intent.putExtras(bundle);
-                        int requestCode = (mBook.getPicture() != null) ? HAS_PICTURE : HAS_NO_PICTURE;
-                        startActivityForResult(intent, requestCode);
-                    }else{
-                        Toast.makeText(getActivity(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            // TO 设置Book对应属性
-            String name=mBook.getTitle();
-            String borrowDay="借阅:"+mBook.getBorrowDay();
-            String returnDay="归还:"+mBook.getReturnDay();
-            String borrowedTime="续借次数:"+  mBook.getBorrowedTime()+"/"+ mBook.getMaxBorrowTime();
-
-            mHolder.mName.setText( name.toString());
-            mHolder.mBorrowDay.setText(borrowDay.toString());
-            mHolder.mReturnDay.setText(returnDay.toString());
-            mHolder.mBorrowedTime.setText(borrowedTime.toString());
-
-            int[] book_color={
-                    getResources().getColor(R.color.book_color_1),
-                    getResources().getColor(R.color.book_color_2),
-                    getResources().getColor(R.color.book_color_3),
-                    getResources().getColor(R.color.book_color_4),
-                    getResources().getColor(R.color.book_color_5),
-                    getResources().getColor(R.color.book_color_6),
-                    getResources().getColor(R.color.book_color_7),
-//                    getResources().getColor(R.color.book_color_8),
-//                    getResources().getColor(R.color.book_color_9),
-//                    getResources().getColor(R.color.book_color_10)
-            };
-
-            if(refreshColor){
-                refreshColor=false;
-                Random ra =new Random();
-                start=ra.nextInt(book_color.length);
-            }
-            int no =(start+position)%book_color.length;
-            //设置图片
-            if (mBook.getPicture() != null) {
-                mHolder.mBookPicture.setImageBitmap(BitmapUtil.getBitmap(mBook.getPicture()));
-                mHolder.mBookPicture.setImageAlpha(255);
-                mHolder.mBookPicture.setBackgroundColor(getResources().getColor(R.color.white));
-                mHolder.mName.setVisibility(View.GONE);
-            }else {
-                mHolder.mBookPicture.setBackgroundColor(book_color[no]);
-                mHolder.mBookPicture.setImageAlpha(0);
-                mHolder.mName.setVisibility(View.VISIBLE);
-            }
-
-            return convertView;
-        }
-
-        public final class ViewHolder{
-            public TextView mButtonBorrow;
-            public XImageView mBookPicture;
-            public TextView mName;
-            public TextView mBorrowDay;
-            public TextView mReturnDay;
-            public TextView mBorrowedTime;
-        }
-
+        new CalendarUtil(getActivity()).new AddCalendarThread(
+                (List<Book>) mAdapter.getItemList())
+                .start();
     }
 
-
-    private class GetBooksAsy extends AsyncTask<String, Void, List<Book>> {
+    private class GetBooksAsy extends AsyncTask<Void, Void, List<Book>> {
+        private String mUsername;
+        private String mPssword;
         private boolean isLogined;
         private boolean serverOK = true;
+
+        public GetBooksAsy(String username,String password){
+            mUsername=username;
+            mPssword=password;
+        }
+
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
@@ -261,26 +119,21 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
         }
 
         @Override
-        protected List<Book> doInBackground(String... account) {
+        protected List<Book> doInBackground(Void... params) {
             List<Book> bookLists = null;
             try {
                 LibraryLoginClient libClient = new LibraryLoginClient();
-                if (libClient.login(account[0], account[1])) {
+                if (libClient.login(mUsername,mPssword)) {
                     isLogined = true;
                     bookLists = libClient.getBooks();
-//                    inflatePicture(bookLists);
                 }
             } catch (ConnectTimeoutException | SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
-                //serverOK = false;
             }
             return bookLists;
         }
-
-
-
 
         @Override
         protected void onPostExecute(List<Book> result) {
@@ -288,139 +141,22 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (serverOK) {
                 if (isLogined) {
-                    if (result != null) mBookList = result;
-                    RefreshBookData();
-                    Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT)
-                            .show();
-
-                } else {
-                    Toast.makeText(getActivity(), R.string.failed_to_getBooks, Toast.LENGTH_SHORT)
-                            .show();
-                }
-            } else {
-                Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT)
-                        .show();
-            }
-
-        }
-    }
-
-    //为图书加载图片
-    private void inflatePicture(List<Book> bookLists) {
-        mCache = ACache.get(getActivity());
-        for (int i = 0; i < bookLists.size(); i++) {
-            Book book = bookLists.get(i);
-            byte[] bitmap2Bytes = mCache.getAsBitmap2Bytes(book.getBookId());
-            if (bitmap2Bytes != null) {
-                book.setPicture(bitmap2Bytes);
-            }
-        }
-    }
-
-    private class RenewBookAsy extends AsyncTask<String, Void, List<Book>> {
-        private boolean serverOK = true;
-        private Book bookToRenew;
-        public RenewBookAsy(Book bookToRenew) {
-            this.bookToRenew = bookToRenew;
-        }
-
-        @Override
-        protected void onPreExecute(){
-            mProgressBar.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected List<Book> doInBackground(String... account) {
-            List<Book> bookLists = null;
-            try {
-                LibraryLoginClient libClient = new LibraryLoginClient();
-                if (libClient.login(account[0], account[1])) {
-                    if (libClient.renew(bookToRenew)) {
-                        bookLists = libClient.getBooks();
-//                        inflatePicture(bookLists);
-
+                    if (result != null) {
+                        mAdapter.setItems(result);
+                        RefreshViewAndCalendar();
                     }
-                }
-            } catch (ConnectTimeoutException | SocketTimeoutException e) {
-                serverOK = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return bookLists;
-        }
-
-        @Override
-        protected void onPostExecute(List<Book> result) {
-
-            mProgressBar.setVisibility(View.GONE);
-            if (serverOK) {
-                if (result != null) {
-                    mBookList=result;
-                    RefreshBookData();
-                    Toast.makeText(getActivity(), "续借成功" , Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
-                }
-            } else {
+                    Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getActivity(), R.string.failed_to_getBooks, Toast.LENGTH_SHORT).show();
+            } else
                 Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        RefreshBookData();
-    }
-
-    private void RefreshBookData(){
-        if(isFirstTime)
-            SortBookList();
-
-        inflatePicture(mBookList);
-        mAdapter.notifyDataSetChanged();
-        ActionBar mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        String title=getResources().getString(R.string.nav_book_borrowed);
-        mActionBar.setTitle(title + "(" + mBookList.size() + ")");
-        if(!isFirstTime && mBookList.isEmpty()){
-            mEmptyInformation.setVisibility(View.VISIBLE);
-        }else{
-            mEmptyInformation.setVisibility(View.GONE);
-        }
-
-        AddCalendarThread addCalendarThread =new AddCalendarThread();
-        addCalendarThread.start();
-
-    }
-
-    /**
-     * 线程中添加日历时间
-     */
-    public class AddCalendarThread extends Thread {
-
-        public void run() {
-            System.out.println("AddCalendarThread.run()");
-            if(mBookList.size()>0){
-                // 添加日历提醒！
-                CalendarUtil calendarUtil =new CalendarUtil(getActivity());
-                calendarUtil.deleteCalendar();
-                for(int i=0;i<mBookList.size();i++){
-                    // returnDay : 2016-04-08
-                    int year = Integer.valueOf(mBookList.get(i).getReturnDay().substring(0, 4));
-                    int month = Integer.valueOf(mBookList.get(i).getReturnDay().substring(5, 7));
-                    int day = Integer.valueOf(mBookList.get(i).getReturnDay().substring(8,10));
-                    String eventTitle = "《"+ mBookList.get(i).getTitle()+"》";
-                    String description ="续借次数：" +mBookList.get(i).getBorrowedTime()+"/"+mBookList.get(i).getMaxBorrowTime();
-                    calendarUtil.addEvent(year,month,day,eventTitle,description);
-                }
-            }
-            System.out.println("AddCalendarThread.exit()");
-        }
-    }
 
     public void shareBooksBorrowed(){
 
-        ScreenShot.shoot(stringSharedBooksBorrowedName, shareView);
+        ScreenShotUtil.shoot(stringSharedBooksBorrowedName, shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
@@ -429,24 +165,7 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBooksBorrowedName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(Intent.createChooser(intent,getResources().getString(R.string.action_share)));
-
-    }
-
-    private void SortBookList(){
-        Collections.sort(mBookList, new Comparator<Book>() {
-            @Override
-            public int compare(Book lhs, Book rhs) {
-                String lhs_date = lhs.getReturnDay();
-                String rhs_date = rhs.getReturnDay();
-                if (lhs_date.compareTo(rhs_date) < 0)
-                    return 1;
-                else if (lhs_date.compareTo(rhs_date) == 0)
-                    return 0;
-                else
-                    return -1;
-            }
-        });
+        startActivity(Intent.createChooser(intent, getResources().getString(R.string.action_share)));
     }
 
 }

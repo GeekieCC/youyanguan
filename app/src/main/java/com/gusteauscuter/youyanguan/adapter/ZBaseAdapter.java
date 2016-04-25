@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Z on 2016/4/23 0023.
@@ -84,6 +85,9 @@ public abstract class ZBaseAdapter<T> extends BaseAdapter {
         return mItemList.get(position);
     }
 
+    public Object getItemList(){
+        return mItemList;
+    }
     /**
      * Get the row id associated with the specified position in the list.
      *

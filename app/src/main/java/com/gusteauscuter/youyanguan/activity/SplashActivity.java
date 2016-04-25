@@ -11,8 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.internetService.server.CollectInfo;
-import com.gusteauscuter.youyanguan.internetService.server.DeviceInfo;
+import com.gusteauscuter.youyanguan.internetService.CollectInfo;
+import com.gusteauscuter.youyanguan.internetService.DeviceInfo;
 
 
 public class SplashActivity extends AppCompatActivity {

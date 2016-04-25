@@ -1,5 +1,11 @@
 package com.gusteauscuter.youyanguan.util;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
@@ -11,9 +17,9 @@ import java.io.OutputStream;
 /**
  * Created by Ziqian on 2015/11/27.
  */
-public class FileOperation {
+public class FileCopyUtil {
 
-    private static String TAG = "FileOperation";
+    private static String TAG = "FileCopyUtil";
 
     public static int copy(String fromFile, String toFile) {
         //要复制的文件目录
@@ -76,5 +82,7 @@ public class FileOperation {
             return -1;
         }
     }
+
+
 
 }

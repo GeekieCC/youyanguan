@@ -30,8 +30,8 @@ import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
 import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
-import com.gusteauscuter.youyanguan.util.ACache;
-import com.gusteauscuter.youyanguan.util.ScreenShot;
+import com.gusteauscuter.youyanguan.util.ACacheUtil;
+import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -65,7 +65,7 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
     private int position;
     private LinearLayout shareView;
 
-    private ACache mCache;
+    private ACacheUtil mCache;
     private SimpleBaseBook bookToCollect;
     private boolean isBookCollected = false;
     //判断图书类型
@@ -120,7 +120,7 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
         position = intent.getIntExtra("position", 0);
 
         //TODO
-        mCache = ACache.get(this);
+        mCache = ACacheUtil.get(this);
 
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
         getBooksDetailAsy.execute(simpleBaseBook);
@@ -210,7 +210,7 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
 
     private void shareBook(){
 
-        ScreenShot.shoot(stringSharedBookDetailName,shareView);
+        ScreenShotUtil.shoot(stringSharedBookDetailName, shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
@@ -222,7 +222,7 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
         startActivity(Intent.createChooser(intent, "Share"));
 
     }
-    //// TODO: 2015/11/13 将第一个参数改为BaseBok
+
     private class GetBooksDetailAsy extends AsyncTask<SimpleBaseBook, Void, BookDetail> {
         private Bitmap bitmap;
         private boolean serverOK = true;
@@ -231,8 +231,6 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
-//            Toast.makeText(getApplicationContext(), R.string.ing_getBookInformation, Toast.LENGTH_SHORT)
-//                    .show();
             super.onPreExecute();
         }
 
@@ -240,7 +238,6 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
         protected BookDetail doInBackground(SimpleBaseBook... simpleBaseBooks) {
             BookDetail bookDetail = new BookDetail();
             try {
-
                 bookDetail.getBookDetail(simpleBaseBooks[0]);
                 borrowCondition = LocationInformation.checkBorrowCondition(bookDetail.getLocationInfoWithoutStopped());
                 simpleBaseBooks[0].setBorrowCondition(borrowCondition);
@@ -258,7 +255,6 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
             } catch (SocketTimeoutException e) {
                 serverOK = false;
             } catch (Exception e) {
-                //serverOK = false;
                 e.printStackTrace();
             }
             return bookDetail;
@@ -289,13 +285,6 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
                 if (bitmap != null) {
                     bookPictureImageView.setImageBitmap(bitmap);
                     inflateBottom(result);
-
-                    //返回给上一个activity
-//                    Intent intent = new Intent();
-//                    intent.putExtra("picture", BitmapUtil.getBytes(bitmap));
-//                    intent.putExtra("position", position);
-//                    BookDetailActivity.this.setResult(PICTURE_RESULT_CODE, intent);
-
                 } else {
                     bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
                     bottomLinearLayout.removeAllViews();
@@ -305,8 +294,6 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
             }
 
         }
-
-
 
         //将整个详情页分为三大部分，第一部分，图片右侧区域,不包括图片
         private void inflateTopRight(BookDetail bookDetail) {
@@ -322,27 +309,20 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
             TextView textView = new TextView(getApplicationContext());
 
             textView.setText(content);
-
             //文字与边框间距离
             textView.setPadding(13, 13, 13, 13);
-
             //定义背景颜色，蓝色
             textView.setBackgroundColor(Color.parseColor(bgColor));
-
             //定义字体颜色,黑色
             int textColor = Color.parseColor("#000000");
             textView.setTextColor(textColor);
-
             //定义透明度
             textView.setAlpha((float) 0.87);
-
             //居中显示
             textView.setGravity(Gravity.CENTER);
             textView.setLayoutParams(new TableRow.LayoutParams(
                     TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
-
             return textView;
-
         }
 
 
@@ -391,42 +371,34 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
         private void inflateBottom(BookDetail bookDetail) {
             if (bookDetail.getAuthorIntro().replaceAll("\\s","").isEmpty()) {
                 bottomLinearLayout.removeView(authorIntroTextView);
-//                authorIntroTextView.setVisibility(View.INVISIBLE);
             } else {
                 authorIntroTextView.setText("\n【作者简介】" + bookDetail.getAuthorIntro());
             }
 
             if (bookDetail.getSummary().replaceAll("\\s","").isEmpty()) {
                 bottomLinearLayout.removeView(contentTextView);
-//                contentTextView.setVisibility(View.INVISIBLE);
             } else {
                 contentTextView.setText("\n【内容简介】" + bookDetail.getSummary());
             }
 
             if (bookDetail.getCatalog().replaceAll("\\s", "").isEmpty()) {
                 bottomLinearLayout.removeView(catalogTextView);
-//                catalogTextView.setVisibility(View.INVISIBLE);
             } else {
                 catalogTextView.setText("\n【目录】" + bookDetail.getCatalog());
             }
 
             if (bookDetail.getPages().replaceAll("\\s", "").isEmpty()) {
                 bottomLinearLayout.removeView(pagesTextView);
-//                pagesTextView.setVisibility(View.INVISIBLE);
             } else {
                 pagesTextView.setText("\n【页数】" + bookDetail.getPages());
             }
 
             if (bookDetail.getPrice().replaceAll("\\s","").isEmpty()) {
                 bottomLinearLayout.removeView(priceTextView);
-//                priceTextView.setVisibility(View.INVISIBLE);
             } else {
                 priceTextView.setText("\n【价格】" + bookDetail.getPrice());
             }
-
         }
-
-
     }
 
 
@@ -484,7 +456,6 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
                 isBookCollected = false;
                 menuCollection.setIcon(R.drawable.ic_action_collect);
             }
-
             super.onPostExecute(aBoolean);
         }
 

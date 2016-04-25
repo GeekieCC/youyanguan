@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.activity.SearchResultActivity;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.util.FileOperation;
+import com.gusteauscuter.youyanguan.util.FileCopyUtil;
 
 import java.io.File;
 
@@ -93,7 +93,7 @@ public class bookSearchFragment extends Fragment implements IPublicUrl {
             Bitmap bitmap= BitmapFactory.decodeFile(picturePath);
             mSearchBackground.setImageBitmap(bitmap);
 
-            FileOperation.CopySdcardFile(picturePath, stringSearchBackgroundName);
+            FileCopyUtil.CopySdcardFile(picturePath, stringSearchBackgroundName);
         }
 
     }

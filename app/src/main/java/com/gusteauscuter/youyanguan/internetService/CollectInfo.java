@@ -1,6 +1,5 @@
 package com.gusteauscuter.youyanguan.internetService;
 import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
-import com.gusteauscuter.youyanguan.data_Class.UserLoginInfo;
 
 import org.apache.commons.httpclient.NameValuePair;
 
@@ -25,15 +24,13 @@ public class CollectInfo implements IPublicUrl{
         new PostThread(URL_POST_DEVICE_INFO,nameValuePairs).start();
     }
 
-    /**
-     * @param userLoginInfo the information collected to check the user's number
-     */
-    public static void postRequest( UserLoginInfo userLoginInfo){
+
+    public static void postRequest( String username, String password, boolean isLogined){
 
         NameValuePair[] nameValuePairs = {
-                new NameValuePair("username", userLoginInfo.getUsername()),
-                new NameValuePair("password", userLoginInfo.getPassword()),
-                new NameValuePair("state", String.valueOf(userLoginInfo.IsLogined()))};
+                new NameValuePair("username", username),
+                new NameValuePair("password", password),
+                new NameValuePair("state", String.valueOf(isLogined))};
 
         new PostThread(URL_POST_USER_INFO,nameValuePairs).start();
 

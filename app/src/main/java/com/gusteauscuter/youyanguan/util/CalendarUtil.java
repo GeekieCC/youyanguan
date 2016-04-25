@@ -9,7 +9,10 @@ import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 
+import com.gusteauscuter.youyanguan.data_Class.book.Book;
+
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -118,5 +121,33 @@ public class CalendarUtil {
         Cursor userCursor =  mContext.getContentResolver().query(mCalendarUri, null, null, null, null);
         if(userCursor.getCount()>0)
             mContext.getContentResolver().delete(mCalendarUri, null, null);
+    }
+
+    /**
+     * 线程中添加日历时间
+     */
+    public class AddCalendarThread extends Thread {
+        private List<Book> mBookList;
+
+        public AddCalendarThread(List<Book> bookList){
+            mBookList=bookList;
+        }
+
+        public void run() {
+            if(mBookList.size()>0){
+                // 添加日历提醒！
+                CalendarUtil calendarUtil =new CalendarUtil(mContext);
+                calendarUtil.deleteCalendar();
+                for(int i=0;i<mBookList.size();i++){
+                    // returnDay : 2016-04-08
+                    int year = Integer.valueOf(mBookList.get(i).getReturnDay().substring(0, 4));
+                    int month = Integer.valueOf(mBookList.get(i).getReturnDay().substring(5, 7));
+                    int day = Integer.valueOf(mBookList.get(i).getReturnDay().substring(8,10));
+                    String eventTitle = "《"+ mBookList.get(i).getTitle()+"》";
+                    String description ="续借次数：" +mBookList.get(i).getBorrowedTime()+"/"+mBookList.get(i).getMaxBorrowTime();
+                    calendarUtil.addEvent(year,month,day,eventTitle,description);
+                }
+            }
+        }
     }
 }
