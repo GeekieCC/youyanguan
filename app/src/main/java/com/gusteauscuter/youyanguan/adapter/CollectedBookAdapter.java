@@ -11,18 +11,16 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
-import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.internetService.LibraryLoginClient;
+import com.gusteauscuter.youyanguan.api.InternetServiceApi;
+import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
+import com.gusteauscuter.youyanguan.definedDataClass.Book;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
 import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.util.ShareDataUtil;
+import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
 import com.gusteauscuter.youyanguan.view.XImageView;
 
-import org.apache.commons.httpclient.ConnectTimeoutException;
-
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 
@@ -61,8 +59,8 @@ public class CollectedBookAdapter extends ZBaseAdapter {
                     boolean isConnected = NetworkConnectUtil.isConnected(mContext);
                     if(isConnected){
                         RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
-                        ShareDataUtil shareDataUtil=new ShareDataUtil(mContext);
-                        renewBookAsy.execute(shareDataUtil.getUSERNAME(), shareDataUtil.getPASSWORD());
+                        SharedPreferencesUtil sharedPreferencesUtil =new SharedPreferencesUtil(mContext);
+                        renewBookAsy.execute(sharedPreferencesUtil.getUSERNAME(), sharedPreferencesUtil.getPASSWORD());
                     } else{
                         Toast.makeText(mContext, R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                     }
@@ -154,14 +152,12 @@ public class CollectedBookAdapter extends ZBaseAdapter {
         protected List<Book> doInBackground(String... account) {
             List<Book> bookLists = null;
             try {
-                LibraryLoginClient libClient = new LibraryLoginClient();
-                if (libClient.login(account[0], account[1])) {
-                    if (libClient.renew(bookToRenew)) {
-                        bookLists = libClient.getBooks();
-                    }
-                }
-            } catch (ConnectTimeoutException | SocketTimeoutException e) {
-                serverOK = false;
+                SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(mContext);
+                String username = sharedPreferencesUtil.getUSERNAME();
+                String password = sharedPreferencesUtil.getPASSWORD();
+                InternetServiceApi internetService = new InternetServiceApiImpl();
+                if (internetService.Login(username,password))
+                    internetService.RenewBook(bookToRenew.getBookId());
             } catch (Exception e) {
                 e.printStackTrace();
             }

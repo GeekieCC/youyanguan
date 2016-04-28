@@ -11,8 +11,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.internetService.CollectInfo;
-import com.gusteauscuter.youyanguan.internetService.DeviceInfo;
+import com.gusteauscuter.youyanguan.api.InternetServiceApi;
+import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
+import com.gusteauscuter.youyanguan.util.DeviceInfoUtil;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -35,17 +36,11 @@ public class SplashActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        /*
-         * add getDeviceInformation here 
-         */
+
+        // ==========add getDeviceInformation here ======================
         getDeviceInformation();
-        /*
-         * END 
-         */
         
         handler.postDelayed(runnable = new Runnable() {
-
             @Override
             public void run() {
                 Intent intent = new Intent(SplashActivity.this, NavigationActivity.class);
@@ -53,31 +48,23 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         }, 2000);
-
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-
-        if(event.getAction()==MotionEvent.ACTION_UP)
-        {
+    public boolean onTouchEvent(MotionEvent event){
+        if(event.getAction()==MotionEvent.ACTION_UP){
             Intent intent = new Intent(SplashActivity.this, NavigationActivity.class);
             startActivity(intent);
             finish();
             if (runnable != null)
                 handler.removeCallbacks(runnable);
         }
-
         return super.onTouchEvent(event);
     }
 
-
     private void getDeviceInformation(){
-
-        DeviceInfo deviceInfo=new DeviceInfo(this);
-        CollectInfo.postRequest(deviceInfo);
-        //Toast.makeText(getApplicationContext(), deviceID, Toast.LENGTH_SHORT).show();
-
+        DeviceInfoUtil deviceInfo=new DeviceInfoUtil(this);
+        InternetServiceApi internetService = new InternetServiceApiImpl();
+        internetService.sendDeviceInfor(deviceInfo);
     }
 }

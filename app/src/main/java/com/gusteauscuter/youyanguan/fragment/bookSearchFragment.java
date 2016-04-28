@@ -16,17 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.activity.SearchResultActivity;
-import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.util.FileCopyUtil;
 
 import java.io.File;
 
-public class bookSearchFragment extends Fragment implements IPublicUrl {
+public class bookSearchFragment extends Fragment {
     private static int RESULT_LOAD_IMAGE_search_background = 3;
     private static int RESULT_OK = -1;
     private int timesOfClickSecretPosition=0;
-
+    private static String mSearchBackgrounFiledName = PublicURI.PATH_BG_SEARCH;
     private ImageView mSearchBackground;
 
     @Override
@@ -44,14 +44,11 @@ public class bookSearchFragment extends Fragment implements IPublicUrl {
         });
 
         mSearchBackground=(ImageView) view.findViewById(R.id.search_background);
-        File file = new File(stringSearchBackgroundName);
+        File file = new File(mSearchBackgrounFiledName);
         if (file.exists()) {
-            Bitmap bitmapHeader=BitmapFactory.decodeFile(stringSearchBackgroundName);
+            Bitmap bitmapHeader=BitmapFactory.decodeFile(mSearchBackgrounFiledName);
             mSearchBackground.setImageBitmap(bitmapHeader);
         }
-//        if(bitmapHeader!=null){
-//            mSearchBackground.setImageBitmap(bitmapHeader);
-//        }
 
         view.findViewById(R.id.secret_book).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +90,7 @@ public class bookSearchFragment extends Fragment implements IPublicUrl {
             Bitmap bitmap= BitmapFactory.decodeFile(picturePath);
             mSearchBackground.setImageBitmap(bitmap);
 
-            FileCopyUtil.CopySdcardFile(picturePath, stringSearchBackgroundName);
+            FileCopyUtil.CopySdcardFile(picturePath, mSearchBackgrounFiledName);
         }
 
     }

@@ -1,6 +1,8 @@
-package com.gusteauscuter.youyanguan.data_Class.book;
+package com.gusteauscuter.youyanguan.definedDataClass;
 
 import android.graphics.Bitmap;
+
+import com.gusteauscuter.youyanguan.util.HttpUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

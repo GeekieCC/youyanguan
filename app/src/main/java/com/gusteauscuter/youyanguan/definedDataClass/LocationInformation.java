@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.data_Class.book;
+package com.gusteauscuter.youyanguan.definedDataClass;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;

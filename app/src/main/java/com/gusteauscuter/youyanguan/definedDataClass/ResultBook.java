@@ -1,9 +1,6 @@
-package com.gusteauscuter.youyanguan.data_Class.book;
+package com.gusteauscuter.youyanguan.definedDataClass;
 
-import android.content.res.Resources;
-import android.graphics.Color;
-
-import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.util.HttpUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

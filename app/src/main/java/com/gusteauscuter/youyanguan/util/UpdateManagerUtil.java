@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.internetService;
+package com.gusteauscuter.youyanguan.util;
 
 /**
  * Created by Z on 2016/2/25 0025.
@@ -23,7 +23,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UpdateManager implements IPublicUrl{
+public class UpdateManagerUtil {
 
     private Context mContext;
     private Dialog downloadDialog;
@@ -48,6 +48,11 @@ public class UpdateManager implements IPublicUrl{
 
     private static final int DOWN_UPDATE = 1;
     private static final int DOWN_OVER = 2;
+
+    private static final String mApkDownloadUrl = PublicURI.URL_APK_DOWNLOAD;
+    private static final String mApkVersionUrl = PublicURI.URL_APK_VERSION;
+    private static final String mApkSavePath = PublicURI.LOCAL_PATH;
+    private static final String mApkSaveFileName = PublicURI.PATH_APK;
 
     /* 进度条与通知ui刷新的handler和msg常量 */
     private ProgressBar mProgress;
@@ -69,7 +74,7 @@ public class UpdateManager implements IPublicUrl{
         };
     };
 
-    public UpdateManager(Context context) {
+    public UpdateManagerUtil(Context context) {
         this.mContext = context;
     }
 
@@ -130,7 +135,7 @@ public class UpdateManager implements IPublicUrl{
 
     private void showNoticeDialog(){
         Builder builder = new Builder(mContext);
-        builder.setTitle(updateMsg+mServerVersion);
+        builder.setTitle(updateMsg + mServerVersion);
         builder.setMessage(mNewFeatures);
         builder.setPositiveButton("下载", new OnClickListener() {
             @Override
@@ -153,7 +158,7 @@ public class UpdateManager implements IPublicUrl{
 
     private void showDownloadDialog(){
         Builder builder = new Builder(mContext);
-        builder.setTitle(updateMsg+mServerVersion);
+        builder.setTitle(updateMsg + mServerVersion);
 
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         View v = inflater.inflate(R.layout.progress_update, null);
@@ -177,18 +182,17 @@ public class UpdateManager implements IPublicUrl{
         @Override
         public void run() {
             try {
-                URL url = new URL(apkDownloadUrl);
+                URL url = new URL(mApkDownloadUrl);
                 HttpURLConnection conn = (HttpURLConnection)url.openConnection();
                 conn.connect();
                 int length = conn.getContentLength();
                 InputStream is = conn.getInputStream();
 
-                File file = new File(savePath);
+                File file = new File(mApkSavePath);
                 if(!file.exists()){
                     file.mkdir();
                 }
-                String apkFile = saveApkFileName;
-                File ApkFile = new File(apkFile);
+                File ApkFile = new File(mApkSaveFileName);
                 FileOutputStream fos = new FileOutputStream(ApkFile);
 
                 int count = 0;
@@ -226,7 +230,7 @@ public class UpdateManager implements IPublicUrl{
 
     public void getServerVersion() throws Exception {
         try {
-            HttpURLConnection conn = (HttpURLConnection) new URL(apkVersionUrl).openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL(mApkVersionUrl).openConnection();
             conn.setConnectTimeout(5000);
             conn.setRequestMethod("GET");
             if (conn.getResponseCode()== HttpURLConnection.HTTP_OK){
@@ -260,7 +264,7 @@ public class UpdateManager implements IPublicUrl{
     }
 
     private void installApk(){
-        File apkfile = new File(saveApkFileName);
+        File apkfile = new File(mApkSaveFileName);
         if (!apkfile.exists())
             return;
         Intent i = new Intent(Intent.ACTION_VIEW);

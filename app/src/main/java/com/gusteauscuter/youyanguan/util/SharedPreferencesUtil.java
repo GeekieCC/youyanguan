@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 /**
  * Created by Ziqian on 2016/4/25.
  */
-public class ShareDataUtil {
+public class SharedPreferencesUtil {
     public static final String SHARED_PREFERENCE_NAME="data";
     public static final String USERNAME="USERNAME";
     public static final String PASSWORD="PASSWORD";
@@ -15,7 +15,7 @@ public class ShareDataUtil {
     protected SharedPreferences.Editor mShareDataEditor;
     protected Context mContext;
 
-    public ShareDataUtil(Context context){
+    public SharedPreferencesUtil(Context context){
         mContext=context;
         mShareData = mContext.getSharedPreferences(SHARED_PREFERENCE_NAME, 0);
         mShareDataEditor=mContext.getSharedPreferences(SHARED_PREFERENCE_NAME,0).edit();

@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,22 +18,20 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.adapter.CollectedBookAdapter;
-import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.api.InternetServiceApi;
+import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
+import com.gusteauscuter.youyanguan.definedDataClass.Book;
+import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.internetService.LibraryLoginClient;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
-import com.gusteauscuter.youyanguan.util.ShareDataUtil;
-
-import org.apache.commons.httpclient.ConnectTimeoutException;
+import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
 
 import java.io.File;
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 
-public class bookBorrowedFragment extends Fragment implements IPublicUrl {
+public class bookBorrowedFragment extends Fragment {
 
     private GridView mListView;
     private TextView mEmptyInformation;
@@ -44,9 +41,10 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
     private ActionBar mActionBar ;
     private CollectedBookAdapter mAdapter;
     private Context mContext ;
-    private ShareDataUtil mShareDataUtil;
+    private SharedPreferencesUtil mSharedPreferencesUtil;
     private boolean isFirstTime=true;
 
+    private static String stringSharedBooksBorrowedName = PublicURI.PATH_SHARE_MY_BOOKS;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,7 +57,7 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
         mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
 
         mContext = getActivity();
-        mShareDataUtil = new ShareDataUtil(mContext);
+        mSharedPreferencesUtil = new SharedPreferencesUtil(mContext);
         if(mAdapter==null)
             mAdapter = new CollectedBookAdapter(mContext);
         mListView.setAdapter(mAdapter);
@@ -82,8 +80,12 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
             isFirstTime=false;
         boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
         if(isConnected){
-            GetBooksAsy getBooksAsy=new GetBooksAsy(mShareDataUtil.getUSERNAME(), mShareDataUtil.getPASSWORD());
-            getBooksAsy.execute();
+            InternetServiceApi internetService = new InternetServiceApiImpl();
+            if (internetService.Login(mSharedPreferencesUtil.getUSERNAME(), mSharedPreferencesUtil.getPASSWORD())){
+                mAdapter.setItems((List) internetService.GetMyBooks());//========================================= TODO
+                RefreshViewAndCalendar();
+            }
+            Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -100,59 +102,6 @@ public class bookBorrowedFragment extends Fragment implements IPublicUrl {
                 (List<Book>) mAdapter.getItemList())
                 .start();
     }
-
-    private class GetBooksAsy extends AsyncTask<Void, Void, List<Book>> {
-        private String mUsername;
-        private String mPssword;
-        private boolean isLogined;
-        private boolean serverOK = true;
-
-        public GetBooksAsy(String username,String password){
-            mUsername=username;
-            mPssword=password;
-        }
-
-        @Override
-        protected void onPreExecute(){
-            mProgressBar.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected List<Book> doInBackground(Void... params) {
-            List<Book> bookLists = null;
-            try {
-                LibraryLoginClient libClient = new LibraryLoginClient();
-                if (libClient.login(mUsername,mPssword)) {
-                    isLogined = true;
-                    bookLists = libClient.getBooks();
-                }
-            } catch (ConnectTimeoutException | SocketTimeoutException e) {
-                serverOK = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return bookLists;
-        }
-
-        @Override
-        protected void onPostExecute(List<Book> result) {
-
-            mProgressBar.setVisibility(View.INVISIBLE);
-            if (serverOK) {
-                if (isLogined) {
-                    if (result != null) {
-                        mAdapter.setItems(result);
-                        RefreshViewAndCalendar();
-                    }
-                    Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
-                } else
-                    Toast.makeText(getActivity(), R.string.failed_to_getBooks, Toast.LENGTH_SHORT).show();
-            } else
-                Toast.makeText(getActivity(), R.string.server_failed, Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     public void shareBooksBorrowed(){
 

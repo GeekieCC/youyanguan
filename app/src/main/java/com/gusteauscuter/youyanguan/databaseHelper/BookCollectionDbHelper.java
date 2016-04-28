@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.data_Class.bookdatabase;
+package com.gusteauscuter.youyanguan.databaseHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
-import com.gusteauscuter.youyanguan.data_Class.bookdatabase.FeedReaderContract.FeedEntry;
+import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.databaseHelper.FeedReaderContract.FeedEntry;
 
 import java.util.ArrayList;
 import java.util.List;

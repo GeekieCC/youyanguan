@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.internetService.UpdateManager;
+import com.gusteauscuter.youyanguan.util.UpdateManagerUtil;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -41,7 +41,7 @@ public class SettingActivity extends AppCompatActivity {
                             Toast.makeText(getApplication(), R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        new UpdateManager(SettingActivity.this).checkUpdateInfo(false);
+                        new UpdateManagerUtil(SettingActivity.this).checkUpdateInfo(false);
                     }
                 });
 

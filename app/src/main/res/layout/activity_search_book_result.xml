@@ -102,19 +102,9 @@
                         android:padding="@dimen/margin_small"
                         android:orientation="horizontal">
 
-                        <CheckBox
-                            style="@style/textDefault"
-                            android:layout_alignParentRight="true"
-                            android:id="@+id/borrowConditionCheckBox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="在馆状态"
-                            android:textColorHighlight="@color/white"
-                            android:checked="true"/>
-
                         <Spinner
                             style="@style/textDefault"
-                            android:layout_toLeftOf="@id/borrowConditionCheckBox"
+                            android:layout_alignParentRight="true"
                             android:id="@+id/spinner"
                             android:layout_width="80dp"
                             android:layout_height="wrap_content"

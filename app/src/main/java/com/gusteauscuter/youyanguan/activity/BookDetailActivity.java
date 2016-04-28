@@ -23,13 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.book.Book;
-import com.gusteauscuter.youyanguan.data_Class.book.BookDetail;
-import com.gusteauscuter.youyanguan.data_Class.book.LocationInformation;
-import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
-import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
-import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
+import com.gusteauscuter.youyanguan.definedDataClass.Book;
+import com.gusteauscuter.youyanguan.definedDataClass.BookDetail;
+import com.gusteauscuter.youyanguan.definedDataClass.LocationInformation;
+import com.gusteauscuter.youyanguan.definedDataClass.ResultBook;
+import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
 
@@ -37,7 +37,7 @@ import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BookDetailActivity extends AppCompatActivity implements IPublicUrl {
+public class BookDetailActivity extends AppCompatActivity {
 
     public static final int PICTURE_RESULT_CODE = 1;
     public static final int COLLECT_RESULT_CODE = 2;
@@ -73,6 +73,7 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
 //    public static final int RESULT_BOOK = 1;
     //private int baseBookType;
 
+    private String mSharedBookDetailFileName = PublicURI.PATH_SHARE_BOOK_DETAIL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,14 +211,14 @@ public class BookDetailActivity extends AppCompatActivity implements IPublicUrl 
 
     private void shareBook(){
 
-        ScreenShotUtil.shoot(stringSharedBookDetailName, shareView);
+        ScreenShotUtil.shoot(mSharedBookDetailFileName, shareView);
 
         Intent intent=new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_TITLE, "Share");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
         intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBookDetailName)));
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(mSharedBookDetailFileName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, "Share"));
 

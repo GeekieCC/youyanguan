@@ -1,11 +1,11 @@
-package com.gusteauscuter.youyanguan.internetService;
+package com.gusteauscuter.youyanguan.util;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
-public class DeviceInfo {
+public class DeviceInfoUtil {
 
     /**
      *
@@ -46,7 +46,7 @@ public class DeviceInfo {
     private String VoiceMailNumber ;
     private String WifiID;
 
-    public DeviceInfo(Context context) {
+    public DeviceInfoUtil(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context
                 .getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -72,6 +72,9 @@ public class DeviceInfo {
     }
 
 
+    public DeviceInfoUtil getDeviceInfor(){
+        return this;
+    }
 
     /**
      * 获取手机服务商信息

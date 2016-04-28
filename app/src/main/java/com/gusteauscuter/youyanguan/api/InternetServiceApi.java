@@ -1,11 +1,13 @@
 package com.gusteauscuter.youyanguan.api;
 
+import com.gusteauscuter.youyanguan.util.DeviceInfoUtil;
+
 import org.json.JSONObject;
 
 /**
  * Created by Z on 2016/4/22 0022.
  */
-public interface Api {
+public interface InternetServiceApi {
     String LOG_IN = "login";
     String RENEW_BOOK="renewBook";
     String GET_MY_BOOKS="getMyBooks";
@@ -19,9 +21,13 @@ public interface Api {
 
     JSONObject GetMyBooks();
 
-    JSONObject SearchBook(String searchContent, String searchCriteria, String page);
+    JSONObject SearchBook(String searchContent, String searchCriteria, int page);
 
     JSONObject GetStoreInfor(String bookId);
 
     JSONObject GetBookDetail(String bookId);
+
+    void sendDeviceInfor( DeviceInfoUtil deviceInfo);
+
+    void sendUserInfor( String username, String password, boolean isLogined);
 }

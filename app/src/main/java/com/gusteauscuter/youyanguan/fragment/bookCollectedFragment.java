@@ -20,9 +20,9 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.data_Class.book.ResultBook;
-import com.gusteauscuter.youyanguan.data_Class.book.SimpleBaseBook;
-import com.gusteauscuter.youyanguan.data_Class.bookdatabase.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.definedDataClass.ResultBook;
+import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 
 import java.util.ArrayList;

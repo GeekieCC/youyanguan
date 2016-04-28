@@ -36,12 +36,11 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.fragment.bookCollectedFragment;
 import com.gusteauscuter.youyanguan.fragment.loginFragment;
 import com.gusteauscuter.youyanguan.fragment.bookSearchFragment;
-import com.gusteauscuter.youyanguan.commonUrl.IPublicUrl;
-import com.gusteauscuter.youyanguan.util.BitmapUtil;
+import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.util.FileCopyUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.internetService.UpdateManager;
-import com.gusteauscuter.youyanguan.util.ShareDataUtil;
+import com.gusteauscuter.youyanguan.util.UpdateManagerUtil;
+import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -50,9 +49,8 @@ import com.gusteauscuter.youyanguan.fragment.bookBorrowedFragment;
 import java.io.File;
 
 
-public class NavigationActivity extends AppCompatActivity  implements IPublicUrl,
-        View.OnClickListener, View.OnTouchListener,
-        GestureDetector.OnGestureListener {
+public class NavigationActivity extends AppCompatActivity  implements  View.OnClickListener,
+        View.OnTouchListener, GestureDetector.OnGestureListener {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationViewLeft;
@@ -77,10 +75,13 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
     private static int RESULT_LOAD_IMAGE_header = 1;
     private static int RESULT_LOAD_IMAGE_background = 2;
 
+    private static String mBackgroundFileName = PublicURI.PATH_BG_HOME;
+    private static String mHeaderFileName = PublicURI.PATH_HEADER_IMAGE;
+
     private int timesOfClickSecretPosition=0;
     String arg;
 
-    private ShareDataUtil mShareDataUtil;
+    private SharedPreferencesUtil mSharedPreferencesUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         initView();
         initEvents();
         if(NetworkConnectUtil.isConnected(getApplicationContext()))
-            new UpdateManager(NavigationActivity.this).checkUpdateInfo(true);
+            new UpdateManagerUtil(NavigationActivity.this).checkUpdateInfo(true);
     }
 
 
@@ -102,17 +103,17 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         mHeaderImage=(RoundImageView)findViewById(R.id.header);
         mDrawerBackground=(ImageView)findViewById(R.id.drawer_background);
 
-        mShareDataUtil= new ShareDataUtil(this);
+        mSharedPreferencesUtil = new SharedPreferencesUtil(this);
 
-        File headFile = new File(stringHeaderName);
+        File headFile = new File(mHeaderFileName);
         if (headFile.exists()) {
-            Bitmap bitmapHeader=BitmapFactory.decodeFile(stringHeaderName);
+            Bitmap bitmapHeader=BitmapFactory.decodeFile(mHeaderFileName);
             mHeaderImage.setImageBitmap(bitmapHeader);
         }
 
-        File backgroundFile = new File(stringBackgroundName);
+        File backgroundFile = new File(mBackgroundFileName);
         if (backgroundFile.exists()) {
-            Bitmap bitmapBackground=BitmapFactory.decodeFile(stringBackgroundName);
+            Bitmap bitmapBackground=BitmapFactory.decodeFile(mBackgroundFileName);
             mDrawerBackground.setImageBitmap(bitmapBackground);
         }
 
@@ -151,10 +152,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
             }
         });
 
-
-//        mNavigationViewRight = (NavigationView) findViewById(R.id.id_nv_menu_right);
         mContentFramelayout = (FrameLayout) findViewById(R.id.container_frame);
-
         mContentFramelayout.setOnClickListener(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.id_toolbar);
@@ -163,7 +161,6 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
         mActionBar.setDisplayHomeAsUpEnabled(true);
         mActionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         setupDrawerContent(mNavigationViewLeft);
-//        setupDrawerContent(mNavigationViewRight);
 
         mGestureDetector = new GestureDetector(this);
         FrameLayout touchArea = (FrameLayout) findViewById(R.id.container_frame);
@@ -190,7 +187,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mHeaderImage.setImageBitmap(bitmap);
-            FileCopyUtil.CopySdcardFile(picturePath, stringHeaderName);
+            FileCopyUtil.CopySdcardFile(picturePath, mHeaderFileName);
         }
 
         if (requestCode == RESULT_LOAD_IMAGE_background && resultCode == RESULT_OK && null != data) {
@@ -206,7 +203,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
             Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
             mDrawerBackground.setImageBitmap(bitmap);
 
-            FileCopyUtil.CopySdcardFile(picturePath, stringBackgroundName);
+            FileCopyUtil.CopySdcardFile(picturePath, mBackgroundFileName);
         }
 
     }
@@ -214,7 +211,7 @@ public class NavigationActivity extends AppCompatActivity  implements IPublicUrl
 
     public void JumpToBookFragment(){
 
-        if (mShareDataUtil.getISLOGINED()){
+        if (mSharedPreferencesUtil.getISLOGINED()){
             if (mBookBorrowedFragment ==null)
                 mBookBorrowedFragment =new bookBorrowedFragment();
             FragmentManager mFragmentManager = getFragmentManager();

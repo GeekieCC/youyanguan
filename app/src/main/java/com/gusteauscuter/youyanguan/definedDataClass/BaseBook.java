@@ -1,4 +1,4 @@
-package com.gusteauscuter.youyanguan.data_Class.book;
+package com.gusteauscuter.youyanguan.definedDataClass;
 
 /**
  * Created by Strang on 2015/11/10.
