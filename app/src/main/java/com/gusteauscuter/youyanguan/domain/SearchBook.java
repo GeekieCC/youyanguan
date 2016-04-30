@@ -1,5 +1,11 @@
 package com.gusteauscuter.youyanguan.domain;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchBook {
 	
 	private String title;
@@ -58,5 +64,24 @@ public class SearchBook {
 		this.collectInfo = collectInfo;
 	}
 	
-	
+	public static List<SearchBook> getBook(JSONArray jsonArray){
+		List<SearchBook> bookList=new ArrayList<>();
+		try {
+			for(int i=0;i<jsonArray.length();i++){
+				JSONObject jsonBook = (JSONObject) jsonArray.get(i);
+				String author = jsonBook.getString("author");
+				String title = jsonBook.getString("title");
+				String searchNum = jsonBook.getString("searchNum");
+				String pubdate = jsonBook.getString("pubdate");
+				String isbn = jsonBook.getString("isbn");
+				String bookId = jsonBook.getString("bookId");
+				String type = jsonBook.getString("type");
+				String publisher = jsonBook.getString("publisher");
+				bookList.add(new SearchBook(title, author, publisher, isbn, pubdate,searchNum, type, bookId));
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return bookList;
+	}
 }

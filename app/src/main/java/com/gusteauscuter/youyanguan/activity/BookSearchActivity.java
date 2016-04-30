@@ -23,13 +23,15 @@ import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
 import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.definedDataClass.ResultBook;
+import com.gusteauscuter.youyanguan.domain.SearchBook;
 import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
 import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.domain.SearchBook;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -196,7 +198,7 @@ public class BookSearchActivity extends AppCompatActivity {
     }
 
 
-    private class SearchBookAsyTask extends AsyncTask<Void, Void, List<ResultBook>> {
+    private class SearchBookAsyTask extends AsyncTask<Void, Void, List<SearchBook>> {
 
         @Override
         protected void onPreExecute(){
@@ -204,25 +206,30 @@ public class BookSearchActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<ResultBook> doInBackground(Void... args) {
-            List<ResultBook> resultBookLists = null;
+        protected List<SearchBook> doInBackground(Void... args) {
+            List<SearchBook> resultBookLists = null;
             try{
                 InternetServiceApi internetServiceApi = new InternetServiceApiImpl();
+                // TEST
+//                mBookKeywordToSearch="OK";
                 JSONObject resultJson =  internetServiceApi.SearchBook(mBookKeywordToSearch,mSearchType,mCurrentPage);
-                resultBookLists=(List<ResultBook>) resultJson.get("result");// TODO translate Json to resultBookList
+                JSONObject searchInfoJson=resultJson.getJSONObject("searchInfo");
+                resultBookLists= SearchBook.getBook((JSONArray) resultJson.get("bookList"));// TODO translate Json to resultBookList
 
                 if (resultBookLists != null && mCurrentPage <= mNumOfPages)
                     mCurrentPage++;
 
-                if(mIsReSearch)
-                    mCountOfBooks = resultJson.getInt("countOfBooks");
+                if(mIsReSearch){
+                    mCountOfBooks = searchInfoJson.getInt("bookNum");
+                    mNumOfPages=searchInfoJson.getInt("pageNum");
+                }
                 //对于搜索出来的书，检查其是否已经被收藏到数据库
                 BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
                 List<SimpleBaseBook> bookCollections = mDbHelper.getAllBookCollections();
-                for (ResultBook resultBook : resultBookLists) {
+                for (SearchBook resultBook : resultBookLists) {
                     for (SimpleBaseBook bookCollected : bookCollections) {
                         if (resultBook.getBookId().equals(bookCollected.getBookId())) {
-                            resultBook.setIsCollected(true);
+//                            resultBook.setIsCollected(true);
                         }
                     }
                 }
@@ -235,7 +242,7 @@ public class BookSearchActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<ResultBook> result) {
+        protected void onPostExecute(List<SearchBook> result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (result == null)
                 return;

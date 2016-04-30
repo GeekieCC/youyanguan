@@ -25,7 +25,7 @@ public class PublicURI {
     public static final String URL_APK_DOWNLOAD = URL_SERVER_ROOT +"/apk/wanjuanwu.apk";
     public static final String URL_APK_VERSION = URL_SERVER_ROOT +"/apk/Version.xml";
     // API网络路径
-    public static final String URL_API_BASE = "http://geekie.cc/wanjuanwu2/";
+    public static final String URL_API_BASE = "http://geekie.cc/wanjuanwu3/";
     public static final String URL_LOGIN = URL_API_BASE +"LoginServlet";
     public static final String URL_SEARCH_BOOK = URL_API_BASE +"SearchBookServlet";
     public static final String URL_GET_BOOK_STORE_INFOR = URL_API_BASE +"CheckCollectionInfoServlet";
