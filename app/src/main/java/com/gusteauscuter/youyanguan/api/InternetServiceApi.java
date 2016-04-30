@@ -8,12 +8,12 @@ import org.json.JSONObject;
  * Created by Z on 2016/4/22 0022.
  */
 public interface InternetServiceApi {
-    String LOG_IN = "login";
-    String RENEW_BOOK="renewBook";
-    String GET_MY_BOOKS="getMyBooks";
-    String SEARCH_BOOK="searchBook";
-    String GET_STORE_INFOR="getStoreInfor";
-    String GET_BOOK_DETAIL="getBookDetail";
+    String ACTION_LOG_IN = "login";
+    String ACTION_RENEW_BOOK ="renewBook";
+    String ACTION_GET_MY_BOOKS ="getMyBooks";
+    String ACTION_SEARCH_BOOK ="searchBook";
+    String ACTION_GET_STORE_INFOR ="getStoreInfor";
+    String ACTION_GET_BOOK_DETAIL ="getBookDetail";
 
     boolean Login(String username, String password);
 

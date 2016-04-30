@@ -35,11 +35,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.List;
 
-public class SearchResultActivity extends AppCompatActivity {
+public class BookSearchActivity extends AppCompatActivity {
 
-    private static final int NUM_OF_BOOKS_PER_SEARCH = 5; // 带可借信息查询时，一次加载的图书数目
     private static final int FIRST_PAGE = 1;
-    private static final int FIRST_SEARCH = 1;
     private static final String SearchBackgroundFileName = PublicURI.PATH_BG_SEARCH;
 
     private ImageView mSearchBackground;
@@ -71,8 +69,9 @@ public class SearchResultActivity extends AppCompatActivity {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     mIsReSearch = true;
                     searchBook();
+                    return true;
                 }
-                return mIsReSearch;
+                return false;
             }
         });
         findViewById(R.id.searchBookButton).setOnClickListener(new View.OnClickListener() {
@@ -143,7 +142,7 @@ public class SearchResultActivity extends AppCompatActivity {
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
+                mSearchType = "TITLE";
             }
         });
         // 背景图片设置
@@ -216,7 +215,7 @@ public class SearchResultActivity extends AppCompatActivity {
                     mCurrentPage++;
 
                 if(mIsReSearch)
-                    mCountOfBooks = resultJson.getInt("couuntOfBooks");
+                    mCountOfBooks = resultJson.getInt("countOfBooks");
                 //对于搜索出来的书，检查其是否已经被收藏到数据库
                 BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
                 List<SimpleBaseBook> bookCollections = mDbHelper.getAllBookCollections();
@@ -255,16 +254,4 @@ public class SearchResultActivity extends AppCompatActivity {
                 Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
         }
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
 }

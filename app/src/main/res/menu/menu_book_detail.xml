@@ -12,6 +12,7 @@
     <item
         android:id="@+id/action_collection"
         android:title="@string/action_collection"
+        android:icon="@null"
         app:showAsAction="ifRoom" />
 
 </menu>

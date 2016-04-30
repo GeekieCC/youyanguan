@@ -85,6 +85,8 @@ public class UpdateManagerUtil {
      *                      否则即为打开app时的更新，若无更新则此时不应该提示状态
      */
     public void checkUpdateInfo(boolean isHome) {
+        if(!NetworkConnectUtil.isConnected(mContext))
+            return;
         CheckUpdateAsy checkUpdateAsy =new CheckUpdateAsy(isHome);
         checkUpdateAsy.execute();
     }

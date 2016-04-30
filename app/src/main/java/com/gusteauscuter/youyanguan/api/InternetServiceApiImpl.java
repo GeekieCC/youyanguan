@@ -23,7 +23,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
     public boolean Login(String username, String password) {
         try {
             NameValuePair[] values ={
-                new NameValuePair("action", InternetServiceApi.LOG_IN),
+                new NameValuePair("action", InternetServiceApi.ACTION_LOG_IN),
                 new NameValuePair("username", username),
                 new NameValuePair("password", password),
             };
@@ -39,7 +39,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
         boolean result = false;
         try{
             NameValuePair[] values ={
-                new NameValuePair("action", InternetServiceApi.RENEW_BOOK),
+                new NameValuePair("action", InternetServiceApi.ACTION_RENEW_BOOK),
                 new NameValuePair("bookId",bookId),
             };
             result = PostToServer(mLoginUrl,values).getBoolean("event");
@@ -52,7 +52,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
     @Override
     public JSONObject GetMyBooks() {
         NameValuePair[] values ={
-            new NameValuePair("action", InternetServiceApi.GET_MY_BOOKS),
+            new NameValuePair("action", InternetServiceApi.ACTION_GET_MY_BOOKS),
         };
         return PostToServer(mLoginUrl, values);
     }
@@ -60,7 +60,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
     @Override
     public JSONObject SearchBook(String searchContent, String searchCriteria, int page) {
         NameValuePair[] values ={
-            new NameValuePair("action", InternetServiceApi.SEARCH_BOOK),
+            new NameValuePair("action", InternetServiceApi.ACTION_SEARCH_BOOK),
             new NameValuePair("searchContent",searchContent),
             new NameValuePair("searchCriteria",searchCriteria),
             new NameValuePair("page",String.valueOf(page)),
@@ -70,10 +70,10 @@ public class InternetServiceApiImpl implements InternetServiceApi {
 
     @Override
     public JSONObject GetStoreInfor(String bookId) {
-        new NameValuePair("action", InternetServiceApi.GET_STORE_INFOR);
+        new NameValuePair("action", InternetServiceApi.ACTION_GET_STORE_INFOR);
         new NameValuePair("bookId",bookId);
         NameValuePair[] values ={
-            new NameValuePair("action", InternetServiceApi.GET_STORE_INFOR),
+            new NameValuePair("action", InternetServiceApi.ACTION_GET_STORE_INFOR),
             new NameValuePair("bookId",bookId),
         };
         return PostToServer(mGetStoreInforUrl,values);
@@ -82,7 +82,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
     @Override
     public JSONObject GetBookDetail(String bookId) {
         NameValuePair[] values ={
-            new NameValuePair("action", InternetServiceApi.GET_BOOK_DETAIL),
+            new NameValuePair("action", InternetServiceApi.ACTION_GET_BOOK_DETAIL),
             new NameValuePair("bookId",bookId),
         };
         return PostToServer(mGetBookDetailUrl,values);

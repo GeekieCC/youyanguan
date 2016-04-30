@@ -73,7 +73,6 @@ public class loginFragment extends Fragment {
                         }
                     }
                 }, 500); //收起软键盘需要一定时间
-
             }
         });
         return view;

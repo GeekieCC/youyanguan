@@ -4,11 +4,15 @@ package com.gusteauscuter.youyanguan.fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -17,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.activity.NavigationActivity;
 import com.gusteauscuter.youyanguan.adapter.CollectedBookAdapter;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
@@ -115,6 +120,34 @@ public class bookBorrowedFragment extends Fragment {
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBooksBorrowedName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, getResources().getString(R.string.action_share)));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_my_borrowed_books, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case (R.id.action_log_out):
+                mSharedPreferencesUtil.setIsLogined(false);
+                ((NavigationActivity) getActivity()).JumpToLoginFragment();
+                Toast.makeText(getActivity(), getString(R.string.re_login), Toast.LENGTH_SHORT).show();
+                break;
+            case (R.id.action_share):
+                shareBooksBorrowed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

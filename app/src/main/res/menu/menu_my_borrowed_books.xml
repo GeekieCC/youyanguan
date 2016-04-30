@@ -3,20 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.gusteauscuter.youyanguan.fragment.bookBorrowedFragment">
 
-
+    <item android:id="@+id/action_log_out"
+        android:title="@string/action_log_out"
+        app:showAsAction="never" />
     <item android:id="@+id/action_share"
         android:title="@string/action_share"
         android:icon="@drawable/ic_action_share"
         app:showAsAction="never" />
-
-    <item android:id="@+id/action_log_out"
-        android:title="@string/action_log_out"
-        app:showAsAction="never" />
-
     <item android:id="@+id/action_refresh_book"
         android:title="@string/action_refresh_book"
         app:showAsAction="never"/>
-
-
-
 </menu>
