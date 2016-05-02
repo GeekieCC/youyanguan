@@ -23,18 +23,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.definedDataClass.Book;
-import com.gusteauscuter.youyanguan.definedDataClass.BookDetail;
-import com.gusteauscuter.youyanguan.definedDataClass.LocationInformation;
-import com.gusteauscuter.youyanguan.definedDataClass.ResultBook;
-import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.api.InternetServiceApi;
+import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
 import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.common.PublicURI;
+import com.gusteauscuter.youyanguan.domain.BookBase;
+import com.gusteauscuter.youyanguan.domain.BookDetail;
+import com.gusteauscuter.youyanguan.domain.JsonUtil;
+import com.gusteauscuter.youyanguan.domain.LocationInfo;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
 
+import org.json.JSONObject;
+
 import java.io.File;
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 public class BookDetailActivity extends AppCompatActivity {
@@ -43,8 +45,7 @@ public class BookDetailActivity extends AppCompatActivity {
     public static final int COLLECT_RESULT_CODE = 2;
 
     private ProgressBar  mProgressBar;
-    private SimpleBaseBook simpleBaseBook;
-    //控件
+
     private ImageView bookPictureImageView;
     private TextView titleTextView;
     private TextView authorTextView;
@@ -61,19 +62,15 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView pagesTextView;
     private TextView priceTextView;
     private MenuItem menuCollection;
-//    private boolean isCollected;
-    private int position;
+
     private LinearLayout shareView;
+    private String mSharedBookDetailFileName = PublicURI.PATH_SHARE_BOOK_DETAIL;
 
     private ACacheUtil mCache;
-    private SimpleBaseBook bookToCollect;
-    private boolean isBookCollected = false;
-    //判断图书类型
-//    public static final int BOOK = 0;
-//    public static final int RESULT_BOOK = 1;
-    //private int baseBookType;
+    private BookBase mBookToShowDetail;
+    private BookDetail mBookDetail;
+    private int mPosition;
 
-    private String mSharedBookDetailFileName = PublicURI.PATH_SHARE_BOOK_DETAIL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +100,6 @@ public class BookDetailActivity extends AppCompatActivity {
         isbnTextView = (TextView) findViewById(R.id.isbn);
         searchNumHeaderTextView = (TextView) findViewById(R.id.searchNumHeader);
 
-
         locationTable = (TableLayout) findViewById(R.id.table);
 
         bottomLinearLayout = (LinearLayout) findViewById(R.id.bottom);
@@ -112,38 +108,50 @@ public class BookDetailActivity extends AppCompatActivity {
         catalogTextView = (TextView) findViewById(R.id.catalog);
         pagesTextView = (TextView) findViewById(R.id.pages);
         priceTextView = (TextView) findViewById(R.id.price);
-
     }
 
     private  void initData(){
         Intent intent = this.getIntent();
-        simpleBaseBook = (SimpleBaseBook) intent.getSerializableExtra("bookToShowDetail");
-        position = intent.getIntExtra("position", 0);
-
-        //TODO
-        mCache = ACacheUtil.get(this);
+        mBookToShowDetail = (BookBase) intent.getSerializableExtra("bookToShowDetail");
+        mBookDetail=new BookDetail();
+        mPosition = intent.getIntExtra("position", 0);
 
         GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
-        getBooksDetailAsy.execute(simpleBaseBook);
+        getBooksDetailAsy.execute();
     }
 
-    private void collectBook(){
-        CrudTask crudTask = new CrudTask();
-        if (simpleBaseBook instanceof Book) {
-            if (bookToCollect != null) {
-                bookToCollect.setIsCollected(isBookCollected);
-                crudTask.execute(bookToCollect);
-            }
-        } else if (simpleBaseBook instanceof ResultBook) {
-            crudTask.execute((ResultBook) simpleBaseBook);
-        } else {
-            crudTask.execute(simpleBaseBook);
+    /**
+     * 加载actionbar上的收藏图标的异步类加载actionbar上的收藏图标的异步类
+     */
+    private class CheckBookCollectionTask extends AsyncTask<BookBase, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(BookBase... books) {
+            if(books[0].isCollected())
+                return true;
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
+            return mDbHelper.isCollected(books[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isCollected) {
+            mBookToShowDetail.setIsCollected(isCollected);
+            menuCollection.setIcon(isCollected?R.drawable.ic_action_collect_cancle:R.drawable.ic_action_collect);
         }
     }
 
-    //TODO 收藏图书的增删改查异步类
-    private class CrudTask extends AsyncTask<SimpleBaseBook, Void, Boolean> {
-        private boolean operation;// 操作为添加时，为true;操作为删除时，为false
+    /**
+     * deal with the action to collect or uncollect a book
+     */
+    private class CollectBookAsy extends AsyncTask<Void, Void, Boolean> {
+        private boolean operationAdd;// 操作为添加时，为true;操作为删除时，为false
+
+        public CollectBookAsy() {
+            if(mBookToShowDetail.isCollected())
+                operationAdd =false;
+            else
+                operationAdd =true;
+        }
+
         @Override
         protected void onPreExecute() {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -151,23 +159,12 @@ public class BookDetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(SimpleBaseBook... simpleBaseBooks) {
+        protected Boolean doInBackground(Void... args) {
             //操作成功与否
             boolean result = false;
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-            if (!simpleBaseBooks[0].isCollected()) {
-                operation = true;
-                if (mDbHelper.addBook(simpleBaseBooks[0]) != -1) {
-                    simpleBaseBooks[0].setIsCollected(true);
-                    result = true;
-                }
-            } else {
-                operation = false;
-                if (mDbHelper.deleteBook(simpleBaseBooks[0]) != 0) {
-                    simpleBaseBooks[0].setIsCollected(false);
-                    result = true;
-                }
-            }
+            if(operationAdd && mDbHelper.addBook(mBookToShowDetail) != (operationAdd?-1:0))
+                result = true;
             return result;
         }
 
@@ -178,19 +175,19 @@ public class BookDetailActivity extends AppCompatActivity {
 
                 //返回给上一个activity，
                 Intent intent = new Intent();
-                intent.putExtra("position", position);
-                intent.putExtra("isCollected", operation);
+                intent.putExtra("mPosition", mPosition);
+                intent.putExtra("isCollected", operationAdd);
                 BookDetailActivity.this.setResult(COLLECT_RESULT_CODE, intent);
 
-                if (operation) {
-                    isBookCollected = true;
-                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
+                if (operationAdd) {
+                    mBookToShowDetail.setIsCollected(true);
                     Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
+                    menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
                 } else {
-                    isBookCollected = false;
+                    mBookToShowDetail.setIsCollected(false);
                     Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
                     //除了在借的书的详情里，其他的点完取消收藏，就finish掉
-                    if (simpleBaseBook instanceof Book) {
+                    if (mBookToShowDetail instanceof BookBase) {
                         menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
                     } else {
                         finish();
@@ -198,112 +195,66 @@ public class BookDetailActivity extends AppCompatActivity {
                 }
 
             } else {
-                if (operation) {
+                if (operationAdd)
                     Toast.makeText(getApplication(), "添加失败", Toast.LENGTH_SHORT).show();
-                } else {
+                else
                     Toast.makeText(getApplication(), "删除失败", Toast.LENGTH_SHORT).show();
-                }
             }
-
-            super.onPostExecute(result);
         }
     }
 
-    private void shareBook(){
+    private class GetBooksDetailAsy extends AsyncTask<Void, Void, Void> {
 
-        ScreenShotUtil.shoot(mSharedBookDetailFileName, shareView);
-
-        Intent intent=new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_TITLE, "Share");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
-        intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(mSharedBookDetailFileName)));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(Intent.createChooser(intent, "Share"));
-
-    }
-
-    private class GetBooksDetailAsy extends AsyncTask<SimpleBaseBook, Void, BookDetail> {
-        private Bitmap bitmap;
-        private boolean serverOK = true;
-        private int borrowCondition;
-        
         @Override
         protected void onPreExecute(){
             mProgressBar.setVisibility(View.VISIBLE);
-            super.onPreExecute();
         }
 
         @Override
-        protected BookDetail doInBackground(SimpleBaseBook... simpleBaseBooks) {
-            BookDetail bookDetail = new BookDetail();
+        protected Void doInBackground(Void... args) {
             try {
-                bookDetail.getBookDetail(simpleBaseBooks[0]);
-                borrowCondition = LocationInformation.checkBorrowCondition(bookDetail.getLocationInfoWithoutStopped());
-                simpleBaseBooks[0].setBorrowCondition(borrowCondition);
-                ///为数据库的可借状态执行更新
-                BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-                mDbHelper.updateTupleBorrowCondition(simpleBaseBooks[0]);
-                bitmap = mCache.getAsBitmap(bookDetail.getBookId());
+                InternetServiceApi internetServiceApi = new InternetServiceApiImpl();
+                JSONObject resultJson = internetServiceApi.GetBookDetail(mBookToShowDetail.getBookId());
+                mBookDetail= JsonUtil.getBookDetatl(resultJson);
+                Bitmap bitmap=null;
+//                bitmap = mCache.getAsBitmap(mBookToShowDetail.getBookId());
                 if (bitmap == null) {
-                    bitmap = bookDetail.getPicture();
+                    bitmap = mBookToShowDetail.getPictureBitmap();
                     if (bitmap != null) {
-                        mCache.put(bookDetail.getBookId(), bitmap);
+                        mCache.put(mBookToShowDetail.getBookId(), bitmap);
                     }
                 }
-
-            } catch (SocketTimeoutException e) {
-                serverOK = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return bookDetail;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(BookDetail result) {
-
+        protected void onPostExecute(Void result) {
             mProgressBar.setVisibility(View.INVISIBLE);
 
-            if (serverOK) {
-                inflateTopRight(result);
-                inflateTable(result);
+            inflateTopRight(mBookToShowDetail);
+            inflateTable(mBookDetail);
+            inflateBottom(mBookDetail);
 
-                //为将bookToCollect插入数据库封装数据
-                if (simpleBaseBook instanceof Book) {
-                    bookToCollect = new Book();
-                    bookToCollect.setAuthor(result.getAuthor());
-                    bookToCollect.setBookId(result.getBookId());
-                    bookToCollect.setIsbn(result.getIsbn());
-                    bookToCollect.setPubdate(result.getPubdate());
-                    bookToCollect.setPublisher(result.getPublisher());
-                    bookToCollect.setTitle(result.getTitle());
-                    bookToCollect.setSearchNum(result.getSearchNum());
-                    bookToCollect.setBorrowCondition(borrowCondition);
-                }
-
-                if (bitmap != null) {
-                    bookPictureImageView.setImageBitmap(bitmap);
-                    inflateBottom(result);
-                } else {
-                    bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
-                    bottomLinearLayout.removeAllViews();
-                }
+            Bitmap bitmap =mBookToShowDetail.getPictureBitmap();
+            if (bitmap != null) {
+                bookPictureImageView.setImageBitmap(bitmap);
             } else {
-                Toast.makeText(getApplicationContext(), R.string.server_failed, Toast.LENGTH_SHORT).show();
+                bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
+                bottomLinearLayout.removeAllViews();
             }
-
         }
 
         //将整个详情页分为三大部分，第一部分，图片右侧区域,不包括图片
-        private void inflateTopRight(BookDetail bookDetail) {
-            titleTextView.setText("【书名】" + bookDetail.getTitle());
-            searchNumHeaderTextView.setText("【索书号】" + bookDetail.getSearchNum());
-            authorTextView.setText("【作者】" + bookDetail.getAuthor());
-            publisherTextView.setText("【出版社】" + bookDetail.getPublisher());
-            pubdateTextView.setText("【出版日期】" + bookDetail.getPubdate());
-            isbnTextView.setText("【ISBN】" + bookDetail.getIsbn());
+        private void inflateTopRight(BookBase bookBase) {
+            titleTextView.setText("【书名】" + bookBase.getTitle());
+            searchNumHeaderTextView.setText("【索书号】" + bookBase.getSearchNum());
+            authorTextView.setText("【作者】" + bookBase.getAuthor());
+            publisherTextView.setText("【出版社】" + bookBase.getPublisher());
+            pubdateTextView.setText("【出版日期】" + bookBase.getPubdate());
+            isbnTextView.setText("【ISBN】" + bookBase.getIsbn());
         }
 
         private TextView createRowTextView(String content, String bgColor) {
@@ -326,11 +277,10 @@ public class BookDetailActivity extends AppCompatActivity {
             return textView;
         }
 
-
         //将整个详情页分为三大部分，第二部分，馆藏信息
         private void inflateTable(BookDetail bookDetail) {
 
-            List<LocationInformation> locationInfoLists = bookDetail.getLocationInfoWithoutStopped();
+            List<LocationInfo> locationInfoLists = bookDetail.getLocationInfo();
 
             String headerColor = "#2196F3"; // 表头颜色
             String tableColor = "#BBDEFB"; // 表格颜色
@@ -345,7 +295,7 @@ public class BookDetailActivity extends AppCompatActivity {
             headerRow.addView(statusHeader);
 
             locationTable.addView(headerRow);
-            for (LocationInformation locationInfo : locationInfoLists) {
+            for (LocationInfo locationInfo : locationInfoLists) {
                 TableRow tr = new TableRow(getApplicationContext());
                 tr.setLayoutParams(new TableRow.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -370,38 +320,15 @@ public class BookDetailActivity extends AppCompatActivity {
 
         //将整个详情页分为三大部分，第三部分，从豆瓣获取的详细信息
         private void inflateBottom(BookDetail bookDetail) {
-            if (bookDetail.getAuthorIntro().replaceAll("\\s","").isEmpty()) {
-                bottomLinearLayout.removeView(authorIntroTextView);
-            } else {
-                authorIntroTextView.setText("\n【作者简介】" + bookDetail.getAuthorIntro());
-            }
-
-            if (bookDetail.getSummary().replaceAll("\\s","").isEmpty()) {
-                bottomLinearLayout.removeView(contentTextView);
-            } else {
-                contentTextView.setText("\n【内容简介】" + bookDetail.getSummary());
-            }
-
-            if (bookDetail.getCatalog().replaceAll("\\s", "").isEmpty()) {
-                bottomLinearLayout.removeView(catalogTextView);
-            } else {
-                catalogTextView.setText("\n【目录】" + bookDetail.getCatalog());
-            }
-
-            if (bookDetail.getPages().replaceAll("\\s", "").isEmpty()) {
-                bottomLinearLayout.removeView(pagesTextView);
-            } else {
-                pagesTextView.setText("\n【页数】" + bookDetail.getPages());
-            }
-
-            if (bookDetail.getPrice().replaceAll("\\s","").isEmpty()) {
-                bottomLinearLayout.removeView(priceTextView);
-            } else {
-                priceTextView.setText("\n【价格】" + bookDetail.getPrice());
-            }
+            if(!bookDetail.isDoubanExist())
+                return;
+            authorIntroTextView.setText("\n【作者简介】" + bookDetail.getAuthorIntro());
+            contentTextView.setText("\n【内容简介】" + bookDetail.getSummary());
+            catalogTextView.setText("\n【目录】" + bookDetail.getCatalog());
+            pagesTextView.setText("\n【页数】" + bookDetail.getPages());
+            priceTextView.setText("\n【价格】" + bookDetail.getPrice());
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -409,17 +336,9 @@ public class BookDetailActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_book_detail, menu);
         menuCollection = menu.findItem(R.id.action_collection);
 
-        if (simpleBaseBook instanceof Book) {
-            CheckBookCollectionTask checkBookCollectionTask = new CheckBookCollectionTask();
-            checkBookCollectionTask.execute((Book) simpleBaseBook);
-        } else {
-            boolean isCollected = simpleBaseBook.isCollected();
-            if (isCollected){
-                menuCollection.setIcon(R.drawable.ic_action_collect_cancle);
-            }else {
-                menuCollection.setIcon(R.drawable.ic_action_collect);
-            }
-        }
+        CheckBookCollectionTask checkBookCollectionTask = new CheckBookCollectionTask();
+        checkBookCollectionTask.execute(mBookToShowDetail);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -431,7 +350,7 @@ public class BookDetailActivity extends AppCompatActivity {
                 this.finish();
                 break;
             case R.id.action_collection:
-                collectBook();
+                new CollectBookAsy().execute();
                 break;
             case R.id.action_share:
                 shareBook();
@@ -440,25 +359,19 @@ public class BookDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // 加载actionbar上的收藏图标的异步类
-    private class CheckBookCollectionTask extends AsyncTask<Book, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Book... books) {
-            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-            return mDbHelper.isCollected(books[0]);
-        }
+    private void shareBook(){
 
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            if(aBoolean) {
-                isBookCollected = true;
-                menuCollection.setIcon(R.drawable.ic_action_collect_cancle);
-            } else {
-                isBookCollected = false;
-                menuCollection.setIcon(R.drawable.ic_action_collect);
-            }
-            super.onPostExecute(aBoolean);
-        }
+        ScreenShotUtil.shoot(mSharedBookDetailFileName, shareView);
+
+        Intent intent=new Intent(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_TITLE, "Share");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
+        intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(mSharedBookDetailFileName)));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(intent, "Share"));
 
     }
+
 }

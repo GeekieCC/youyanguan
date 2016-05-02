@@ -1,6 +1,7 @@
 package com.gusteauscuter.youyanguan.adapter;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public abstract class ZBaseAdapter<T> extends BaseAdapter {
      *
      * @param itemList
      */
-    public void addItems(List<T> itemList) {
+    public void addItems( List<T> itemList) {
         this.mItemList.addAll(itemList);
         notifyDataSetChanged();
     }

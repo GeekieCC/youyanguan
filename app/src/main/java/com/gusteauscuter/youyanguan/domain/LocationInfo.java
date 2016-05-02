@@ -1,6 +1,6 @@
 package com.gusteauscuter.youyanguan.domain;
 
-public class CollectInfo {
+public class LocationInfo {
 	
 	public static final int BOTH_NOT = 0;
 	public static final int BOTH_YES = 1;
@@ -14,7 +14,7 @@ public class CollectInfo {
 	private String status;
 	
 	
-	public CollectInfo(String location, String detailLocation, String status) {
+	public LocationInfo(String location, String detailLocation, String status) {
 		super();
 		this.location = location;
 		this.detailLocation = detailLocation;
@@ -29,6 +29,5 @@ public class CollectInfo {
 	public String getStatus() {
 		return status;
 	}
-	
-	
+
 }

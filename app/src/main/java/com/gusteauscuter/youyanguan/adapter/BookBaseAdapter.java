@@ -2,6 +2,7 @@ package com.gusteauscuter.youyanguan.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -13,9 +14,8 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
-import com.gusteauscuter.youyanguan.definedDataClass.Book;
+import com.gusteauscuter.youyanguan.domain.BookBorrowed;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
-import com.gusteauscuter.youyanguan.util.BitmapUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
@@ -24,12 +24,12 @@ import com.gusteauscuter.youyanguan.view.XImageView;
 import java.util.List;
 
 
-public class CollectedBookAdapter extends ZBaseAdapter {
+public class BookBaseAdapter extends ZBaseAdapter {
 
     private static final int HAS_PICTURE = 5;
     private static final int HAS_NO_PICTURE = 10;
 
-    public CollectedBookAdapter(Context context){
+    public BookBaseAdapter(Context context){
         super(context);
     }
 
@@ -51,21 +51,15 @@ public class CollectedBookAdapter extends ZBaseAdapter {
             mHolder=(ViewHolder) convertView.getTag();
         }
 
-        final Book mBook = (Book) mItemList.get(position);
+        final BookBorrowed mBook = (BookBorrowed) mItemList.get(position);
         mHolder.mButtonBorrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mBook.getBorrowedTime() < mBook.getMaxBorrowTime()) {
-                    boolean isConnected = NetworkConnectUtil.isConnected(mContext);
-                    if(isConnected){
-                        RenewBookAsy renewBookAsy = new RenewBookAsy(mBook);
-                        SharedPreferencesUtil sharedPreferencesUtil =new SharedPreferencesUtil(mContext);
-                        renewBookAsy.execute(sharedPreferencesUtil.getUSERNAME(), sharedPreferencesUtil.getPASSWORD());
-                    } else{
-                        Toast.makeText(mContext, R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
-                    }
-                } else {
+                if (mBook.getBorrowedTime() >= mBook.getMaxBorrowTime())
                     Toast.makeText(mContext, "已达最大续借次数，请及时归还", Toast.LENGTH_SHORT).show();
+                if(NetworkConnectUtil.isConnected(mContext)){
+                    RenewBookAsy renewBookAsy = new RenewBookAsy(mBook.getBookId(),position);
+                    renewBookAsy.execute();
                 }
             }
         });
@@ -78,13 +72,10 @@ public class CollectedBookAdapter extends ZBaseAdapter {
                 if(isConnected){
                     Intent intent =new Intent(mContext, BookDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("bookToShowDetail", mBook);
+                    bundle.putSerializable("bookId", mBook.getBookId());
                     bundle.putInt("position", position);
                     intent.putExtras(bundle);
-                    //int requestCode = (mBook.getPicture() != null) ? HAS_PICTURE : HAS_NO_PICTURE;
                     mContext.startActivity(intent);
-                }else{
-                    Toast.makeText(mContext, R.string.internet_not_connected, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -95,10 +86,10 @@ public class CollectedBookAdapter extends ZBaseAdapter {
         String returnDay="归还:"+mBook.getReturnDay();
         String borrowedTime="续借次数:"+  mBook.getBorrowedTime()+"/"+ mBook.getMaxBorrowTime();
 
-        mHolder.mName.setText( name.toString());
-        mHolder.mBorrowDay.setText(borrowDay.toString());
-        mHolder.mReturnDay.setText(returnDay.toString());
-        mHolder.mBorrowedTime.setText(borrowedTime.toString());
+        mHolder.mName.setText( name);
+        mHolder.mBorrowDay.setText(borrowDay);
+        mHolder.mReturnDay.setText(returnDay);
+        mHolder.mBorrowedTime.setText(borrowedTime);
 
         int[] book_color={
                 mContext.getResources().getColor(R.color.book_color_1),
@@ -113,12 +104,12 @@ public class CollectedBookAdapter extends ZBaseAdapter {
         int no =(position)%book_color.length;
         //设置图片
         ACacheUtil mCache = ACacheUtil.get(mContext);
-        byte[] bitmap2Bytes = mCache.getAsBitmap2Bytes(mBook.getBookId());
+        Bitmap bitmap2Bytes = mCache.getAsBitmap(mBook.getBookId());
         if (bitmap2Bytes != null) {
-            mBook.setPicture(bitmap2Bytes);
+            mBook.setPictureBitmap(bitmap2Bytes);
         }
-        if (mBook.getPicture() != null) {
-            mHolder.mBookPicture.setImageBitmap(BitmapUtil.getBitmap(mBook.getPicture()));
+        if (mBook.getPictureBitmap() != null) {
+            mHolder.mBookPicture.setImageBitmap(mBook.getPictureBitmap());
             mHolder.mBookPicture.setImageAlpha(255);
             mHolder.mBookPicture.setBackgroundColor(mContext.getResources().getColor(R.color.white));
             mHolder.mName.setVisibility(View.GONE);
@@ -127,7 +118,6 @@ public class CollectedBookAdapter extends ZBaseAdapter {
             mHolder.mBookPicture.setImageAlpha(0);
             mHolder.mName.setVisibility(View.VISIBLE);
         }
-
         return convertView;
     }
 
@@ -141,44 +131,42 @@ public class CollectedBookAdapter extends ZBaseAdapter {
     }
 
 
-    private class RenewBookAsy extends AsyncTask<String, Void, List<Book>> {
-        private boolean serverOK = true;
-        private Book bookToRenew;
-        public RenewBookAsy(Book bookToRenew) {
-            this.bookToRenew = bookToRenew;
+    private class RenewBookAsy extends AsyncTask<Void, Void, BookBorrowed> {
+        private String mBookId;
+        private int mPosition;
+        public RenewBookAsy(String bookId, int position) {
+            mBookId=bookId;
+            mPosition=position;
         }
 
         @Override
-        protected List<Book> doInBackground(String... account) {
-            List<Book> bookLists = null;
+        protected BookBorrowed doInBackground(Void... args) {
+            BookBorrowed renewedBook = null;
             try {
                 SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(mContext);
                 String username = sharedPreferencesUtil.getUSERNAME();
                 String password = sharedPreferencesUtil.getPASSWORD();
                 InternetServiceApi internetService = new InternetServiceApiImpl();
+                boolean result = false;
                 if (internetService.Login(username,password))
-                    internetService.RenewBook(bookToRenew.getBookId());
+                    result=internetService.RenewBook(mBookId);
+                if(result)
+                    renewedBook = (BookBorrowed) mItemList.get(mPosition);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return bookLists;
+            return renewedBook;
         }
 
         @Override
-        protected void onPostExecute(List<Book> result) {
-            if (serverOK) {
-                if (result != null) {
-                    setItems(result);
-                    new CalendarUtil(mContext).new AddCalendarThread(
-                            (List<Book>) getItemList())
-                            .start();
-                    Toast.makeText(mContext, "续借成功" , Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(mContext, "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(mContext, R.string.server_failed, Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(BookBorrowed renewedBook) {
+            if (renewedBook == null){
+                Toast.makeText(mContext, "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
+                return;
             }
+            mItemList.set(mPosition,renewedBook);
+            new CalendarUtil(mContext).new AddCalendarThread((List<BookBorrowed>) getItemList()).start();
+            Toast.makeText(mContext, "续借成功" , Toast.LENGTH_SHORT).show();
         }
     }
 

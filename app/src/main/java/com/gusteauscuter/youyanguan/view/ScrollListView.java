@@ -32,7 +32,7 @@ public class ScrollListView extends ListView implements AbsListView.OnScrollList
     /**
      * Scroll position offset value to trigger earlier bottom reached events.
      */
-    private int mOffset = 0;
+    private int mOffset = 1;
     private boolean isTriggeredOnce;
 
     public ScrollListView(Context context, AttributeSet attrs, int defStyle) {

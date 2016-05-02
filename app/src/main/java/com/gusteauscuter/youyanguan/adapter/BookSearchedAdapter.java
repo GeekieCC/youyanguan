@@ -13,11 +13,12 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
-import com.gusteauscuter.youyanguan.domain.SearchBook;
 import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
+import com.gusteauscuter.youyanguan.domain.BookBase;
+import com.gusteauscuter.youyanguan.domain.LocationInfo;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 
-public class SearchBookAdapter extends ZBaseAdapter {
+public class BookSearchedAdapter extends ZBaseAdapter {
 
     private static int COLOR_DEFAULT= Color.parseColor("#295086");
     private static int COLOR_VIEWED=Color.parseColor("#938490");
@@ -28,7 +29,7 @@ public class SearchBookAdapter extends ZBaseAdapter {
     int colorGray =mContext.getResources().getColor(R.color.gray);
 
 
-    public SearchBookAdapter(Context context){
+    public BookSearchedAdapter(Context context){
         super(context);
     }
 
@@ -51,27 +52,27 @@ public class SearchBookAdapter extends ZBaseAdapter {
             mHolder=(ViewHolder) convertView.getTag();
         }
         // 获取对象
-        final SearchBook mBook = (SearchBook) mItemList.get(position);
+        final BookBase mBook = (BookBase) mItemList.get(position);
 
 
         // 根据馆藏条件，设置视图
-        int borrowCondition = mBook.getCollectInfo();
-//        if (borrowCondition == SearchBook.BOTH_YES) { //两校区都可借
-//            mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
-//            mHolder.mSearchBookState.setColorFilter(colorPrimary);
-//        } else if (borrowCondition == SearchBook.BOTH_NOT) { //两校区都不可借
-//            mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
-//            mHolder.mSearchBookState.setColorFilter(colorGray);
-//        } else if (borrowCondition == SearchBook.NORTH_ONLY) { // 只有北校区可借
-//            mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
-//            mHolder.mSearchBookState.setColorFilter(colorPrimary);
-//        } else if (borrowCondition == SearchBook.SOUTH_ONLY) { // 只有南校区可借
-//            mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
-//            mHolder.mSearchBookState.setColorFilter(colorPrimary);
-//        } else if (borrowCondition == SearchBook.UNKNOWN) { // 不知道是否可借
-//            mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
-//            mHolder.mSearchBookState.setColorFilter(colorGray);
-//        }
+        int borrowCondition = mBook.getLocationSummary();
+        if (borrowCondition == LocationInfo.BOTH_YES) { //两校区都可借
+            mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
+            mHolder.mSearchBookState.setColorFilter(colorPrimary);
+        } else if (borrowCondition == LocationInfo.BOTH_NOT) { //两校区都不可借
+            mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
+            mHolder.mSearchBookState.setColorFilter(colorGray);
+        } else if (borrowCondition == LocationInfo.NORTH_ONLY) { // 只有北校区可借
+            mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
+            mHolder.mSearchBookState.setColorFilter(colorPrimary);
+        } else if (borrowCondition == LocationInfo.SOUTH_ONLY) { // 只有南校区可借
+            mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
+            mHolder.mSearchBookState.setColorFilter(colorPrimary);
+        } else if (borrowCondition == LocationInfo.UNKNOWN) { // 不知道是否可借
+            mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
+            mHolder.mSearchBookState.setColorFilter(colorGray);
+        }
         // 设置Book对应属性
         String title="【" + (position + 1) + "】"+mBook.getTitle();
         String publisher="出版社："+mBook.getPublisher();
@@ -86,9 +87,7 @@ public class SearchBookAdapter extends ZBaseAdapter {
         mHolder.mPubdate.setText(pubdate);
 
         // 对搜索出来的结果显示时，区别已收藏和未收藏图书
-//        boolean collected =mBook.isCollected();
-        boolean collected =true;//test
-
+        boolean collected =mBook.isCollected();
         mHolder.mButton.setText(collected ? "取消" : "收藏");
         mHolder.mButton.setTextColor(collected ? colorPrimary : colorWhite);
         mHolder.mButton.setBackgroundColor(collected? colorGrayLight : colorPrimary);
@@ -102,7 +101,7 @@ public class SearchBookAdapter extends ZBaseAdapter {
                 if (isConnected) {
                     Intent intent = new Intent(mContext, BookDetailActivity.class);
                     Bundle bundle = new Bundle();
-//                    bundle.putSerializable("bookToShowDetail", mBook);
+                    bundle.putSerializable("bookToShowDetail", mBook);
                     bundle.putInt("position", position);
                     intent.putExtras(bundle);
                     mContext.startActivity(intent);
@@ -122,27 +121,27 @@ public class SearchBookAdapter extends ZBaseAdapter {
         return convertView;
     }
 
-    private class CrudTask extends AsyncTask<SearchBook, Void, Boolean> {
+    private class CrudTask extends AsyncTask<BookBase, Void, Boolean> {
         private boolean operation;// 操作为添加时，为true;操作为删除时，为false
 
         @Override
-        protected Boolean doInBackground(SearchBook... resultBooks) {
+        protected Boolean doInBackground(BookBase... resultBooks) {
             //操作成功与否
             boolean result = false;
-//            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(mContext);
-//            if (resultBooks[0].getCollectInfo()!=5) {
-//                operation = true;
-//                if (mDbHelper.addBook(resultBooks[0]) != -1) {
-//                    resultBooks[0].setIsCollected(true);
-//                    result = true;
-//                }
-//            } else {
-//                operation = false;
-//                if (mDbHelper.deleteBook(resultBooks[0]) != 0) {
-//                    resultBooks[0].setIsCollected(false);
-//                    result = true;
-//                }
-//            }
+            BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(mContext);
+            if (resultBooks[0].getLocationSummary()!=LocationInfo.UNKNOWN) {
+                operation = true;
+                if (mDbHelper.addBook(resultBooks[0]) != -1) {
+                    resultBooks[0].setIsCollected(true);
+                    result = true;
+                }
+            } else {
+                operation = false;
+                if (mDbHelper.deleteBook(resultBooks[0]) != 0) {
+                    resultBooks[0].setIsCollected(false);
+                    result = true;
+                }
+            }
             return result;
         }
 

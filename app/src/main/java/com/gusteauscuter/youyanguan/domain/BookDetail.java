@@ -2,57 +2,29 @@ package com.gusteauscuter.youyanguan.domain;
 
 import java.util.List;
 
-public class DetailBook {
+public class BookDetail {
 	
-//	private String title;
-	// ��ͼ�������ҳ��ȡ
-	private String searchNum;
-	private List<CollectInfo> collectInfo;
-//	private String author;
-	
-	//�Ӷ����ȡ
-	private String publisher;
-	private String pubdate;
+	private List<LocationInfo> locationInfo;
 	private String authorIntro;
 	private String summary;
-	private String catalog; // Ŀ¼
+	private String catalog;
 	private String pages;
 	private String price;
 	private String pictureUrl;
-	
-	private boolean isDoubanExist; // �ж϶���ͼ���Ƿ����
+	private boolean isDoubanExist;
 
-	public DetailBook() {
-		
+	public BookDetail() {
 	}
-	
-	public DetailBook(String searchNum, List<CollectInfo> collectInfo, String publisher, String pubdate,
-			String authorIntro, String summary, String catalog, String pages, String price, String pictureUrl) {
-		super();
-		this.searchNum = searchNum;
-		this.collectInfo = collectInfo;
-		this.publisher = publisher;
-		this.pubdate = pubdate;
+
+	public BookDetail(List<LocationInfo> locationInfo, String authorIntro, String summary,
+					  String catalog, String pages, String price, String pictureUrl) {
+		this.locationInfo = locationInfo;
 		this.authorIntro = authorIntro;
 		this.summary = summary;
 		this.catalog = catalog;
 		this.pages = pages;
 		this.price = price;
 		this.pictureUrl = pictureUrl;
-	}
-
-
-	public String getSearchNum() {
-		return searchNum;
-	}
-
-
-	public String getPublisher() {
-		return publisher;
-	}
-
-	public String getPubdate() {
-		return pubdate;
 	}
 
 	public String getAuthorIntro() {
@@ -75,8 +47,8 @@ public class DetailBook {
 		return price;
 	}
 
-	public List<CollectInfo> getCollectInfo() {
-		return collectInfo;
+	public List<LocationInfo> getLocationInfo() {
+		return locationInfo;
 	}
 
 	public String getPictureUrl() {
@@ -93,26 +65,9 @@ public class DetailBook {
 		this.isDoubanExist = isDoubanExist;
 	}
 
-
-	public void setSearchNum(String searchNum) {
-		this.searchNum = searchNum;
+	public void setLocationInfo(List<LocationInfo> locationInfo) {
+		this.locationInfo = locationInfo;
 	}
-
-
-	public void setCollectInfo(List<CollectInfo> collectInfo) {
-		this.collectInfo = collectInfo;
-	}
-
-
-	public void setPublisher(String publisher) {
-		this.publisher = publisher;
-	}
-
-
-	public void setPubdate(String pubdate) {
-		this.pubdate = pubdate;
-	}
-
 
 	public void setAuthorIntro(String authorIntro) {
 		this.authorIntro = authorIntro;

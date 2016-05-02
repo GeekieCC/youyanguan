@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,15 +17,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.adapter.SearchBookAdapter;
+import com.gusteauscuter.youyanguan.adapter.BookSearchedAdapter;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
 import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.domain.SearchBook;
-import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.domain.BookBase;
 import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.domain.SearchBook;
+import com.gusteauscuter.youyanguan.domain.JsonUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
@@ -39,7 +37,7 @@ import java.util.List;
 
 public class BookSearchActivity extends AppCompatActivity {
 
-    private static final int FIRST_PAGE = 1;
+    private static final int FIRST_PAGE = 0;
     private static final String SearchBackgroundFileName = PublicURI.PATH_BG_SEARCH;
 
     private ImageView mSearchBackground;
@@ -48,18 +46,18 @@ public class BookSearchActivity extends AppCompatActivity {
     private Spinner mSearchTypeSpinner;
     private ProgressBar mProgressBar;
     private ScrollListView mListView;
-    private SearchBookAdapter mAdapter;
+    private BookSearchedAdapter mAdapter;
 
     //第一次搜索时初始化这两个变量
     private int mNumOfPages = 0;
     private int mCountOfBooks = 0;
     //带可借信息查询时，一个页面的第几次查询
     private int mCurrentPage;
-    private int mCurrentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
+//    private int mCurrentCount = 0;//当前搜索到的书的数目，用于计算是否所有的图书加载完毕
     // 搜索条件
     private String mBookKeywordToSearch;
     private String mSearchType ="TITLE";
-    private boolean mIsReSearch =true;
+    private static final boolean RESEARCH = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +67,7 @@ public class BookSearchActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    mIsReSearch = true;
-                    searchBook();
+                    searchBook(RESEARCH);
                     return true;
                 }
                 return false;
@@ -79,16 +76,14 @@ public class BookSearchActivity extends AppCompatActivity {
         findViewById(R.id.searchBookButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mIsReSearch = true;
-                searchBook();
+                searchBook(RESEARCH);
             }
         });
         mListView.setOnBottomReachedListener(new ScrollListView.OnBottomReachedListener() {
             @Override
             public void onBottomReached() {
                 //Toast.makeText(getApplicationContext(),"到底了",Toast.LENGTH_SHORT).show();
-                mIsReSearch = false;
-                searchBook();
+                searchBook(!RESEARCH);
             }
         });
     }
@@ -157,14 +152,13 @@ public class BookSearchActivity extends AppCompatActivity {
         // 有效数据
         mTotalNumberTextView =(TextView) findViewById(R.id.totalNumber);
         mListView = (ScrollListView) findViewById(R.id.bookListView);
-        mAdapter = new SearchBookAdapter(this) ;
+        mAdapter = new BookSearchedAdapter(this) ;
         mListView.setAdapter(mAdapter);
     }
 
-    private void searchBook() {
+    private void searchBook(boolean IsReSearch) {
 
         boolean isConnected = NetworkConnectUtil.isConnected(getApplication());
-        mListView.setTriggeredOnce(isConnected); // TODO what's this ?
         if(!isConnected)
             return;
         mBookKeywordToSearch = mSearchViewEditText.getText().toString().replaceAll("\\s", "");
@@ -172,9 +166,8 @@ public class BookSearchActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"请输入搜索内容！",Toast.LENGTH_SHORT).show();
             return;
         }
-        if(mIsReSearch){
+        if(IsReSearch){
             mCurrentPage = FIRST_PAGE;
-            mCurrentCount = 0;
             mTotalNumberTextView.setText("0");
             mAdapter.clearItems();
 
@@ -187,6 +180,7 @@ public class BookSearchActivity extends AppCompatActivity {
             }, 200); //收起软键盘需要一定时间
 
         } else {
+            mListView.setTriggeredOnce(true); // TODO what's this ?
             startSearchBookAsy();
         }
     }
@@ -198,7 +192,7 @@ public class BookSearchActivity extends AppCompatActivity {
     }
 
 
-    private class SearchBookAsyTask extends AsyncTask<Void, Void, List<SearchBook>> {
+    private class SearchBookAsyTask extends AsyncTask<Void, Void, List<BookBase>> {
 
         @Override
         protected void onPreExecute(){
@@ -206,59 +200,48 @@ public class BookSearchActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<SearchBook> doInBackground(Void... args) {
-            List<SearchBook> resultBookLists = null;
+        protected List<BookBase> doInBackground(Void... args) {
+            List<BookBase> resultBookLists = null;
             try{
                 InternetServiceApi internetServiceApi = new InternetServiceApiImpl();
-                // TEST
-//                mBookKeywordToSearch="OK";
-                JSONObject resultJson =  internetServiceApi.SearchBook(mBookKeywordToSearch,mSearchType,mCurrentPage);
-                JSONObject searchInfoJson=resultJson.getJSONObject("searchInfo");
-                resultBookLists= SearchBook.getBook((JSONArray) resultJson.get("bookList"));// TODO translate Json to resultBookList
-
-                if (resultBookLists != null && mCurrentPage <= mNumOfPages)
-                    mCurrentPage++;
-
-                if(mIsReSearch){
-                    mCountOfBooks = searchInfoJson.getInt("bookNum");
-                    mNumOfPages=searchInfoJson.getInt("pageNum");
+                JSONObject resultJson =  internetServiceApi.SearchBook(mBookKeywordToSearch, mSearchType, mCurrentPage);
+                resultBookLists= JsonUtil.getBookList(resultJson);
+                if(mCurrentPage==FIRST_PAGE){
+                    mCountOfBooks = JsonUtil.getCountOfBooks(resultJson);
+                    mNumOfPages = JsonUtil.getNumOfPages(resultJson);
                 }
+
                 //对于搜索出来的书，检查其是否已经被收藏到数据库
                 BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-                List<SimpleBaseBook> bookCollections = mDbHelper.getAllBookCollections();
-                for (SearchBook resultBook : resultBookLists) {
-                    for (SimpleBaseBook bookCollected : bookCollections) {
-                        if (resultBook.getBookId().equals(bookCollected.getBookId())) {
-//                            resultBook.setIsCollected(true);
-                        }
-                    }
+                for (BookBase resultBook : resultBookLists) {
+                    if(mDbHelper.isCollected(resultBook))
+                        resultBook.setIsCollected(true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            finally {
-                return resultBookLists;
-            }
+            return resultBookLists;
         }
 
         @Override
-        protected void onPostExecute(List<SearchBook> result) {
+        protected void onPostExecute(List<BookBase> result) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            if (result == null)
-                return;
-            if (mCountOfBooks == 0) {
+            if (result == null) {
                 Toast.makeText(getApplication(), "图书未搜索到", Toast.LENGTH_SHORT).show();
                 return;
             }
             if(mCurrentPage==FIRST_PAGE)
                 mTotalNumberTextView.setText(String.valueOf(mCountOfBooks));
+            if ( ++mCurrentPage < mNumOfPages) {
+                mListView.setTriggeredOnce(false);
+            }
+            else {
+                Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
+                mListView.setTriggeredOnce(true);
+            }
 
             mAdapter.addItems(result);
             mAdapter.notifyDataSetChanged();
-            mListView.setTriggeredOnce(false);
-            mCurrentCount = mListView.getCount();
-            if (mCurrentCount >= mCountOfBooks)
-                Toast.makeText(getApplication(), "全部图书加载完毕", Toast.LENGTH_SHORT).show();
         }
     }
 }

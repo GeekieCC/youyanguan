@@ -9,7 +9,7 @@ import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.provider.CalendarContract.Reminders;
 
-import com.gusteauscuter.youyanguan.definedDataClass.Book;
+import com.gusteauscuter.youyanguan.domain.BookBorrowed;
 
 import java.util.Calendar;
 import java.util.List;
@@ -127,9 +127,9 @@ public class CalendarUtil {
      * 线程中添加日历时间
      */
     public class AddCalendarThread extends Thread {
-        private List<Book> mBookList;
+        private List<BookBorrowed> mBookList;
 
-        public AddCalendarThread(List<Book> bookList){
+        public AddCalendarThread(List<BookBorrowed> bookList){
             mBookList=bookList;
         }
 

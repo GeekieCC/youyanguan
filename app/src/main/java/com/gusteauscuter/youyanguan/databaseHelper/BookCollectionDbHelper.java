@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.gusteauscuter.youyanguan.definedDataClass.SimpleBaseBook;
+import com.gusteauscuter.youyanguan.domain.BookBase;
 import com.gusteauscuter.youyanguan.databaseHelper.FeedReaderContract.FeedEntry;
 
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
      * @param simpleBaseBook
      * @return
      */
-    public long addBook(SimpleBaseBook simpleBaseBook) {
+    public long addBook(BookBase simpleBaseBook) {
         SQLiteDatabase db = this.getWritableDatabase();
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -76,7 +76,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         values.put(FeedEntry.COLUMN_NAME_PUBDATE, simpleBaseBook.getPubdate());
         values.put(FeedEntry.COLUMN_NAME_SEARCHNUM, simpleBaseBook.getSearchNum());
         values.put(FeedEntry.COLUMN_NAME_BOOKID, simpleBaseBook.getBookId());
-        values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, simpleBaseBook.getBorrowCondition());
+        values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, simpleBaseBook.getLocationSummary());
         // Insert the new row, returning the primary key value of the new row
         //the row ID of the newly inserted row, or -1 if an error occurred
         long newRowId = db.insert(FeedEntry.TABLE_NAME, null, values);
@@ -88,8 +88,8 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
      * 得到收藏的所有图书
      * @return 收藏的所有图书
      */
-    public List<SimpleBaseBook> getAllBookCollections() {
-        List<SimpleBaseBook> bookLists = new ArrayList<SimpleBaseBook>();
+    public List<BookBase> getAllBookCollections() {
+        List<BookBase> bookLists = new ArrayList<BookBase>();
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(
@@ -105,7 +105,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                SimpleBaseBook simpleBaseBook = new SimpleBaseBook();
+                BookBase simpleBaseBook = new BookBase();
                 simpleBaseBook.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_TITLE)));
                 simpleBaseBook.setAuthor(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_AUTHOR)));
                 simpleBaseBook.setPublisher(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_PUBLISHER)));
@@ -113,7 +113,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
                 simpleBaseBook.setPubdate(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_PUBDATE)));
                 simpleBaseBook.setSearchNum(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_SEARCHNUM)));
                 simpleBaseBook.setBookId(cursor.getString(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BOOKID)));
-                simpleBaseBook.setBorrowCondition(cursor.getInt(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BORROW_CONDITION)));
+                simpleBaseBook.setLocationSummary(cursor.getInt(cursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_BORROW_CONDITION)));
                 simpleBaseBook.setIsCollected(true);
                 bookLists.add(simpleBaseBook);
             } while (cursor.moveToNext());
@@ -153,7 +153,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
      * @param simpleBaseBook
      * @return 若返回非零值，则取消收藏成功；否则失败
      */
-    public int deleteBook(SimpleBaseBook simpleBaseBook) {
+    public int deleteBook(BookBase simpleBaseBook) {
         SQLiteDatabase db = this.getWritableDatabase();
         // Define 'where' part of query.
         String selection = FeedEntry.COLUMN_NAME_BOOKID + " LIKE ?";
@@ -185,7 +185,7 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
      * @param simpleBaseBook
      * @return
      */
-    public boolean isCollected(SimpleBaseBook simpleBaseBook) {
+    public boolean isCollected(BookBase simpleBaseBook) {
         boolean result;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(
@@ -205,11 +205,11 @@ public class BookCollectionDbHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public int updateTupleBorrowCondition(SimpleBaseBook simpleBaseBook) {
+    public int updateTupleBorrowCondition(BookBase simpleBaseBook) {
         int result = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, simpleBaseBook.getBorrowCondition());
+        values.put(FeedEntry.COLUMN_NAME_BORROW_CONDITION, simpleBaseBook.getLocationSummary());
         result = db.update(FeedEntry.TABLE_NAME, values,
                            FeedEntry.COLUMN_NAME_BOOKID + " = ?",
                            new String[]{simpleBaseBook.getBookId()});

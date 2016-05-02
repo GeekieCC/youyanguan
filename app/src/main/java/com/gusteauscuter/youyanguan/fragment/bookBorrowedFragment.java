@@ -4,8 +4,8 @@ package com.gusteauscuter.youyanguan.fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,15 +22,18 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.NavigationActivity;
-import com.gusteauscuter.youyanguan.adapter.CollectedBookAdapter;
+import com.gusteauscuter.youyanguan.adapter.BookBaseAdapter;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
-import com.gusteauscuter.youyanguan.definedDataClass.Book;
 import com.gusteauscuter.youyanguan.common.PublicURI;
+import com.gusteauscuter.youyanguan.domain.BookBorrowed;
+import com.gusteauscuter.youyanguan.domain.JsonUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
 import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -44,7 +47,7 @@ public class bookBorrowedFragment extends Fragment {
     private View shareView;
 
     private ActionBar mActionBar ;
-    private CollectedBookAdapter mAdapter;
+    private BookBaseAdapter mAdapter;
     private Context mContext ;
     private SharedPreferencesUtil mSharedPreferencesUtil;
     private boolean isFirstTime=true;
@@ -64,7 +67,7 @@ public class bookBorrowedFragment extends Fragment {
         mContext = getActivity();
         mSharedPreferencesUtil = new SharedPreferencesUtil(mContext);
         if(mAdapter==null)
-            mAdapter = new CollectedBookAdapter(mContext);
+            mAdapter = new BookBaseAdapter(mContext);
         mListView.setAdapter(mAdapter);
 
         RefreshBook();
@@ -85,11 +88,34 @@ public class bookBorrowedFragment extends Fragment {
             isFirstTime=false;
         boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
         if(isConnected){
+            new GetMyBookAsy().execute();
+        }
+    }
+
+    private class GetMyBookAsy extends AsyncTask<Void,Void,Boolean> {
+
+        @Override
+        protected void onPreExecute(){
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
             InternetServiceApi internetService = new InternetServiceApiImpl();
-            if (internetService.Login(mSharedPreferencesUtil.getUSERNAME(), mSharedPreferencesUtil.getPASSWORD())){
-                mAdapter.setItems((List) internetService.GetMyBooks());//========================================= TODO
-                RefreshViewAndCalendar();
-            }
+            JSONObject resultJson = internetService.getMyBookBorrowed();
+            List<BookBorrowed> bookBorrowedList = JsonUtil.getMyBookBorrowed(resultJson) ;
+            if(bookBorrowedList==null)
+                return true;
+            mAdapter.setItems(bookBorrowedList);
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isnull) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            if (isnull)
+                return;
+            RefreshViewAndCalendar();
             Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
         }
     }
@@ -104,7 +130,7 @@ public class bookBorrowedFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
 
         new CalendarUtil(getActivity()).new AddCalendarThread(
-                (List<Book>) mAdapter.getItemList())
+                (List<BookBorrowed>) mAdapter.getItemList())
                 .start();
     }
 
@@ -140,7 +166,7 @@ public class bookBorrowedFragment extends Fragment {
         switch (item.getItemId()){
             case (R.id.action_log_out):
                 mSharedPreferencesUtil.setIsLogined(false);
-                ((NavigationActivity) getActivity()).JumpToLoginFragment();
+                ((NavigationActivity) getActivity()).JumpToLoginActivity();
                 Toast.makeText(getActivity(), getString(R.string.re_login), Toast.LENGTH_SHORT).show();
                 break;
             case (R.id.action_share):

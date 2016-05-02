@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.fragment.loginFragment;
 import com.gusteauscuter.youyanguan.fragment.bookSearchFragment;
 import com.gusteauscuter.youyanguan.fragment.bookBorrowedFragment;
 import com.gusteauscuter.youyanguan.fragment.bookCollectedFragment;
@@ -38,15 +36,16 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
 
     private bookBorrowedFragment mBookBorrowedFragment;
     private bookCollectedFragment mBookCollectedFragment;
-    private loginFragment mLoginFragment;
     private bookSearchFragment mBookSearchFragment;
 
     private RoundImageView mHeaderImage;
     private TextView mLinkBackground;
     private ImageView mDrawerBackground;
 
-    private static final int RESULT_LOAD_IMAGE_header = 1;
-    private static final int RESULT_LOAD_IMAGE_background = 2;
+    private static final int REQUEST_LOAD_IMAGE_header = 1;
+    private static final int REQUEST_LOAD_IMAGE_background = 2;
+    private static final int REQUEST_LOGIN = 3;
+
     private static final String mBackgroundFileName = PublicURI.PATH_BG_HOME;
     private static final String mHeaderFileName = PublicURI.PATH_HEADER_IMAGE;
 
@@ -89,9 +88,14 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(data==null)
-            return;
         if(resultCode != RESULT_OK)
+            return;
+        if (requestCode == REQUEST_LOGIN) {
+            jumpToBookBorrowedFragment();
+            return;
+        }
+        // 以下为图片设置
+        if(data==null)
             return;
         Uri selectedImageUri = data.getData();
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -105,12 +109,11 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
         cursor.close();
         Bitmap bitmap=BitmapFactory.decodeFile(picturePath);
 
-        if (requestCode == RESULT_LOAD_IMAGE_header ) {
+        if (requestCode == REQUEST_LOAD_IMAGE_header) {
             mHeaderImage.setImageBitmap(bitmap);
             FileCopyUtil.CopySdcardFile(picturePath, mHeaderFileName);
         }
-
-        if (requestCode == RESULT_LOAD_IMAGE_background  ) {
+        if (requestCode == REQUEST_LOAD_IMAGE_background) {
             mDrawerBackground.setImageBitmap(bitmap);
             FileCopyUtil.CopySdcardFile(picturePath, mBackgroundFileName);
         }
@@ -119,17 +122,16 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
     public void jumpToBookBorrowedFragment(){
         SharedPreferencesUtil mSharedPreferencesUtil = new SharedPreferencesUtil(this);
         if (mSharedPreferencesUtil.getISLOGINED()) {
-            if (mBookCollectedFragment == null)
-                mBookCollectedFragment = new bookCollectedFragment();
+            if (mBookBorrowedFragment == null)
+                mBookBorrowedFragment = new bookBorrowedFragment();
             jumpToFragmentWithTitle(mBookBorrowedFragment, R.string.nav_book_borrowed);
         } else
-            JumpToLoginFragment();
+            JumpToLoginActivity();
     }
 
-    public void JumpToLoginFragment(){
-        if(mLoginFragment==null)
-            mLoginFragment=new loginFragment();
-        jumpToFragmentWithTitle(mLoginFragment, R.string.login_library);
+    public void JumpToLoginActivity(){
+        Intent intent = new Intent(this,LoginActivity.class);
+        startActivityForResult(intent,REQUEST_LOGIN);
     }
 
     private void JumpToBookCollectedFragment() {
@@ -186,7 +188,7 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
             case R.id.header:
                 Toast.makeText(getApplicationContext(), "设置头像...", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, RESULT_LOAD_IMAGE_header);
+                startActivityForResult(intent, REQUEST_LOAD_IMAGE_header);
                 break;
             case R.id.drawer_background:
                 break;
@@ -194,8 +196,8 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
                 if(timesOfClickSecretPosition ==10){
                     timesOfClickSecretPosition =0;
                     Toast.makeText(getApplicationContext(), "设置背景...", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(i, RESULT_LOAD_IMAGE_background);
+                    Intent intent1 = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(intent1, REQUEST_LOAD_IMAGE_background);
                 }else{
                     timesOfClickSecretPosition++;
                 }

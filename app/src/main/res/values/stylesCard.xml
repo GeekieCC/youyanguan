@@ -160,7 +160,7 @@
 
 
 
-    <!--    style for Card.SearchBook     **************************************************************************************    -->
+    <!--    style for Card.BookBase     **************************************************************************************    -->
     <style name="Widget.SampleDashboard.Grid" parent="Widget">
         <item name="android:stretchMode">columnWidth</item>
         <item name="android:numColumns">1</item>
