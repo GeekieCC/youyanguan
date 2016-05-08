@@ -2,7 +2,7 @@ package com.gusteauscuter.youyanguan.domain;
 
 import java.util.List;
 
-public class BookDetail {
+public class BookDetail extends BookBase{
 	
 	private List<LocationInfo> locationInfo;
 	private String authorIntro;
@@ -97,6 +97,22 @@ public class BookDetail {
 	public void setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
 	}
-	
-	
+
+	public void addProperty(BookBase bookIn){
+		if(!bookIn.getTitle().isEmpty())
+			setTitle(bookIn.getTitle());
+		if(!bookIn.getAuthor().isEmpty())
+			setAuthor(bookIn.getAuthor());
+		if(!bookIn.getPublisher().isEmpty())
+			setPublisher(bookIn.getPublisher());
+		if(!bookIn.getPubdate().isEmpty())
+			setPubdate(bookIn.getPubdate());
+		if(!bookIn.getIsbn().isEmpty())
+			setIsbn(bookIn.getIsbn());
+		if(!bookIn.getBookId().isEmpty())
+			setBookId(bookIn.getBookId());
+		if(!bookIn.getSearchNum().isEmpty())
+			setSearchNum(bookIn.getSearchNum());
+		setLocationSummary(bookIn.getLocationSummary());
+	}
 }

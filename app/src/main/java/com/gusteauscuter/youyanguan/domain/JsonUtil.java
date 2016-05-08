@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,8 @@ public class JsonUtil {
     public static List<BookBorrowed> getMyBookBorrowed(JSONObject resultJson){
         List<BookBorrowed> bookBorrowedList = null;
         try {
-            JSONArray jsonArray =  resultJson.getJSONArray("array");
+            JSONArray jsonArray =  resultJson.getJSONArray("bookList");
+//            JSONArray jsonArray = new JSONArray(resultJson.toString());
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonBookBorrowed = (JSONObject) jsonArray.get(i);
                 String  title= jsonBookBorrowed.getString("title");

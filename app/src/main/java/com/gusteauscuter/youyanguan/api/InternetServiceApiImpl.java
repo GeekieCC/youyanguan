@@ -129,8 +129,12 @@ public class InternetServiceApiImpl implements InternetServiceApi {
                 responseJson.put("event", true);
             else if(response.equals("false"))
                 responseJson.put("event",false);
-            else
-                responseJson=new JSONObject(response);
+            else {
+                if(response.startsWith("["))
+                    response="{\"bookList\":"+response+"}";
+                responseJson = new JSONObject(response);
+                int i=0;
+            }
             return responseJson;
         }catch (Exception e){
             e.printStackTrace();

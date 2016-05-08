@@ -14,6 +14,7 @@ import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
+import com.gusteauscuter.youyanguan.domain.BookBase;
 import com.gusteauscuter.youyanguan.domain.BookBorrowed;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
@@ -72,7 +73,7 @@ public class BookBaseAdapter extends ZBaseAdapter {
                 if(isConnected){
                     Intent intent =new Intent(mContext, BookDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("bookId", mBook.getBookId());
+                    bundle.putSerializable("bookToShowDetail", mBook);
                     bundle.putInt("position", position);
                     intent.putExtras(bundle);
                     mContext.startActivity(intent);

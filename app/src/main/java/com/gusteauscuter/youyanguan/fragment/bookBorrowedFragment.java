@@ -56,21 +56,23 @@ public class bookBorrowedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        mContext = getActivity();
         View view = inflater.inflate(R.layout.fragment_books_borrowed, container, false);
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefresh);
         mListView = (GridView) view.findViewById(R.id.bookListView);
-        shareView=view.findViewById(R.id.bookListView);
-        mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        shareView = view.findViewById(R.id.bookListView);
+        mActionBar = ((AppCompatActivity)mContext).getSupportActionBar();
 
-        mContext = getActivity();
         mSharedPreferencesUtil = new SharedPreferencesUtil(mContext);
         if(mAdapter==null)
             mAdapter = new BookBaseAdapter(mContext);
         mListView.setAdapter(mAdapter);
 
-        RefreshBook();
+        if(isFirstTime) {
+            isFirstTime = false;
+            RefreshBook();
+        }
         RefreshViewAndCalendar();
         return view;
     }
@@ -82,11 +84,7 @@ public class bookBorrowedFragment extends Fragment {
     }
 
     public void RefreshBook(){
-        if(!isFirstTime||!mAdapter.isEmpty())
-            return;
-        else
-            isFirstTime=false;
-        boolean isConnected = NetworkConnectUtil.isConnected(getActivity());
+        boolean isConnected = NetworkConnectUtil.isConnected(mContext);
         if(isConnected){
             new GetMyBookAsy().execute();
         }
@@ -102,6 +100,8 @@ public class bookBorrowedFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
             InternetServiceApi internetService = new InternetServiceApiImpl();
+            SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(mContext);
+            internetService.Login(sharedPreferencesUtil.getUSERNAME(),sharedPreferencesUtil.getPASSWORD());
             JSONObject resultJson = internetService.getMyBookBorrowed();
             List<BookBorrowed> bookBorrowedList = JsonUtil.getMyBookBorrowed(resultJson) ;
             if(bookBorrowedList==null)
@@ -116,12 +116,12 @@ public class bookBorrowedFragment extends Fragment {
             if (isnull)
                 return;
             RefreshViewAndCalendar();
-            Toast.makeText(getActivity(), R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void RefreshViewAndCalendar(){
-        String title=getResources().getString(R.string.nav_book_borrowed);
+        String title=mContext.getResources().getString(R.string.nav_book_borrowed);
         mActionBar.setTitle(title + "(" + mAdapter.getCount() + ")");
         if( mAdapter.isEmpty())
             mEmptyInformation.setVisibility(View.VISIBLE);
@@ -129,7 +129,7 @@ public class bookBorrowedFragment extends Fragment {
             mEmptyInformation.setVisibility(View.GONE);
         mAdapter.notifyDataSetChanged();
 
-        new CalendarUtil(getActivity()).new AddCalendarThread(
+        new CalendarUtil(mContext).new AddCalendarThread(
                 (List<BookBorrowed>) mAdapter.getItemList())
                 .start();
     }
@@ -166,11 +166,14 @@ public class bookBorrowedFragment extends Fragment {
         switch (item.getItemId()){
             case (R.id.action_log_out):
                 mSharedPreferencesUtil.setIsLogined(false);
-                ((NavigationActivity) getActivity()).JumpToLoginActivity();
-                Toast.makeText(getActivity(), getString(R.string.re_login), Toast.LENGTH_SHORT).show();
+                ((NavigationActivity) mContext).JumpToLoginActivity();
+                Toast.makeText(mContext, getString(R.string.re_login), Toast.LENGTH_SHORT).show();
                 break;
             case (R.id.action_share):
                 shareBooksBorrowed();
+                break;
+            case (R.id.action_refresh_book):
+                RefreshBook();
                 break;
         }
         return super.onOptionsItemSelected(item);
