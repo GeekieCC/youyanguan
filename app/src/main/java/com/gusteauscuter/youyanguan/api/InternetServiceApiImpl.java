@@ -50,6 +50,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
                 new NameValuePair("action", ACTION_RENEW_BOOK),
                 new NameValuePair("bookId",bookId),
             };
+            // TODO to check the return value
             result = PostToServer(mLoginUrl,values).getBoolean("event");
         }catch (Exception e){
             e.printStackTrace();

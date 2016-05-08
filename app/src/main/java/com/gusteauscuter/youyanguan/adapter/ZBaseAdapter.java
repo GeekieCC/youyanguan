@@ -86,7 +86,7 @@ public abstract class ZBaseAdapter<T> extends BaseAdapter {
         return mItemList.get(position);
     }
 
-    public Object getItemList(){
+    public List<T> getItemList(){
         return mItemList;
     }
     /**

@@ -27,9 +27,6 @@ import java.util.List;
 
 public class BookBaseAdapter extends ZBaseAdapter {
 
-    private static final int HAS_PICTURE = 5;
-    private static final int HAS_NO_PICTURE = 10;
-
     public BookBaseAdapter(Context context){
         super(context);
     }
@@ -59,8 +56,7 @@ public class BookBaseAdapter extends ZBaseAdapter {
                 if (mBook.getBorrowedTime() >= mBook.getMaxBorrowTime())
                     Toast.makeText(mContext, "已达最大续借次数，请及时归还", Toast.LENGTH_SHORT).show();
                 if(NetworkConnectUtil.isConnected(mContext)){
-                    RenewBookAsy renewBookAsy = new RenewBookAsy(mBook.getBookId(),position);
-                    renewBookAsy.execute();
+                    new RenewBookAsy(mBook.getBookId(),position).execute();
                 }
             }
         });
@@ -70,7 +66,7 @@ public class BookBaseAdapter extends ZBaseAdapter {
             public void onClick(View v) {
 
                 boolean isConnected = NetworkConnectUtil.isConnected(mContext);
-                if(isConnected){
+                if(isConnected||(mBook.getDetailsOfBook()!=null)){
                     Intent intent =new Intent(mContext, BookDetailActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("bookToShowDetail", mBook);

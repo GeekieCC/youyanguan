@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,23 +97,23 @@ public class JsonUtil {
     }
 
 
-    public static BookDetail getBookDetatl(JSONObject jsonBookDetail){
-        BookDetail bookDetail=new BookDetail();
+    public static DetailsOfBook getBookDetatl(JSONObject jsonBookDetail){
+        DetailsOfBook detailsOfBook =new DetailsOfBook();
         try {
-            bookDetail.setLocationInfo(getLocationList(jsonBookDetail.getJSONArray("collectInfo")));
+            detailsOfBook.setLocationInfo(getLocationList(jsonBookDetail.getJSONArray("collectInfo")));
             if(jsonBookDetail.getBoolean("doubanExist")) {
-                bookDetail.setSummary(jsonBookDetail.getString("summary"));
-                bookDetail.setDoubanExist(jsonBookDetail.getBoolean("doubanExist"));
-                bookDetail.setPrice(jsonBookDetail.getString("price"));
-                bookDetail.setPictureUrl(jsonBookDetail.getString("pictureUrl"));
-                bookDetail.setCatalog(jsonBookDetail.getString("catalog"));
-                bookDetail.setPages(jsonBookDetail.getString("pages"));
-                bookDetail.setAuthorIntro(jsonBookDetail.getString("authorIntro"));
+                detailsOfBook.setSummary(jsonBookDetail.getString("summary"));
+                detailsOfBook.setDoubanExist(jsonBookDetail.getBoolean("doubanExist"));
+                detailsOfBook.setPrice(jsonBookDetail.getString("price"));
+                detailsOfBook.setPictureUrl(jsonBookDetail.getString("pictureUrl"));
+                detailsOfBook.setCatalog(jsonBookDetail.getString("catalog"));
+                detailsOfBook.setPages(jsonBookDetail.getString("pages"));
+                detailsOfBook.setAuthorIntro(jsonBookDetail.getString("authorIntro"));
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return bookDetail;
+        return detailsOfBook;
     }
 
     public static List<LocationInfo> getLocationList(@Nullable JSONArray jsonLocationList){

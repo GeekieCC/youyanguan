@@ -1,14 +1,8 @@
 package com.gusteauscuter.youyanguan.domain;
 
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BookBase implements Serializable{
 
@@ -22,6 +16,7 @@ public class BookBase implements Serializable{
 	private int locationSummary;
 	private boolean isCollected;
 	private Bitmap pictureBitmap=null;
+	private DetailsOfBook detailsOfBook =null;
 
 	public BookBase(){
 
@@ -128,5 +123,11 @@ public class BookBase implements Serializable{
 		this.pictureBitmap = pictureBitmap;
 	}
 
+	public DetailsOfBook getDetailsOfBook() {
+		return detailsOfBook;
+	}
 
+	public void setDetailsOfBook(DetailsOfBook detailsOfBook) {
+		this.detailsOfBook = detailsOfBook;
+	}
 }

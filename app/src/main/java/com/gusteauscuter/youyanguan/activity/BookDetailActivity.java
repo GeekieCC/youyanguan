@@ -28,7 +28,8 @@ import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
 import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
 import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.domain.BookBase;
-import com.gusteauscuter.youyanguan.domain.BookDetail;
+import com.gusteauscuter.youyanguan.domain.BookBorrowed;
+import com.gusteauscuter.youyanguan.domain.DetailsOfBook;
 import com.gusteauscuter.youyanguan.domain.JsonUtil;
 import com.gusteauscuter.youyanguan.domain.LocationInfo;
 import com.gusteauscuter.youyanguan.util.ACacheUtil;
@@ -41,9 +42,6 @@ import java.util.List;
 
 public class BookDetailActivity extends AppCompatActivity {
 
-    public static final int PICTURE_RESULT_CODE = 1;
-    public static final int COLLECT_RESULT_CODE = 2;
-
     private ProgressBar  mProgressBar;
 
     private ImageView bookPictureImageView;
@@ -55,7 +53,6 @@ public class BookDetailActivity extends AppCompatActivity {
     private TextView searchNumHeaderTextView;
     private TableLayout locationTable;
 
-    private LinearLayout bottomLinearLayout;
     private TextView authorIntroTextView;
     private TextView contentTextView;
     private TextView catalogTextView;
@@ -67,8 +64,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private String mSharedBookDetailFileName = PublicURI.PATH_SHARE_BOOK_DETAIL;
 
     private ACacheUtil mCache;
-    private BookDetail mBookDetail;
-    private BookBase mBookIn;
+    private BookBase mBook;
     private int mPosition;
 
     @Override
@@ -102,7 +98,6 @@ public class BookDetailActivity extends AppCompatActivity {
 
         locationTable = (TableLayout) findViewById(R.id.table);
 
-        bottomLinearLayout = (LinearLayout) findViewById(R.id.bottom);
         authorIntroTextView = (TextView) findViewById(R.id.author_description);
         contentTextView = (TextView) findViewById(R.id.book_description);
         catalogTextView = (TextView) findViewById(R.id.catalog);
@@ -112,29 +107,35 @@ public class BookDetailActivity extends AppCompatActivity {
 
     private  void initData(){
         Intent intent = this.getIntent();
-        mBookIn = (BookBase) intent.getSerializableExtra("bookToShowDetail");
+        mBook = (BookBase) intent.getSerializableExtra("bookToShowDetail");
         mPosition = intent.getIntExtra("position", 0);
-
-        GetBooksDetailAsy getBooksDetailAsy = new GetBooksDetailAsy();
-        getBooksDetailAsy.execute();
+        if(mBook.getDetailsOfBook()==null)
+            new GetBooksDetailAsy().execute();
+        else
+            inflateView();
     }
 
     /**
      * 加载actionbar上的收藏图标的异步类加载actionbar上的收藏图标的异步类
      */
-    private class CheckBookCollectionTask extends AsyncTask<BookBase, Void, Boolean> {
+    private class CheckBookCollectionTask extends AsyncTask<Void, Void, Boolean> {
+        private BookBase bookBase;
+        public CheckBookCollectionTask(BookBase bookBase) {
+            this.bookBase = bookBase;
+        }
+
         @Override
-        protected Boolean doInBackground(BookBase... books) {
-            if(books[0].isCollected())
+        protected Boolean doInBackground(Void... args) {
+            if(bookBase.isCollected())
                 return true;
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-            return mDbHelper.isCollected(books[0]);
+            return mDbHelper.isCollected(bookBase);
         }
 
         @Override
         protected void onPostExecute(Boolean isCollected) {
-            mBookDetail.setIsCollected(isCollected);
-            menuCollection.setIcon(isCollected?R.drawable.ic_action_collect_cancle:R.drawable.ic_action_collect);
+            mBook.setIsCollected(isCollected);
+            menuCollection.setIcon(isCollected ? R.drawable.ic_action_collect_cancle : R.drawable.ic_action_collect);
         }
     }
 
@@ -145,7 +146,7 @@ public class BookDetailActivity extends AppCompatActivity {
         private boolean operationAdd;// 操作为添加时，为true;操作为删除时，为false
 
         public CollectBookAsy() {
-            if(mBookDetail.isCollected())
+            if(mBook.isCollected())
                 operationAdd =false;
             else
                 operationAdd =true;
@@ -153,8 +154,8 @@ public class BookDetailActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            mProgressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
+            mProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -162,7 +163,7 @@ public class BookDetailActivity extends AppCompatActivity {
             //操作成功与否
             boolean result = false;
             BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
-            if(operationAdd && mDbHelper.addBook(mBookDetail) != (operationAdd?-1:0))
+            if(operationAdd && mDbHelper.addBook(mBook) != (operationAdd?-1:0))
                 result = true;
             return result;
         }
@@ -171,26 +172,15 @@ public class BookDetailActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (result) {
-
-                //返回给上一个activity，
-                Intent intent = new Intent();
-                intent.putExtra("mPosition", mPosition);
-                intent.putExtra("isCollected", operationAdd);
-                BookDetailActivity.this.setResult(COLLECT_RESULT_CODE, intent);
-
                 if (operationAdd) {
-                    mBookDetail.setIsCollected(true);
+                    mBook.setIsCollected(true);
                     Toast.makeText(getApplication(), "添加成功", Toast.LENGTH_SHORT).show();
                     menuCollection.setTitle("取消收藏").setIcon(R.drawable.ic_action_collect_cancle);
                 } else {
-                    mBookDetail.setIsCollected(false);
+                    mBook.setIsCollected(false);
                     Toast.makeText(getApplication(), "删除成功", Toast.LENGTH_SHORT).show();
                     //除了在借的书的详情里，其他的点完取消收藏，就finish掉
-                    if (mBookDetail instanceof BookBase) {
-                        menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
-                    } else {
-                        finish();
-                    }
+                    menuCollection.setTitle("添加收藏").setIcon(R.drawable.ic_action_collect);
                 }
 
             } else {
@@ -213,24 +203,9 @@ public class BookDetailActivity extends AppCompatActivity {
         protected Void doInBackground(Void... args) {
             try {
                 InternetServiceApi internetServiceApi = new InternetServiceApiImpl();
-                JSONObject resultJson = internetServiceApi.GetBookDetail(mBookIn.getBookId());
-                mBookDetail=new BookDetail();
-                mBookDetail= JsonUtil.getBookDetatl(resultJson);
-                mBookDetail.addProperty(mBookIn);
-//                if(mBookDetail.getPublisher().isEmpty())
-//                    mBookDetail.setPublisher(resultJson.getString("publisher"));
-//                if(mBookDetail.getIsbn().isEmpty())
-//                    mBookDetail.setIsbn(resultJson.getString("isbn"));
-//                if(mBookDetail.getPubdate().isEmpty())
-//                    mBookDetail.setPubdate(resultJson.getString("pubdate"));
-                Bitmap bitmap=null;
-//                bitmap = mCache.getAsBitmap(mBookDetail.getBookId());
-                if (bitmap == null) {
-                    bitmap = mBookDetail.getPictureBitmap();
-                    if (bitmap != null) {
-                        mCache.put(mBookDetail.getBookId(), bitmap);
-                    }
-                }
+                JSONObject resultJson = internetServiceApi.GetBookDetail(mBook.getBookId());
+                mBook.setDetailsOfBook(JsonUtil.getBookDetatl(resultJson));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -239,122 +214,122 @@ public class BookDetailActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
             mProgressBar.setVisibility(View.INVISIBLE);
-
-            inflateTopRight(mBookDetail);
-            inflateTable(mBookDetail);
-            inflateBottom(mBookDetail);
-
-            Bitmap bitmap = mBookDetail.getPictureBitmap();
-            if (bitmap != null) {
-                bookPictureImageView.setImageBitmap(bitmap);
-            } else {
-                bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
-//                bottomLinearLayout.removeAllViews();
-            }
-        }
-
-        //将整个详情页分为三大部分，第一部分，图片右侧区域,不包括图片
-        private void inflateTopRight(BookBase bookBase) {
-            titleTextView.setText("【书名】" + bookBase.getTitle());
-            //searchNumHeaderTextView.setText("【索书号】" + bookBase.getSearchNum());
-            authorTextView.setText("【作者】" + bookBase.getAuthor());
-            publisherTextView.setText("【出版社】" + bookBase.getPublisher());
-            pubdateTextView.setText("【出版日期】" + bookBase.getPubdate());
-            //isbnTextView.setText("【ISBN】" + bookBase.getIsbn());
-        }
-
-        private TextView createRowTextView(String content, String bgColor) {
-            TextView textView = new TextView(getApplicationContext());
-
-            textView.setText(content);
-            //文字与边框间距离
-            textView.setPadding(13, 13, 13, 13);
-            //定义背景颜色，蓝色
-            textView.setBackgroundColor(Color.parseColor(bgColor));
-            //定义字体颜色,黑色
-            int textColor = Color.parseColor("#000000");
-            textView.setTextColor(textColor);
-            //定义透明度
-            textView.setAlpha((float) 0.87);
-            //居中显示
-            textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new TableRow.LayoutParams(
-                    TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
-            return textView;
-        }
-
-        //将整个详情页分为三大部分，第二部分，馆藏信息
-        private void inflateTable(BookDetail bookDetail) {
-
-            List<LocationInfo> locationInfoLists = bookDetail.getLocationInfo();
-
-            String headerColor = "#2196F3"; // 表头颜色
-            String tableColor = "#BBDEFB"; // 表格颜色
-
-            TextView locationHeader = createRowTextView("馆址", headerColor);
-            TextView detailLocationHeader = createRowTextView("馆藏地", headerColor);
-            TextView statusHeader = createRowTextView("状态", headerColor);
-
-            TableRow headerRow = new TableRow(getApplicationContext());
-            headerRow.addView(detailLocationHeader);
-            headerRow.addView(locationHeader);
-            headerRow.addView(statusHeader);
-
-            locationTable.addView(headerRow);
-            for (LocationInfo locationInfo : locationInfoLists) {
-                TableRow tr = new TableRow(getApplicationContext());
-                tr.setLayoutParams(new TableRow.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
-                TextView detailLocation = createRowTextView(locationInfo.getDetailLocation(),tableColor);
-                TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
-
-                tr.addView(location);
-                tr.addView(detailLocation);
-                tr.addView(status);
-
-                locationTable.addView(tr);
-            }
-
-            if(locationInfoLists.isEmpty()){
-                TextView emptyInfor = createRowTextView("本书已全部暂停外借",tableColor);
-                locationTable.addView(emptyInfor);
-            }
-        }
-
-        //将整个详情页分为三大部分，第三部分，从豆瓣获取的详细信息
-        private void inflateBottom(BookDetail bookDetail) {
-            if(!bookDetail.isDoubanExist())
-                return;
-            String authorIntro = bookDetail.getAuthorIntro();
-            if(!authorIntro.isEmpty())
-                authorIntroTextView.setText("\n【作者简介】" + authorIntro);
-            String summary = bookDetail.getSummary();
-            if(!summary.isEmpty())
-                contentTextView.setText("\n【内容简介】" + summary);
-            String catalog = bookDetail.getCatalog();
-            if(!catalog.isEmpty())
-                catalogTextView.setText("\n【目录】" + catalog);
-            String pages = bookDetail.getPages();
-            if(!pages.isEmpty())
-                pagesTextView.setText("\n【页数】" + pages);
-            String price = bookDetail.getPrice();
-            if(!price.isEmpty())
-                priceTextView.setText("\n【价格】" + price);
+            inflateView();
         }
     }
+
+    private  void inflateView(){
+        inflateTopRight(mBook);
+        inflateTable(mBook.getDetailsOfBook());
+        inflateBottom(mBook.getDetailsOfBook());
+        // TODO to get a picture
+        bookPictureImageView.setImageResource(R.drawable.book_default); //当网络上没有图片时，自动加载这个图片
+    }
+
+    //将整个详情页分为三大部分，第一部分，图片右侧区域,不包括图片
+    private void inflateTopRight(BookBase bookBase) {
+        titleTextView.setText("【书名】" + bookBase.getTitle());
+        searchNumHeaderTextView.setText("【索书号】" + bookBase.getSearchNum());
+        authorTextView.setText("【作者】" + bookBase.getAuthor());
+        publisherTextView.setText("【出版社】" + bookBase.getPublisher());
+        pubdateTextView.setText("【出版日期】" + bookBase.getPubdate());
+        if(bookBase.getIsbn().isEmpty())
+            isbnTextView.setVisibility(View.GONE);
+        else 
+            isbnTextView.setText("【ISBN】" + bookBase.getIsbn());
+    }
+
+    private TextView createRowTextView(String content, String bgColor) {
+        TextView textView = new TextView(getApplicationContext());
+
+        textView.setText(content);
+        //文字与边框间距离
+        textView.setPadding(13, 13, 13, 13);
+        //定义背景颜色，蓝色
+        textView.setBackgroundColor(Color.parseColor(bgColor));
+        //定义字体颜色,黑色
+        int textColor = Color.parseColor("#000000");
+        textView.setTextColor(textColor);
+        //定义透明度
+        textView.setAlpha((float) 0.87);
+        //居中显示
+        textView.setGravity(Gravity.CENTER);
+        textView.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+        return textView;
+    }
+
+    //将整个详情页分为三大部分，第二部分，馆藏信息
+    private void inflateTable(DetailsOfBook detailsOfBook) {
+
+        List<LocationInfo> locationInfoLists = detailsOfBook.getLocationInfo();
+
+        String headerColor = "#2196F3"; // 表头颜色
+        String tableColor = "#BBDEFB"; // 表格颜色
+
+        TextView locationHeader = createRowTextView("馆址", headerColor);
+        TextView detailLocationHeader = createRowTextView("馆藏地", headerColor);
+        TextView statusHeader = createRowTextView("状态", headerColor);
+
+        TableRow headerRow = new TableRow(getApplicationContext());
+        headerRow.addView(detailLocationHeader);
+        headerRow.addView(locationHeader);
+        headerRow.addView(statusHeader);
+
+        locationTable.addView(headerRow);
+        for (LocationInfo locationInfo : locationInfoLists) {
+            TableRow tr = new TableRow(getApplicationContext());
+            tr.setLayoutParams(new TableRow.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            TextView location = createRowTextView(locationInfo.getLocation(),tableColor);
+            TextView detailLocation = createRowTextView(locationInfo.getDetailLocation(),tableColor);
+            TextView status = createRowTextView(locationInfo.getStatus(),tableColor);
+
+            tr.addView(location);
+            tr.addView(detailLocation);
+            tr.addView(status);
+
+            locationTable.addView(tr);
+        }
+
+        if(locationInfoLists.isEmpty()){
+            TextView emptyInfor = createRowTextView("本书已全部暂停外借",tableColor);
+            locationTable.addView(emptyInfor);
+        }
+    }
+
+    //将整个详情页分为三大部分，第三部分，从豆瓣获取的详细信息
+    private void inflateBottom(DetailsOfBook detailsOfBook) {
+        if(!detailsOfBook.isDoubanExist())
+            return;
+        String authorIntro = detailsOfBook.getAuthorIntro();
+        if(!authorIntro.isEmpty())
+            authorIntroTextView.setText("\n【作者简介】" + authorIntro);
+        String summary = detailsOfBook.getSummary();
+        if(!summary.isEmpty())
+            contentTextView.setText("\n【内容简介】" + summary);
+        String catalog = detailsOfBook.getCatalog();
+        if(!catalog.isEmpty())
+            catalogTextView.setText("\n【目录】" + catalog);
+        String pages = detailsOfBook.getPages();
+        if(!pages.isEmpty())
+            pagesTextView.setText("\n【页数】" + pages);
+        String price = detailsOfBook.getPrice();
+        if(!price.isEmpty())
+            priceTextView.setText("\n【价格】" + price);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_book_detail, menu);
         menuCollection = menu.findItem(R.id.action_collection);
-
-        CheckBookCollectionTask checkBookCollectionTask = new CheckBookCollectionTask();
-        checkBookCollectionTask.execute(mBookDetail);
-
+        if(mBook !=null)
+            new CheckBookCollectionTask(mBook).execute();
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -363,7 +338,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                BookDetailActivity.this.finish();
                 break;
             case R.id.action_collection:
                 new CollectBookAsy().execute();
@@ -387,4 +362,13 @@ public class BookDetailActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(intent, "Share"));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //返回给上一个activity，
+        Intent intent = new Intent();
+        intent.putExtra("position", mPosition);
+        intent.putExtra("bookBaseFromDetail", mBook);
+        BookDetailActivity.this.setResult(RESULT_OK, intent);
+    }
 }

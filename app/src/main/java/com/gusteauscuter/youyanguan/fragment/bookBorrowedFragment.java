@@ -26,6 +26,7 @@ import com.gusteauscuter.youyanguan.adapter.BookBaseAdapter;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
 import com.gusteauscuter.youyanguan.common.PublicURI;
+import com.gusteauscuter.youyanguan.domain.BookBase;
 import com.gusteauscuter.youyanguan.domain.BookBorrowed;
 import com.gusteauscuter.youyanguan.domain.JsonUtil;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
@@ -56,6 +57,7 @@ public class bookBorrowedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater,container,savedInstanceState);
         mContext = getActivity();
         View view = inflater.inflate(R.layout.fragment_books_borrowed, container, false);
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
@@ -77,11 +79,21 @@ public class bookBorrowedFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        RefreshViewAndCalendar();
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(data==null)
+//            return;
+//        BookBase bookBack = (BookBase) data.getSerializableExtra("bookBaseFromDetail");
+//        int positon = data.getIntExtra("position",0);
+//        BookBorrowed bookBorrowedTmp = (BookBorrowed) mAdapter.getItem(positon);
+//        bookBorrowedTmp.setDetailsOfBook(bookBack.getDetailsOfBook());
+//        bookBorrowedTmp.setIsCollected(bookBack.isCollected());
+//        bookBorrowedTmp.setPubdate(bookBack.getPubdate());
+//        // ...TODO to check the property to get
+//        mAdapter.getItemList().set(positon,bookBorrowedTmp);
+//        mAdapter.notifyDataSetChanged();
+//    }
 
     public void RefreshBook(){
         boolean isConnected = NetworkConnectUtil.isConnected(mContext);
@@ -90,7 +102,7 @@ public class bookBorrowedFragment extends Fragment {
         }
     }
 
-    private class GetMyBookAsy extends AsyncTask<Void,Void,Boolean> {
+    private class GetMyBookAsy extends AsyncTask<Void,Void,List<BookBorrowed>> {
 
         @Override
         protected void onPreExecute(){
@@ -98,23 +110,20 @@ public class bookBorrowedFragment extends Fragment {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected List<BookBorrowed> doInBackground(Void... params) {
             InternetServiceApi internetService = new InternetServiceApiImpl();
             SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(mContext);
             internetService.Login(sharedPreferencesUtil.getUSERNAME(),sharedPreferencesUtil.getPASSWORD());
             JSONObject resultJson = internetService.getMyBookBorrowed();
-            List<BookBorrowed> bookBorrowedList = JsonUtil.getMyBookBorrowed(resultJson) ;
-            if(bookBorrowedList==null)
-                return true;
-            mAdapter.setItems(bookBorrowedList);
-            return false;
+            return JsonUtil.getMyBookBorrowed(resultJson) ;
         }
 
         @Override
-        protected void onPostExecute(Boolean isnull) {
+        protected void onPostExecute(List<BookBorrowed> result) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            if (isnull)
+            if(result==null)
                 return;
+            mAdapter.setItems(result);
             RefreshViewAndCalendar();
             Toast.makeText(mContext, R.string.succeed_to_getBooks, Toast.LENGTH_SHORT).show();
         }
@@ -128,10 +137,10 @@ public class bookBorrowedFragment extends Fragment {
         else
             mEmptyInformation.setVisibility(View.GONE);
         mAdapter.notifyDataSetChanged();
-
-        new CalendarUtil(mContext).new AddCalendarThread(
-                (List<BookBorrowed>) mAdapter.getItemList())
-                .start();
+        List<BookBorrowed> myBooks =  mAdapter.getItemList();
+        if(myBooks==null)
+            return;
+        new CalendarUtil(mContext).new AddCalendarThread(myBooks).start();
     }
 
     public void shareBooksBorrowed(){
@@ -142,7 +151,7 @@ public class bookBorrowedFragment extends Fragment {
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_TITLE, "Share");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
-        intent.putExtra(Intent.EXTRA_TEXT, "I want to share a wonderful book through YouYanGuan");
+        intent.putExtra(Intent.EXTRA_TEXT, "I want to share you a wonderful book");
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(stringSharedBooksBorrowedName)));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, getResources().getString(R.string.action_share)));

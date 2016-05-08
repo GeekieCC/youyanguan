@@ -99,7 +99,7 @@
     </style>
 
 
-    <!-- BookDetail -->
+    <!-- DetailsOfBook -->
 
     <style name="BookDetail.Title" parent="Widget">
         <item name="android:textAppearance">?android:textAppearanceSmall</item>
