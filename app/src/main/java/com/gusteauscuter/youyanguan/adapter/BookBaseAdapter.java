@@ -2,169 +2,170 @@ package com.gusteauscuter.youyanguan.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.BookDetailActivity;
-import com.gusteauscuter.youyanguan.api.InternetServiceApi;
-import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
+import com.gusteauscuter.youyanguan.common.PublicString;
+import com.gusteauscuter.youyanguan.databaseHelper.CollectBookAsy;
 import com.gusteauscuter.youyanguan.domain.BookBase;
-import com.gusteauscuter.youyanguan.domain.BookBorrowed;
-import com.gusteauscuter.youyanguan.util.ACacheUtil;
-import com.gusteauscuter.youyanguan.util.CalendarUtil;
+import com.gusteauscuter.youyanguan.domain.LocationInfo;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
-import com.gusteauscuter.youyanguan.view.XImageView;
 
-import java.util.List;
+public abstract class BookBaseAdapter extends ZBaseAdapter {
 
+    private boolean isSearched;// 标识是搜索（true）还是收藏（false）
+    private static int COLOR_DEFAULT= Color.parseColor("#295086");
+    private static int COLOR_VIEWED=Color.parseColor("#938490");
+    private static boolean isViewed = false ;
+    int colorWhite = mContext.getResources().getColor(R.color.white);
+    int colorPrimary =mContext.getResources().getColor(R.color.primaryColor);
+    int colorGrayLight =mContext.getResources().getColor(R.color.gray_light);
+    int colorGray =mContext.getResources().getColor(R.color.gray);
 
-public class BookBaseAdapter extends ZBaseAdapter {
-
-    public BookBaseAdapter(Context context){
+    public BookBaseAdapter(Context context, boolean isSearched){
         super(context);
+        this.isSearched = isSearched;
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup container) {
-
-        final ViewHolder mHolder;
+    public View getView(final int position, View convertView, final ViewGroup container) {
+        // 组件-变量匹配
+        ViewHolder mHolder;
         if (convertView == null) {
-            convertView=mLayoutInflater.inflate(R.layout.card_book,container, false);
+            convertView= mLayoutInflater.inflate(R.layout.card_search_book, container, false);
             mHolder =new ViewHolder();
-            mHolder.mButtonBorrow=(TextView) convertView.findViewById(R.id.button_Borrow);
-            mHolder.mBookPicture=(XImageView) convertView.findViewById(R.id.BookPicture);
-            mHolder.mName=((TextView) convertView.findViewById(R.id.text_Title));
-            mHolder.mBorrowDay=((TextView) convertView.findViewById(R.id.text_BorrowDay));
-            mHolder.mReturnDay=(TextView) convertView.findViewById(R.id.text_ReturnDay);
-            mHolder.mBorrowedTime=((TextView) convertView.findViewById(R.id.text_BorrowedTime));
+            mHolder.mSearchBookState = (ImageView) convertView.findViewById(R.id.searchBookState);
+
+            if(!isSearched) {
+                // 收藏显示位置
+                mHolder.mSearchBookState.setVisibility(View.GONE);
+            }
+            mHolder.mTitle=((TextView) convertView.findViewById(R.id.searchBook_Title));
+            mHolder.mPublisher=((TextView) convertView.findViewById(R.id.searchBook_Publisher));
+            mHolder.mPubdate=((TextView) convertView.findViewById(R.id.searchBook_Pubdate));
+            mHolder.mBookId=((TextView) convertView.findViewById(R.id.searchBook_BookId));
+            mHolder.mAuthor=((TextView) convertView.findViewById(R.id.searchBook_Author));
+            mHolder.mButton = (TextView) convertView.findViewById(R.id.collect_book);
             convertView.setTag(mHolder);
         } else{
             mHolder=(ViewHolder) convertView.getTag();
         }
+        // 获取对象
+        final BookBase mBook = (BookBase) mItemList.get(position);
 
-        final BookBorrowed mBook = (BookBorrowed) mItemList.get(position);
-        mHolder.mButtonBorrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mBook.getBorrowedTime() >= mBook.getMaxBorrowTime())
-                    Toast.makeText(mContext, "已达最大续借次数，请及时归还", Toast.LENGTH_SHORT).show();
-                if(NetworkConnectUtil.isConnected(mContext)){
-                    new RenewBookAsy(mBook.getBookId(),position).execute();
-                }
+        if(isSearched) {
+            // 根据馆藏条件，设置视图
+            int borrowCondition = mBook.getLocationSummary();
+            if (borrowCondition == LocationInfo.BOTH_YES) { //两校区都可借
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_s_n);
+                mHolder.mSearchBookState.setColorFilter(colorPrimary);
+            } else if (borrowCondition == LocationInfo.BOTH_NOT) { //两校区都不可借
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_s_n);
+                mHolder.mSearchBookState.setColorFilter(colorGray);
+            } else if (borrowCondition == LocationInfo.NORTH_ONLY) { // 只有北校区可借
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_north);
+                mHolder.mSearchBookState.setColorFilter(colorPrimary);
+            } else if (borrowCondition == LocationInfo.SOUTH_ONLY) { // 只有南校区可借
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_south);
+                mHolder.mSearchBookState.setColorFilter(colorPrimary);
+            } else if (borrowCondition == LocationInfo.UNKNOWN) { // 不知道是否可借
+                mHolder.mSearchBookState.setImageResource(R.drawable.ic_not_known);
+                mHolder.mSearchBookState.setColorFilter(colorGray);
             }
-        });
+        }
 
-        mHolder.mBookPicture.setOnClickListener(new View.OnClickListener() {
+        // 设置Book对应属性
+        String title="【" + (position + 1) + "】"+mBook.getTitle();
+        String publisher="出版社："+mBook.getPublisher();
+        String pubdate="出版日期："+mBook.getPubdate();
+        String bookId="索书号："+mBook.getSearchNum();
+        String author="作者："+mBook.getAuthor();
+        mHolder.mTitle.setText(title);
+        mHolder.mTitle.setTextColor(isViewed?COLOR_VIEWED:COLOR_DEFAULT);
+        mHolder.mBookId.setText(bookId);
+        mHolder.mAuthor.setText(author);
+        mHolder.mPublisher.setText(publisher);
+        mHolder.mPubdate.setText(pubdate);
+
+        // 对搜索出来的结果显示时，区别已收藏和未收藏图书
+        boolean collected =mBook.isCollected();
+        mHolder.mButton.setText(collected ? "取消" : "收藏");
+        mHolder.mButton.setTextColor(collected ? colorPrimary : colorWhite);
+        mHolder.mButton.setBackgroundColor(collected? colorGrayLight : colorPrimary);
+
+
+        convertView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
 
                 boolean isConnected = NetworkConnectUtil.isConnected(mContext);
-                if(isConnected||(mBook.getDetailsOfBook()!=null)){
-                    Intent intent =new Intent(mContext, BookDetailActivity.class);
+                if (isConnected) {
+                    Intent intent = new Intent(mContext, BookDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("bookToShowDetail", mBook);
-                    bundle.putInt("position", position);
+                    bundle.putString(PublicString.BUNDLE_BookId, mBook.getBookId());
+                    bundle.putString(PublicString.BUNDLE_Title, mBook.getTitle());
+                    bundle.putInt(PublicString.BUNDLE_Position, position);
+                    bundle.putBoolean(PublicString.BUNDLE_IsFromBase, true);
+                    bundle.putString(PublicString.BUNDLE_Author, mBook.getAuthor());
+                    bundle.putString(PublicString.BUNDLE_Isbn,mBook.getIsbn());
+                    bundle.putString(PublicString.BUNDLE_Publisher,mBook.getPublisher());
+                    bundle.putString(PublicString.BUNDLE_Pubdate,mBook.getPubdate());
+                    bundle.putString(PublicString.BUNDLE_SearchNum,mBook.getSearchNum());
                     intent.putExtras(bundle);
                     mContext.startActivity(intent);
                 }
             }
         });
-
-        // TO 设置Book对应属性
-        String name=mBook.getTitle();
-        String borrowDay="借阅:"+mBook.getBorrowDay();
-        String returnDay="归还:"+mBook.getReturnDay();
-        String borrowedTime="续借次数:"+  mBook.getBorrowedTime()+"/"+ mBook.getMaxBorrowTime();
-
-        mHolder.mName.setText( name);
-        mHolder.mBorrowDay.setText(borrowDay);
-        mHolder.mReturnDay.setText(returnDay);
-        mHolder.mBorrowedTime.setText(borrowedTime);
-
-        int[] book_color={
-                mContext.getResources().getColor(R.color.book_color_1),
-                mContext.getResources().getColor(R.color.book_color_2),
-                mContext.getResources().getColor(R.color.book_color_3),
-                mContext.getResources().getColor(R.color.book_color_4),
-                mContext.getResources().getColor(R.color.book_color_5),
-                mContext.getResources().getColor(R.color.book_color_6),
-                mContext.getResources().getColor(R.color.book_color_7),
-        };
-
-        int no =(position)%book_color.length;
-        //设置图片
-        ACacheUtil mCache = ACacheUtil.get(mContext);
-        Bitmap bitmap2Bytes = mCache.getAsBitmap(mBook.getBookId());
-        if (bitmap2Bytes != null) {
-            mBook.setPictureBitmap(bitmap2Bytes);
-        }
-        if (mBook.getPictureBitmap() != null) {
-            mHolder.mBookPicture.setImageBitmap(mBook.getPictureBitmap());
-            mHolder.mBookPicture.setImageAlpha(255);
-            mHolder.mBookPicture.setBackgroundColor(mContext.getResources().getColor(R.color.white));
-            mHolder.mName.setVisibility(View.GONE);
-        }else {
-            mHolder.mBookPicture.setBackgroundColor(book_color[no]);
-            mHolder.mBookPicture.setImageAlpha(0);
-            mHolder.mName.setVisibility(View.VISIBLE);
-        }
+        // 收藏和取消收藏的动作监听
+        mHolder.mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new mCollectBookAsy(mContext,mBook).execute();
+            }
+        });
         return convertView;
     }
 
-    public final class ViewHolder{
-        public TextView mButtonBorrow;
-        public XImageView mBookPicture;
-        public TextView mName;
-        public TextView mBorrowDay;
-        public TextView mReturnDay;
-        public TextView mBorrowedTime;
-    }
+    private class mCollectBookAsy extends CollectBookAsy {
 
-
-    private class RenewBookAsy extends AsyncTask<Void, Void, BookBorrowed> {
-        private String mBookId;
-        private int mPosition;
-        public RenewBookAsy(String bookId, int position) {
-            mBookId=bookId;
-            mPosition=position;
+        public mCollectBookAsy(Context context , BookBase bookBase){
+            super(context, bookBase);
         }
 
         @Override
-        protected BookBorrowed doInBackground(Void... args) {
-            BookBorrowed renewedBook = null;
-            try {
-                SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(mContext);
-                String username = sharedPreferencesUtil.getUSERNAME();
-                String password = sharedPreferencesUtil.getPASSWORD();
-                InternetServiceApi internetService = new InternetServiceApiImpl();
-                boolean result = false;
-                if (internetService.Login(username,password))
-                    result=internetService.RenewBook(mBookId);
-                if(result)
-                    renewedBook = (BookBorrowed) mItemList.get(mPosition);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return renewedBook;
-        }
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if (result) {
+                // 如果是取消操作，而且是来自于收藏，则移除对应项
+                if(!mOperationAdd&&!isSearched)
+                    mItemList.remove(mBookBaseToCollect);
+                notifyDataSetChanged();
 
-        @Override
-        protected void onPostExecute(BookBorrowed renewedBook) {
-            if (renewedBook == null){
-                Toast.makeText(mContext, "本书尚未到续借时间", Toast.LENGTH_SHORT).show();
-                return;
             }
-            mItemList.set(mPosition,renewedBook);
-            new CalendarUtil(mContext).new AddCalendarThread((List<BookBorrowed>) getItemList()).start();
-            Toast.makeText(mContext, "续借成功" , Toast.LENGTH_SHORT).show();
         }
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        onDataChanged();
+    }
+
+    protected abstract void onDataChanged() ;
+
+    static class ViewHolder{
+        public ImageView mSearchBookState;
+        public TextView mTitle;
+        public TextView mPublisher;
+        public TextView mPubdate;
+        public TextView mBookId;
+        public TextView mAuthor;
+        public TextView mButton;
+    }
 }

@@ -23,8 +23,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.common.PublicString;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -49,10 +49,10 @@ public class UpdateManagerUtil {
     private static final int DOWN_UPDATE = 1;
     private static final int DOWN_OVER = 2;
 
-    private static final String mApkDownloadUrl = PublicURI.URL_APK_DOWNLOAD;
-    private static final String mApkVersionUrl = PublicURI.URL_APK_VERSION;
-    private static final String mApkSavePath = PublicURI.LOCAL_PATH;
-    private static final String mApkSaveFileName = PublicURI.PATH_APK;
+    private static final String mApkDownloadUrl = PublicString.URL_APK_DOWNLOAD;
+    private static final String mApkVersionUrl = PublicString.URL_APK_VERSION;
+    private static final String mApkSavePath = PublicString.LOCAL_PATH;
+    private static final String mApkSaveFileName = PublicString.PATH_APK;
 
     /* 进度条与通知ui刷新的handler和msg常量 */
     private ProgressBar mProgress;

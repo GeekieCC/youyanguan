@@ -11,6 +11,9 @@ public class SharedPreferencesUtil {
     public static final String USERNAME="USERNAME";
     public static final String PASSWORD="PASSWORD";
     public static final String ISLOGINED="ISLOGINED";
+    public static final String COLLECT_ACTION = "collectAction";
+    public static final String COLLECT_RESULT = "collectResult";
+    public static final String COLLECT_POSITION ="collectPosition";
     protected SharedPreferences mShareData;
     protected SharedPreferences.Editor mShareDataEditor;
     protected Context mContext;
@@ -21,6 +24,34 @@ public class SharedPreferencesUtil {
         mShareDataEditor=mContext.getSharedPreferences(SHARED_PREFERENCE_NAME,0).edit();
     }
 
+
+
+    public void setCollectAction(boolean action) {
+        mShareDataEditor.putBoolean(COLLECT_ACTION,action).apply();
+    }
+
+    public void setCollectResult(boolean result) {
+        mShareDataEditor.putBoolean(COLLECT_RESULT,result).apply();
+    }
+
+    public void setCollectPosition(int position) {
+        mShareDataEditor.putInt(COLLECT_POSITION, position).apply();
+    }
+
+    public boolean getCollectAction() {
+        // 读取之后自动置否
+        boolean result = mShareData.getBoolean(COLLECT_ACTION, false);
+        setCollectAction(false);
+        return result;
+    }
+
+    public boolean getCollectResult() {
+        return mShareData.getBoolean(COLLECT_RESULT,false);
+    }
+
+    public  int getCollectPosition(){
+        return mShareData.getInt(COLLECT_POSITION,0);
+    }
     public String getUSERNAME() {
         return mShareData.getString(USERNAME,"");
     }

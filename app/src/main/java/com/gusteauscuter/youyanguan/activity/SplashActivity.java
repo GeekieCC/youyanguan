@@ -11,9 +11,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.api.InternetServiceApi;
-import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
-import com.gusteauscuter.youyanguan.util.DeviceInfoUtil;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -37,9 +34,6 @@ public class SplashActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // ==========add getDeviceInformation here ======================
-        getDeviceInformation();
-        
         handler.postDelayed(runnable = new Runnable() {
             @Override
             public void run() {
@@ -47,7 +41,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 1600);
     }
 
     @Override
@@ -62,9 +56,4 @@ public class SplashActivity extends AppCompatActivity {
         return super.onTouchEvent(event);
     }
 
-    private void getDeviceInformation(){
-        DeviceInfoUtil deviceInfo=new DeviceInfoUtil(this);
-        InternetServiceApi internetService = new InternetServiceApiImpl();
-        internetService.sendDeviceInfor(deviceInfo);
-    }
 }

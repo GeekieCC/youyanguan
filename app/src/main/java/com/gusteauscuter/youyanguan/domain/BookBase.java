@@ -1,39 +1,22 @@
 package com.gusteauscuter.youyanguan.domain;
 
-import android.graphics.Bitmap;
 
-import java.io.Serializable;
+public class BookBase {
 
-public class BookBase implements Serializable{
-
+	private String bookId;
 	private String title;
 	private String author;
 	private String publisher;
 	private String isbn;
 	private String pubdate;
 	private String searchNum;
-	private String bookId;
 	private int locationSummary;
 	private boolean isCollected;
-	private Bitmap pictureBitmap=null;
-	private DetailsOfBook detailsOfBook =null;
 
 	public BookBase(){
-
+		this("","","","","","","");
 	}
 
-	public void copyBookBase(BookBase bookBase){
-		setTitle(bookBase.getTitle());
-		setAuthor(bookBase.getAuthor());
-		setPublisher(bookBase.getPublisher());
-		setIsbn(bookBase.getIsbn());
-		setPubdate(bookBase.getPubdate());
-		setSearchNum(bookBase.getSearchNum());
-		setBookId(bookBase.getBookId());
-		setLocationSummary(bookBase.getLocationSummary());
-		setIsCollected(bookBase.isCollected());
-		setPictureBitmap(bookBase.getPictureBitmap());
-	}
 
 	public BookBase(String title, String author, String publisher, String isbn, String pubdate,
 					String searchNum, String bookId) {
@@ -46,7 +29,6 @@ public class BookBase implements Serializable{
 		this.bookId = bookId;
 		locationSummary = LocationInfo.UNKNOWN;
 		isCollected=false;
-		pictureBitmap =null;
 	}
 
 	public String getTitle() {
@@ -115,19 +97,4 @@ public class BookBase implements Serializable{
 		this.isCollected = isCollected;
 	}
 
-	public Bitmap getPictureBitmap() {
-		return pictureBitmap;
-	}
-
-	public void setPictureBitmap(Bitmap pictureBitmap) {
-		this.pictureBitmap = pictureBitmap;
-	}
-
-	public DetailsOfBook getDetailsOfBook() {
-		return detailsOfBook;
-	}
-
-	public void setDetailsOfBook(DetailsOfBook detailsOfBook) {
-		this.detailsOfBook = detailsOfBook;
-	}
 }

@@ -22,15 +22,14 @@ import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
 import com.gusteauscuter.youyanguan.activity.NavigationActivity;
-import com.gusteauscuter.youyanguan.adapter.BookBaseAdapter;
+import com.gusteauscuter.youyanguan.adapter.BookBorrowedAdapter;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
-import com.gusteauscuter.youyanguan.common.PublicURI;
-import com.gusteauscuter.youyanguan.domain.BookBase;
+import com.gusteauscuter.youyanguan.api.JsonUtil;
+import com.gusteauscuter.youyanguan.common.PublicString;
 import com.gusteauscuter.youyanguan.domain.BookBorrowed;
-import com.gusteauscuter.youyanguan.domain.JsonUtil;
-import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.CalendarUtil;
+import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
 import com.gusteauscuter.youyanguan.util.ScreenShotUtil;
 import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
 
@@ -48,27 +47,27 @@ public class bookBorrowedFragment extends Fragment {
     private View shareView;
 
     private ActionBar mActionBar ;
-    private BookBaseAdapter mAdapter;
+    private BookBorrowedAdapter mAdapter;
     private Context mContext ;
     private SharedPreferencesUtil mSharedPreferencesUtil;
     private boolean isFirstTime=true;
 
-    private static String stringSharedBooksBorrowedName = PublicURI.PATH_SHARE_MY_BOOKS;
+    private static String stringSharedBooksBorrowedName = PublicString.PATH_SHARE_MY_BOOKS;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        super.onCreateView(inflater,container,savedInstanceState);
+        super.onCreateView(inflater, container, savedInstanceState);
         mContext = getActivity();
         View view = inflater.inflate(R.layout.fragment_books_borrowed, container, false);
         mEmptyInformation=(TextView) view.findViewById(R.id.emptyInformation);
         mProgressBar=(ProgressBar) view.findViewById(R.id.progressBarRefresh);
         mListView = (GridView) view.findViewById(R.id.bookListView);
-        shareView = view.findViewById(R.id.bookListView);
+        shareView = mListView;
         mActionBar = ((AppCompatActivity)mContext).getSupportActionBar();
 
         mSharedPreferencesUtil = new SharedPreferencesUtil(mContext);
         if(mAdapter==null)
-            mAdapter = new BookBaseAdapter(mContext);
+            mAdapter = new BookBorrowedAdapter(mContext);
         mListView.setAdapter(mAdapter);
 
         if(isFirstTime) {
@@ -79,21 +78,12 @@ public class bookBorrowedFragment extends Fragment {
         return view;
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(data==null)
-//            return;
-//        BookBase bookBack = (BookBase) data.getSerializableExtra("bookBaseFromDetail");
-//        int positon = data.getIntExtra("position",0);
-//        BookBorrowed bookBorrowedTmp = (BookBorrowed) mAdapter.getItem(positon);
-//        bookBorrowedTmp.setDetailsOfBook(bookBack.getDetailsOfBook());
-//        bookBorrowedTmp.setIsCollected(bookBack.isCollected());
-//        bookBorrowedTmp.setPubdate(bookBack.getPubdate());
-//        // ...TODO to check the property to get
-//        mAdapter.getItemList().set(positon,bookBorrowedTmp);
-//        mAdapter.notifyDataSetChanged();
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
+    }
+
 
     public void RefreshBook(){
         boolean isConnected = NetworkConnectUtil.isConnected(mContext);

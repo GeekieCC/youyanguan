@@ -75,7 +75,7 @@ public class SettingActivity extends AppCompatActivity {
 
     public void SendEmailIntent(String fromWhere){
         Intent data=new Intent(Intent.ACTION_SENDTO);
-        data.setData(Uri.parse("mailto:gusteauscuter@163.com"));
+        data.setData(Uri.parse("mailto:geekie@163.com"));
         data.putExtra(Intent.EXTRA_SUBJECT, "【反馈建议/" + fromWhere + "】");
         data.putExtra(Intent.EXTRA_TEXT, "详细情况：\n");
         startActivity(data);

@@ -1,6 +1,9 @@
-package com.gusteauscuter.youyanguan.domain;
+package com.gusteauscuter.youyanguan.api;
 
-import android.support.annotation.Nullable;
+import com.gusteauscuter.youyanguan.domain.BookBase;
+import com.gusteauscuter.youyanguan.domain.BookBorrowed;
+import com.gusteauscuter.youyanguan.domain.BookDetail;
+import com.gusteauscuter.youyanguan.domain.LocationInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,25 +25,16 @@ public class JsonUtil {
                 JSONObject jsonBookBorrowed = (JSONObject) jsonArray.get(i);
                 String  title= jsonBookBorrowed.getString("title");
                 String  author= jsonBookBorrowed.getString("author");
-                String publisher = "";
-                String isbn = "";
-                String pubdate = "";
-                String searchNum = "";
                 String  bookId= jsonBookBorrowed.getString("bookId");
-                String  barcode= jsonBookBorrowed.getString("barcode");
                 String  borrowDay= jsonBookBorrowed.getString("borrowDay");
                 String  returnDay= jsonBookBorrowed.getString("returnDay");
                 int  borrowedTime= jsonBookBorrowed.getInt("borrowedTime");
                 int  maxBorrowTime= jsonBookBorrowed.getInt("maxBorrowTime");
                 boolean  expired = jsonBookBorrowed.getBoolean("expired");
                 String  renewLink= jsonBookBorrowed.getString("renewLink");
-                String  detailLink= jsonBookBorrowed.getString("detailLink");
-//                String  volume= jsonBookBorrowed.getString("volume");
-//                String  libraryLocation= jsonBookBorrowed.getString("libraryLocation");
-//                String  libraryName = jsonBookBorrowed.getString("libraryName");
-                BookBorrowed bookBorrowed = new BookBorrowed(title, author,publisher,isbn,pubdate,
-                        searchNum, bookId, barcode,borrowDay,returnDay,borrowedTime,
-                        maxBorrowTime, expired, renewLink, detailLink);
+
+                BookBorrowed bookBorrowed = new BookBorrowed(title, author, bookId, borrowDay,
+                        returnDay,borrowedTime,maxBorrowTime, expired, renewLink);
                 if(bookBorrowedList == null)
                     bookBorrowedList=new ArrayList<>();
                 bookBorrowedList.add(bookBorrowed);
@@ -97,26 +91,26 @@ public class JsonUtil {
     }
 
 
-    public static DetailsOfBook getBookDetatl(JSONObject jsonBookDetail){
-        DetailsOfBook detailsOfBook =new DetailsOfBook();
+    public static BookDetail getBookDetail(JSONObject jsonBookDetail){
+        BookDetail bookDetail =new BookDetail();
         try {
-            detailsOfBook.setLocationInfo(getLocationList(jsonBookDetail.getJSONArray("collectInfo")));
+            bookDetail.setLocationInfo(getLocationList(jsonBookDetail.getJSONArray("collectInfo")));
             if(jsonBookDetail.getBoolean("doubanExist")) {
-                detailsOfBook.setSummary(jsonBookDetail.getString("summary"));
-                detailsOfBook.setDoubanExist(jsonBookDetail.getBoolean("doubanExist"));
-                detailsOfBook.setPrice(jsonBookDetail.getString("price"));
-                detailsOfBook.setPictureUrl(jsonBookDetail.getString("pictureUrl"));
-                detailsOfBook.setCatalog(jsonBookDetail.getString("catalog"));
-                detailsOfBook.setPages(jsonBookDetail.getString("pages"));
-                detailsOfBook.setAuthorIntro(jsonBookDetail.getString("authorIntro"));
+                bookDetail.setSummary(jsonBookDetail.getString("summary"));
+                bookDetail.setDoubanExist(jsonBookDetail.getBoolean("doubanExist"));
+                bookDetail.setPrice(jsonBookDetail.getString("price"));
+                bookDetail.setPictureUrl(jsonBookDetail.getString("pictureUrl"));
+                bookDetail.setCatalog(jsonBookDetail.getString("catalog"));
+                bookDetail.setPages(jsonBookDetail.getString("pages"));
+                bookDetail.setAuthorIntro(jsonBookDetail.getString("authorIntro"));
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return detailsOfBook;
+        return bookDetail;
     }
 
-    public static List<LocationInfo> getLocationList(@Nullable JSONArray jsonLocationList){
+    public static List<LocationInfo> getLocationList( JSONArray jsonLocationList){
         List<LocationInfo> locationInfoList=new ArrayList<>();
         try {
             for (int i = 0; i < jsonLocationList.length(); i++) {

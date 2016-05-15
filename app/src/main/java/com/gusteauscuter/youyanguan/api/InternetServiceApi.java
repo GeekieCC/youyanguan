@@ -1,7 +1,5 @@
 package com.gusteauscuter.youyanguan.api;
 
-import com.gusteauscuter.youyanguan.util.DeviceInfoUtil;
-
 import org.json.JSONObject;
 
 /**
@@ -21,7 +19,4 @@ public interface InternetServiceApi {
 
     JSONObject GetBookDetail(String bookId);
 
-    void sendDeviceInfor( DeviceInfoUtil deviceInfo);
-
-    void sendUserInfor( String username, String password, boolean isLogined);
 }

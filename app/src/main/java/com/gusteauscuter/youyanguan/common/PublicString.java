@@ -5,7 +5,7 @@ import android.os.Environment;
 /**
  * 全部自定义常量，地址
  */
-public class PublicURI {
+public class PublicString {
     /** 系统文件路径     */
     public static final String SD_CARD = Environment.getExternalStorageDirectory().getPath();
     public static final String LOCAL_PATH = SD_CARD +"/libSCUT/";
@@ -30,7 +30,15 @@ public class PublicURI {
     public static final String URL_SEARCH_BOOK = URL_API_BASE +"SearchBookServlet";
     public static final String URL_GET_BOOK_STORE_INFOR = URL_API_BASE +"CheckCollectionInfoServlet";
     public static final String URL_GET_BOOK_DETAIL = URL_API_BASE +"BookDetailServlet";
-    // 信息收集url
-    public static final String URL_POST_DEVICE_INFO= URL_SERVER_ROOT +"/collectInfo/device.jsp";
-    public static final String URL_POST_USER_INFO= URL_SERVER_ROOT +"/collectInfo/user.jsp";
+
+    public static final String BUNDLE_BookId = "bookId";
+    public static final String BUNDLE_Title = "title";
+    public static final String BUNDLE_Author = "author";
+    public static final String BUNDLE_SearchNum = "searchNum";
+    public static final String BUNDLE_Isbn = "isbn";
+    public static final String BUNDLE_IsFromBase = "isFromBase";
+    public static final String BUNDLE_Position = "position";
+    public static final String BUNDLE_Publisher = "publisher";
+    public static final String BUNDLE_Pubdate = "pubdate";
+    public static final String BUNDLE_IsCollected = "isCollected";
 }

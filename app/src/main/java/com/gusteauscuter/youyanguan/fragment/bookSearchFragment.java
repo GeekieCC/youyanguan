@@ -15,9 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.activity.BookSearchActivity;
-import com.gusteauscuter.youyanguan.common.PublicURI;
 import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.activity.BookSearchActivity;
+import com.gusteauscuter.youyanguan.common.PublicString;
 import com.gusteauscuter.youyanguan.util.FileCopyUtil;
 
 import java.io.File;
@@ -25,7 +25,7 @@ import java.io.File;
 public class bookSearchFragment extends Fragment {
     private static final int RESULT_LOAD_IMAGE_search_background = 3;
     private static final int RESULT_OK = -1;
-    private static final String mSearchBackgroundFiledName = PublicURI.PATH_BG_SEARCH;
+    private static final String mSearchBackgroundFiledName = PublicString.PATH_BG_SEARCH;
     private ImageView mSearchBackground;
     private int timesOfClickSecretPosition=0;
 

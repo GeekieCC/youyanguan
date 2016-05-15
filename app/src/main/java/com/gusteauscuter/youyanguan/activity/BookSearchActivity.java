@@ -17,19 +17,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gusteauscuter.youyanguan.adapter.BookSearchedAdapter;
+import com.gusteauscuter.youyanguan.R;
+import com.gusteauscuter.youyanguan.adapter.BookBaseAdapter;
 import com.gusteauscuter.youyanguan.api.InternetServiceApi;
 import com.gusteauscuter.youyanguan.api.InternetServiceApiImpl;
-import com.gusteauscuter.youyanguan.common.PublicURI;
-import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.domain.BookBase;
+import com.gusteauscuter.youyanguan.api.JsonUtil;
+import com.gusteauscuter.youyanguan.common.PublicString;
 import com.gusteauscuter.youyanguan.databaseHelper.BookCollectionDbHelper;
-import com.gusteauscuter.youyanguan.domain.JsonUtil;
+import com.gusteauscuter.youyanguan.domain.BookBase;
 import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
+import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
 import com.gusteauscuter.youyanguan.util.SoftInputUtil;
 import com.gusteauscuter.youyanguan.view.ScrollListView;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -38,7 +38,7 @@ import java.util.List;
 public class BookSearchActivity extends AppCompatActivity {
 
     private static final int FIRST_PAGE = 0;
-    private static final String SearchBackgroundFileName = PublicURI.PATH_BG_SEARCH;
+    private static final String SearchBackgroundFileName = PublicString.PATH_BG_SEARCH;
 
     private ImageView mSearchBackground;
     private TextView mTotalNumberTextView;
@@ -46,7 +46,7 @@ public class BookSearchActivity extends AppCompatActivity {
     private Spinner mSearchTypeSpinner;
     private ProgressBar mProgressBar;
     private ScrollListView mListView;
-    private BookSearchedAdapter mAdapter;
+    private BookBaseAdapter mAdapter;
 
     //第一次搜索时初始化这两个变量
     private int mNumOfPages = 0;
@@ -86,6 +86,20 @@ public class BookSearchActivity extends AppCompatActivity {
                 searchBook(!RESEARCH);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getApplicationContext());
+        boolean action = sharedPreferencesUtil.getCollectAction();
+        if(action){
+            boolean isCollected = sharedPreferencesUtil.getCollectResult();
+            int position = sharedPreferencesUtil.getCollectPosition();
+            BookBase bookBaseTmp = (BookBase)(mAdapter.getItem(position));
+            bookBaseTmp.setIsCollected(isCollected);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initView(){
@@ -152,7 +166,12 @@ public class BookSearchActivity extends AppCompatActivity {
         // 有效数据
         mTotalNumberTextView =(TextView) findViewById(R.id.totalNumber);
         mListView = (ScrollListView) findViewById(R.id.bookListView);
-        mAdapter = new BookSearchedAdapter(this) ;
+        mAdapter = new BookBaseAdapter(this, true) {
+            @Override
+            protected void onDataChanged() {
+                // do nothing here
+            }
+        };
         mListView.setAdapter(mAdapter);
     }
 
@@ -214,7 +233,7 @@ public class BookSearchActivity extends AppCompatActivity {
                 //对于搜索出来的书，检查其是否已经被收藏到数据库
                 BookCollectionDbHelper mDbHelper = new BookCollectionDbHelper(getApplicationContext());
                 for (BookBase resultBook : resultBookLists) {
-                    if(mDbHelper.isCollected(resultBook))
+                    if(mDbHelper.isCollected(resultBook.getBookId()))
                         resultBook.setIsCollected(true);
                 }
             } catch (Exception e) {

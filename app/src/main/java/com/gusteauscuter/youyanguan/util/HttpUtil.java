@@ -3,8 +3,6 @@ package com.gusteauscuter.youyanguan.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.gusteauscuter.youyanguan.util.NetworkConnectUtil;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;

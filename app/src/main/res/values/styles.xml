@@ -99,7 +99,7 @@
     </style>
 
 
-    <!-- DetailsOfBook -->
+    <!-- BookDetail -->
 
     <style name="BookDetail.Title" parent="Widget">
         <item name="android:textAppearance">?android:textAppearanceSmall</item>
@@ -122,6 +122,7 @@
 
     <style name="BookDetail.Bottom" parent="Widget">
         <item name="android:textIsSelectable">true</item>
+        <item name="android:layout_margin">5dp</item>
     </style>
 
     <!-- 设置 -->

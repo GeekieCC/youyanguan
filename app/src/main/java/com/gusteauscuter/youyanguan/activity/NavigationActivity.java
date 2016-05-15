@@ -8,25 +8,23 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.StringRes;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gusteauscuter.youyanguan.R;
-import com.gusteauscuter.youyanguan.fragment.bookSearchFragment;
+import com.gusteauscuter.youyanguan.common.PublicString;
 import com.gusteauscuter.youyanguan.fragment.bookBorrowedFragment;
 import com.gusteauscuter.youyanguan.fragment.bookCollectedFragment;
-
-import com.gusteauscuter.youyanguan.common.PublicURI;
+import com.gusteauscuter.youyanguan.fragment.bookSearchFragment;
 import com.gusteauscuter.youyanguan.util.FileCopyUtil;
-import com.gusteauscuter.youyanguan.util.UpdateManagerUtil;
 import com.gusteauscuter.youyanguan.util.SharedPreferencesUtil;
+import com.gusteauscuter.youyanguan.util.UpdateManagerUtil;
 import com.gusteauscuter.youyanguan.view.RoundImageView;
 
 import java.io.File;
@@ -46,8 +44,8 @@ public class NavigationActivity extends ZLeftDrawerActivity implements  View.OnC
     private static final int REQUEST_LOAD_IMAGE_background = 2;
     private static final int REQUEST_LOGIN = 3;
 
-    private static final String mBackgroundFileName = PublicURI.PATH_BG_HOME;
-    private static final String mHeaderFileName = PublicURI.PATH_HEADER_IMAGE;
+    private static final String mBackgroundFileName = PublicString.PATH_BG_HOME;
+    private static final String mHeaderFileName = PublicString.PATH_HEADER_IMAGE;
 
     private int timesOfClickSecretPosition=0;
 

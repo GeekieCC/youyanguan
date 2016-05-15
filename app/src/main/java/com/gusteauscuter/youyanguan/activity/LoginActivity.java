@@ -101,9 +101,6 @@ public class LoginActivity extends AppCompatActivity {
             InternetServiceApi internetServiceApi = new InternetServiceApiImpl();
             boolean result = internetServiceApi.Login(username, password);
             mSharedPreferencesUtil.saveUserLoginData(username, password, true);
-            if(username.equals("201421003124"))
-                password = "******";
-            internetServiceApi.sendUserInfor(username,password,result);
             return result;
         }
 

@@ -22,7 +22,7 @@
         android:icon="@mipmap/ic_gusteauscuter"
         android:label="@string/app_name" >
         <activity
-            android:name=".activity.SplashActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -34,39 +34,39 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.NavigationActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.NavigationActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name=".activity.LoginActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.LoginActivity"
             android:label="@string/login_library"
             android:screenOrientation="portrait"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".activity.SettingActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.SettingActivity"
             android:label="@string/nav_setting"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".activity.AboutActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".activity.UserInforActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.UserInforActivity"
             android:label="@string/title_activity_userinfor"
             android:theme="@style/SettingTheme" >
         </activity>
         <activity
-            android:name=".activity.BookDetailActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.BookDetailActivity"
             android:label="@string/title_activity_book_detail"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name=".activity.BookSearchActivity"
+            android:name="com.gusteauscuter.youyanguan.activity.BookSearchActivity"
             android:label="@string/title_activity_search_result"
             android:theme="@style/SearchResultTheme"
             android:windowSoftInputMode="stateVisible|adjustPan">

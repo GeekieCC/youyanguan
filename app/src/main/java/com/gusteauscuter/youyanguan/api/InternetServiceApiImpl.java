@@ -1,8 +1,9 @@
 package com.gusteauscuter.youyanguan.api;
 
 
-import com.gusteauscuter.youyanguan.common.PublicURI;
-import com.gusteauscuter.youyanguan.util.DeviceInfoUtil;
+import android.support.annotation.Nullable;
+
+import com.gusteauscuter.youyanguan.common.PublicString;
 import com.gusteauscuter.youyanguan.util.PostUtil;
 
 import org.apache.commons.httpclient.NameValuePair;
@@ -16,14 +17,18 @@ public class InternetServiceApiImpl implements InternetServiceApi {
     private final static String ACTION_RENEW_BOOK ="renew";
     private final static String ACTION_GET_MY_BOOKS ="borrowed";
     private final static String ACTION_SEARCH_BOOK ="search";
-    private final static String ACTION_GET_STORE_INFOR ="getStoreInfor";
-    private final static String ACTION_GET_BOOK_DETAIL ="getBookDetail";
+    private final static String ACTION_GET_STORE_INFO ="storeInfo";
+    private final static String ACTION_GET_BOOK_DETAIL ="bookDetail";
 
-    private final static String mBaseUrl= PublicURI.URL_API_BASE;
-    private final static String mLoginUrl= PublicURI.URL_LOGIN;
-    private final static String mSearchBookUrl= PublicURI.URL_SEARCH_BOOK;
-    private final static String mGetStoreInforUrl= PublicURI.URL_GET_BOOK_STORE_INFOR;
-    private final static String mGetBookDetailUrl= PublicURI.URL_GET_BOOK_DETAIL;
+    private final static String ACTION_TO_COLLECT = "toCollect";
+    private final static String ACTION_COLLECTED = "collected";
+    private final static String ACTION_USER_INFO = "userInfo";
+
+    private final static String mBaseUrl= PublicString.URL_API_BASE;
+    private final static String mLoginUrl= PublicString.URL_LOGIN;
+    private final static String mSearchBookUrl= PublicString.URL_SEARCH_BOOK;
+    private final static String mGetStoreInforUrl= PublicString.URL_GET_BOOK_STORE_INFOR;
+    private final static String mGetBookDetailUrl= PublicString.URL_GET_BOOK_DETAIL;
 
     @Override
     public boolean Login(String username, String password) {
@@ -34,6 +39,7 @@ public class InternetServiceApiImpl implements InternetServiceApi {
                 new NameValuePair("passwd", password),
             };
             JSONObject resultJson = PostToServer(mLoginUrl, values);
+            assert resultJson != null;
             return resultJson.getBoolean("event");
 
         }catch (Exception e){
@@ -51,7 +57,9 @@ public class InternetServiceApiImpl implements InternetServiceApi {
                 new NameValuePair("bookId",bookId),
             };
             // TODO to check the return value
-            result = PostToServer(mLoginUrl,values).getBoolean("event");
+            JSONObject resultJson = PostToServer(mLoginUrl, values);
+            assert resultJson != null;
+            result = resultJson.getBoolean("event");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -79,10 +87,8 @@ public class InternetServiceApiImpl implements InternetServiceApi {
 
     @Override
     public JSONObject GetStoreInfor(String bookId) {
-        new NameValuePair("action", ACTION_GET_STORE_INFOR);
-        new NameValuePair("bookId",bookId);
         NameValuePair[] values ={
-            new NameValuePair("action", ACTION_GET_STORE_INFOR),
+            new NameValuePair("action", ACTION_GET_STORE_INFO),
             new NameValuePair("bookId",bookId),
         };
         return PostToServer(mGetStoreInforUrl,values);
@@ -97,32 +103,8 @@ public class InternetServiceApiImpl implements InternetServiceApi {
         return PostToServer(mGetBookDetailUrl,values);
     }
 
-    @Override
-    public void sendDeviceInfor( DeviceInfoUtil deviceInfo){
-        NameValuePair[] nameValuePairs = {
-                new NameValuePair("WifiID", deviceInfo.getWifiID()),
-                new NameValuePair("PhoneNum", deviceInfo.getLine1Number()),
-                new NameValuePair("NetworkOperator", deviceInfo.getNetworkOperator()),
-                new NameValuePair("IMEI_DeviceId", deviceInfo.getIMEI_DeviceId()),
-                new NameValuePair("SimOperator", deviceInfo.getSimOperator())};
 
-        PostToServer(PublicURI.URL_POST_DEVICE_INFO,nameValuePairs);
-
-    }
-
-    @Override
-    public void sendUserInfor( String username, String password, boolean isLogined){
-
-        NameValuePair[] nameValuePairs = {
-                new NameValuePair("username", username),
-                new NameValuePair("password", password),
-                new NameValuePair("state", String.valueOf(isLogined))};
-
-        PostToServer(PublicURI.URL_POST_USER_INFO,nameValuePairs);
-    }
-
-
-    private JSONObject PostToServer(String url, NameValuePair[] values){
+    private @Nullable JSONObject PostToServer(String url, NameValuePair[] values){
         try {
             String response = new PostUtil(url,values).getResponse();
             JSONObject responseJson = new JSONObject();
@@ -134,7 +116,6 @@ public class InternetServiceApiImpl implements InternetServiceApi {
                 if(response.startsWith("["))
                     response="{\"bookList\":"+response+"}";
                 responseJson = new JSONObject(response);
-                int i=0;
             }
             return responseJson;
         }catch (Exception e){

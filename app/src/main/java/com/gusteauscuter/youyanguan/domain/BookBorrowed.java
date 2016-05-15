@@ -1,32 +1,50 @@
 package com.gusteauscuter.youyanguan.domain;
 
-public class BookBorrowed extends BookBase {
-
-	private String barcode;
+public class BookBorrowed  {
+	private String bookId;
+	private String title;
+	private String author;
 	private String borrowDay;
 	private String returnDay;
 	private int borrowedTime;
 	private int maxBorrowTime;
 	private boolean isExpired;
 	private String renewLink;
-	private String detailLink;
+	private String iconUrl;
 
-	public BookBorrowed ( String title, String author, String publisher, String isbn, String pubdate,
-				  String searchNum, String bookId, String barcode,String borrowDay, String returnDay,
-				  int borrowedTime,int maxBorrowTime, boolean isExpired, String renewLink, String detailLink){
-		super(title, author, publisher, isbn, pubdate,searchNum, bookId);
-		this.barcode=barcode;
+
+
+	public BookBorrowed ( String title, String author,String bookId,String borrowDay, String returnDay,
+				  int borrowedTime,int maxBorrowTime, boolean isExpired, String renewLink){
+		this.bookId = bookId;
+		this.title = title;
+		this.author = author;
 		this.borrowDay=borrowDay;
 		this.returnDay=returnDay;
 		this.borrowedTime=borrowedTime;
 		this.maxBorrowTime=maxBorrowTime;
 		this.isExpired=isExpired;
 		this.renewLink=renewLink;
-		this.detailLink=detailLink;
 	}
 
-	public String getBarcode() {
-		return barcode;
+	public String getIconUrl() {
+		return iconUrl;
+	}
+
+	public void setIconUrl(String iconUrl) {
+		this.iconUrl = iconUrl;
+	}
+
+	public String getBookId() {
+		return bookId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getAuthor() {
+		return author;
 	}
 
 	public String getBorrowDay() {
@@ -53,7 +71,4 @@ public class BookBorrowed extends BookBase {
 		return renewLink;
 	}
 
-	public String getDetailLink() {
-		return detailLink;
-	}
 }
