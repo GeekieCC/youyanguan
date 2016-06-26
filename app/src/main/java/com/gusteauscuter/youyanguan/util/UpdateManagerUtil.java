@@ -43,7 +43,7 @@ public class UpdateManagerUtil {
     private String mNewFeatures;
 
     //提示语
-    private static final String updateMsg = "update: v";
+    private static final String updateMsg = "万卷屋V";
     private static final String noUpdateInfor = "已是最新版本！";
 
     private static final int DOWN_UPDATE = 1;
@@ -137,16 +137,16 @@ public class UpdateManagerUtil {
 
     private void showNoticeDialog(){
         Builder builder = new Builder(mContext);
-        builder.setTitle(updateMsg + mServerVersion);
-        builder.setMessage(mNewFeatures);
-        builder.setPositiveButton("下载", new OnClickListener() {
+        builder.setTitle(updateMsg + mServerVersion + "发布");
+        builder.setMessage("新版本的功能有:"+mNewFeatures);
+        builder.setPositiveButton("立即更新", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 showDownloadDialog();
             }
         });
-        builder.setNegativeButton("忽略", new OnClickListener() {
+        builder.setNegativeButton("走开", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -160,7 +160,7 @@ public class UpdateManagerUtil {
 
     private void showDownloadDialog(){
         Builder builder = new Builder(mContext);
-        builder.setTitle(updateMsg + mServerVersion);
+        builder.setTitle(updateMsg + mServerVersion + "发布");
 
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         View v = inflater.inflate(R.layout.progress_update, null);
